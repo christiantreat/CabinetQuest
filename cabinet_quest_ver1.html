@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabinet Quest</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .task {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .cabinet-area {
+            display: flex;
+            gap: 20px;
+        }
+        .cabinet {
+            width: 300px;
+            height: 400px;
+            background-color: #006400;
+            border: 2px solid #004d00;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 10px;
+        }
+        .drawer {
+            height: 80px;
+            background-color: #008000;
+            border: 2px solid #004d00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .drawer:hover {
+            background-color: #009900;
+        }
+        .drawer-content {
+            display: none;
+            background-color: #ffffff;
+            padding: 10px;
+            border: 1px solid #004d00;
+            position: absolute;
+            left: 340px;
+            width: 250px;
+        }
+        .item {
+            cursor: pointer;
+            display: inline-block;
+            margin: 5px;
+        }
+        .item img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+        .close-btn {
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .game-info {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .inventory-box {
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            padding: 10px;
+            height: 150px;
+            overflow-y: auto;
+        }
+        .inventory-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .inventory-item {
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            padding: 2px 5px;
+            background-color: #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .inventory-item img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+        .inventory-item:hover {
+            background-color: #ccc;
+        }
+        .message-box {
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            padding: 10px;
+            height: 100px;
+            overflow-y: auto;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .action-buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .action-buttons button:hover {
+            background-color: #45a049;
+        }
+        .action-buttons button#resetBtn {
+            background-color: #f44336;
+        }
+        .action-buttons button#resetBtn:hover {
+            background-color: #d32f2f;
+        }
+       .stats-display {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-width: 600px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="task" id="task"></div>
+        <div class="cabinet-area">
+            <div class="cabinet">
+                <div class="drawer" onclick="toggleDrawer(1)">Drawer 1</div>
+                <div class="drawer" onclick="toggleDrawer(2)">Drawer 2</div>
+                <div class="drawer" onclick="toggleDrawer(3)">Drawer 3</div>
+                <div class="drawer" onclick="toggleDrawer(4)">Drawer 4</div>
+            </div>
+            <div id="drawer1" class="drawer-content"></div>
+            <div id="drawer2" class="drawer-content"></div>
+            <div id="drawer3" class="drawer-content"></div>
+            <div id="drawer4" class="drawer-content"></div>
+            <div class="game-info">
+                <div class="inventory-box">
+                    <div class="inventory-title">Inventory:</div>
+                    <div id="inventory"></div>
+                </div>
+                <div class="message-box" id="message"></div>
+                <div class="action-buttons">
+                    <button id="readyBtn" onclick="finishTask()">I'm Ready!</button>
+                    <button id="resetBtn" onclick="resetGame()" style="display: none;">Reset Game</button>
+                </div>
+            </div>
+        </div>
+       <div class="stats-display" id="statsDisplay"></div>
+    </div>
+
+    <script>
+        let currentTask;
+        let taskAttempts = {};
+        let finalInventory; // Declare this at the top level of your script
+        let inventory = [];
+        let startTime;
+        let gameEnded = false;
+        let taskTimes = [];
+        let drawerContents = {
+            1: ['paper', 'scissors', 'stapler'],
+            2: ['glue', 'paper-clips', 'rubber-bands'],
+            3: ['flashlight', 'batteries', 'lighter'],
+            4: ['pencil', 'pen', 'eraser']
+        };
+        let taskAttemptInventories = {};
+        
+        const tasks = [
+            "Get what you need to create a book",
+            "Prepare for a camping trip",
+            "Gather items for a basic first aid kit",
+            "Collect supplies for a science experiment",
+            "Assemble tools for a home repair task",
+            "Put together items for an art project"
+        ];
+
+  function getRandomTask() {
+    currentTask = tasks[Math.floor(Math.random() * tasks.length)];
+    if (!taskAttempts[currentTask]) {
+        taskAttempts[currentTask] = 0;
+        taskAttemptInventories[currentTask] = [];
+    }
+    taskAttempts[currentTask]++;
+    return currentTask;
+}
+
+        function toggleDrawer(drawerNumber) {
+            const drawer = document.getElementById(`drawer${drawerNumber}`);
+            const allDrawers = document.getElementsByClassName('drawer-content');
+            
+            for (let i = 0; i < allDrawers.length; i++) {
+                if (allDrawers[i] !== drawer) {
+                    allDrawers[i].style.display = 'none';
+                }
+            }
+            
+            drawer.style.display = drawer.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function closeDrawer(drawerNumber) {
+            document.getElementById(`drawer${drawerNumber}`).style.display = 'none';
+        }
+
+        function addToInventory(item) {
+            if (!gameEnded && !inventory.includes(item)) {
+                inventory.push(item);
+                updateInventoryDisplay();
+                setMessage(`Added ${item} to inventory.`);
+                removeFromDrawer(item);
+            } else if (inventory.includes(item)) {
+                setMessage(`${item} is already in your inventory.`);
+            }
+        }
+
+        function removeFromInventory(item) {
+            if (!gameEnded) {
+                const index = inventory.indexOf(item);
+                if (index > -1) {
+                    inventory.splice(index, 1);
+                    updateInventoryDisplay();
+                    setMessage(`Removed ${item} from inventory.`);
+                    addToDrawer(item);
+                }
+            }
+        }
+
+        function updateInventoryDisplay() {
+            const inventoryElement = document.getElementById('inventory');
+            inventoryElement.innerHTML = inventory.map(item => 
+                `<span class="inventory-item" onclick="removeFromInventory('${item}')"><img src="/api/placeholder/30/30" alt="${item}" title="${item}"></span>`
+            ).join(' ');
+        }
+
+        function removeFromDrawer(item) {
+            for (let drawer in drawerContents) {
+                const index = drawerContents[drawer].indexOf(item);
+                if (index > -1) {
+                    drawerContents[drawer].splice(index, 1);
+                    updateDrawerContent(drawer);
+                    break;
+                }
+            }
+        }
+
+        function addToDrawer(item) {
+            for (let drawer in drawerContents) {
+                if (drawerContents[drawer].length < 3) {
+                    drawerContents[drawer].push(item);
+                    updateDrawerContent(drawer);
+                    break;
+                }
+            }
+        }
+
+        function updateDrawerContent(drawer) {
+            const drawerElement = document.getElementById(`drawer${drawer}`);
+            drawerElement.innerHTML = `
+                <span class="close-btn" onclick="closeDrawer(${drawer})">&times;</span>
+                ${drawerContents[drawer].map(item => 
+                    `<span class="item" onclick="addToInventory('${item}')"><img src="/api/placeholder/50/50" alt="${item}" title="${item}"></span>`
+                ).join('')}
+            `;
+        }
+
+        function initializeGame() {
+            inventory = [];
+            gameEnded = false;
+            document.getElementById('task').innerText = getRandomTask();
+            document.getElementById('inventory').innerText = "";
+            document.getElementById('message').innerText = "";
+            document.getElementById('readyBtn').style.display = 'block';
+            document.getElementById('resetBtn').style.display = 'none';
+            startTime = new Date();
+            
+            drawerContents = {
+                1: ['paper', 'scissors', 'stapler'],
+                2: ['glue', 'paper-clips', 'rubber-bands'],
+                3: ['flashlight', 'batteries', 'lighter'],
+                4: ['pencil', 'pen', 'eraser']
+            };
+            
+            for (let drawer in drawerContents) {
+                updateDrawerContent(drawer);
+            }
+        }
+
+function finishTask() {
+    if (!gameEnded) {
+        gameEnded = true;
+        const endTime = new Date();
+        const timeTaken = Math.floor((endTime - startTime) / 1000);
+        taskTimes.push(timeTaken);
+        
+        finalInventory = [...inventory];
+        
+        // Store the inventory for this attempt
+        taskAttemptInventories[currentTask].push(finalInventory);
+        
+        setMessage(`Task completed! Your final inventory: ${finalInventory.join(', ')}`);
+        document.getElementById('readyBtn').style.display = 'none';
+        document.getElementById('resetBtn').style.display = 'block';
+        
+        updateStatsDisplay();
+        
+        // Prepare data for Qualtrics
+        prepareDataForQualtrics();
+    }
+}
+
+        function resetGame() {
+            initializeGame();
+            finalInventory = null; 
+            document.getElementById('statsDisplay').textContent = '';
+        }
+
+        function setMessage(msg) {
+            document.getElementById('message').innerText = msg;
+        }
+      
+        function updateStatsDisplay() {
+    const statsDisplay = document.getElementById('statsDisplay');
+    let statsText = `
+Task prompt: "${currentTask}"
+Time taken for task: ${taskTimes[taskTimes.length - 1]} seconds
+All task times: ${taskTimes.join(', ')} seconds
+Final inventory: ${finalInventory ? finalInventory.join(', ') : 'N/A'}
+Number of attempts for this task: ${taskAttempts[currentTask]}
+
+All task attempts:
+`;
+
+    for (let task in taskAttempts) {
+        statsText += `
+  ${task}: ${taskAttempts[task]} attempts
+    Inventories:
+${taskAttemptInventories[task].map((inv, i) => `      Attempt ${i + 1}: ${inv.join(', ')}`).join('\n')}
+`;
+    }
+
+    statsDisplay.textContent = statsText.trim();
+}
+      
+      function prepareDataForQualtrics() {
+    const gameData = {
+        taskAttempts: taskAttempts,
+        taskAttemptInventories: taskAttemptInventories,
+        taskTimes: taskTimes,
+        allTasks: tasks
+    };
+
+    // Make the data available to the parent window (Qualtrics)
+    window.gameData = gameData;
+
+    // Signal to Qualtrics that the data is ready
+    if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage("gameDataReady", "*");
+    }
+
+    console.log("Game data prepared for Qualtrics:", gameData);
+}
+      
+        initializeGame();
+    </script>
+</body>
+</html>
