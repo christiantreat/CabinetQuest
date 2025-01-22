@@ -359,6 +359,30 @@ body {
     justify-content: center;
     overflow-y: auto;
 }
+        
+.game-complete-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.survey-button {
+    background: #4169e1;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: clamp(16px, 5vw, 20px);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    touch-action: manipulation;
+}
+
+.survey-button:active {
+    transform: scale(0.98);
+    background: #3158d3;
+}
 
 .game-start-content,
 .game-complete-content {
@@ -778,9 +802,14 @@ body {
         let currentCabinet = null;
         let currentDrawer = null;
         // Logging function
+        // Array to store all log entries
+            let gameLogEntries = [];
+        
         function logAction(action, details) {
             const timestamp = new Date().toLocaleTimeString();
-            console.log(`[${timestamp}] ${action}: ${details}`);
+            const logEntry = `[${timestamp}] ${action}: ${details}`;
+            console.log(logEntry);
+            gameLogEntries.push(logEntry);
         }
 
         // Function to get image path for an item
@@ -1113,6 +1142,29 @@ function showGameComplete() {
             document.getElementById('gameComplete').style.display = 'none';
         });
     
+        // Function to handle survey continuation
+async function continueToSurvey() {
+    try {
+        // Save logs to local storage
+        localStorage.setItem('gameLogEntries', JSON.stringify(gameLogEntries));
+        
+        // Create formatted log text
+        const logText = gameLogEntries.join('\n');
+        
+        // Copy to clipboard
+        await navigator.clipboard.writeText(logText);
+        
+        alert('Game logs have been saved and copied to clipboard! You can now proceed to the survey.');
+        
+        // Here you could redirect to your survey or open it in a new tab
+        // window.location.href = 'your-survey-url';
+        
+    } catch (err) {
+        console.error('Error handling survey continuation:', err);
+        alert('There was an error saving the game logs. Please try again.');
+    }
+}
+        
         </script>
         
         <!-- Game Start Screen -->
@@ -1136,13 +1188,16 @@ function showGameComplete() {
     </div>
 
     <!-- Game Complete Screen -->
-    <div class="game-complete" id="gameComplete">
+        <div class="game-complete" id="gameComplete">
         <div class="game-complete-content">
-            <h1>🎉 Congratulations! 🎉</h1>
-            <p>You've completed all missions!</p>
+        <h1>🎉 Congratulations! 🎉</h1>
+        <p>You've completed all missions!</p>
+        <div class="game-complete-buttons">
             <button class="restart-button" onclick="restartGame()">Play Again</button>
+            <button class="survey-button" onclick="continueToSurvey()">Continue to Survey</button>
+            </div>
+            </div>
         </div>
-    </div>
         
 </body>
 </html>
