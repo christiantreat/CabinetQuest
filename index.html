@@ -3,400 +3,1146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cabinet Quest</title>
+    <title>Cabinet Inventory System</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        .task {
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-            font-size: 1.2em;
-        }
-        .cabinet-area {
-            display: flex;
-            gap: 20px;
-        }
-        .cabinet {
-            width: 300px;
-            height: 400px;
-            background-color: #006400;
-            border: 2px solid #004d00;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            padding: 10px;
-        }
-        .drawer {
-            height: 80px;
-            background-color: #008000;
-            border: 2px solid #004d00;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .drawer:hover {
-            background-color: #009900;
-        }
-        .drawer-content {
-            display: none;
-            background-color: #ffffff;
-            padding: 10px;
-            border: 1px solid #004d00;
-            position: absolute;
-            left: 340px;
-            width: 250px;
-        }
-        .item {
-            cursor: pointer;
-            display: inline-block;
-            margin: 5px;
-        }
-        .item img {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-        }
-        .close-btn {
-            position: absolute;
-            right: 10px;
-            top: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .game-info {
-            width: 300px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .inventory-box {
-            background-color: #f9f9f9;
-            border: 2px solid #ddd;
-            padding: 10px;
-            height: 150px;
-            overflow-y: auto;
-        }
-        .inventory-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .inventory-item {
-            display: inline-block;
-            margin-right: 5px;
-            margin-bottom: 5px;
-            padding: 2px 5px;
-            background-color: #ddd;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .inventory-item img {
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-        }
-        .inventory-item:hover {
-            background-color: #ccc;
-        }
-        .message-box {
-            background-color: #f9f9f9;
-            border: 2px solid #ddd;
-            padding: 10px;
-            height: 100px;
-            overflow-y: auto;
-        }
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .action-buttons button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .action-buttons button:hover {
-            background-color: #45a049;
-        }
-        .action-buttons button#resetBtn {
-            background-color: #f44336;
-        }
-        .action-buttons button#resetBtn:hover {
-            background-color: #d32f2f;
-        }
-       .stats-display {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            max-width: 600px;
-            overflow-x: auto;
-        }
+/* Base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #2C2C2C;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    gap: 10px;
+    touch-action: manipulation;
+}
+
+/* Add Retro Styling Here */
+/* Retro Text Base Styling */
+.retro-text {
+    font-family: monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+}
+
+/* SNES-inspired color palette */
+.text-retro-normal {
+    color: #f0f0f0;  /* Light gray */
+}
+
+.text-retro-title {
+    color: #ffd700;  /* Yellow */
+}
+
+.text-retro-menu {
+    color: #4169e1;  /* Royal blue */
+}
+
+.text-retro-warning {
+    color: #ff4444;  /* Red */
+}
+
+.text-retro-success {
+    color: #44ff44;  /* Green */
+}
+
+/* Mission Container */
+.mission-container {
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+}
+
+.mission-title {
+    font-size: clamp(18px, 5vw, 24px);
+    font-weight: bold;
+    margin-bottom: 8px;
+    /* Update these styles */
+    font-family: monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    color: #ffd700;
+}
+
+.mission-description {
+    color: #666;
+    margin-bottom: 12px;
+    font-size: clamp(14px, 4vw, 16px);
+    /* Update these styles */
+    font-family: monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    color: #f0f0f0;
+}
+
+/* Submit and Reset buttons */
+.submit-button {
+    background: #4CAF50;
+    color: white;
+}
+
+.submit-button:hover,
+.submit-button:active {
+    background: #45a049;
+}
+
+.reset-button {
+    background: #f44336;
+    color: white;
+}
+
+.reset-button:hover,
+.reset-button:active {
+    background: #da190b;
+}
+
+#missionProgressText {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.mission-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.mission-button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    font-size: 16px;
+    min-width: 120px;
+    touch-action: manipulation;
+}
+
+/* Inventory Layout */
+.inventory-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+@media (min-width: 768px) {
+    .inventory-container {
+        flex-direction: row;
+    }
+    
+    .main-content {
+        flex: 1;
+    }
+    
+    .user-inventory {
+      width: 300px;
+    }
+}
+
+/* Cabinet Grid */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 10px;
+}
+
+.cabinet {
+    background: #4A4A4A;
+    border: 2px solid #666;  /* Subtle border */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 12px;
+}
+
+.cabinet-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #FFC107;
+    font-size: clamp(14px, 4vw, 16px);
+}
+
+.drawer {
+    background: #3A3A3A;
+    margin: 5px 0;
+    padding: 15px;
+    
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: clamp(14px, 4vw, 16px);
+    touch-action: manipulation;
+    /* Add these styles */
+    font-family: monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    color: #4169e1; /* Royal blue for interactive elements */
+}
+        
+.drawer:active {
+    background: #e9ecef;
+    transform: scale(0.98);
+}
+
+/* Modal Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    touch-action: none;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    overflow-y: auto;
+    z-index: 1001;
+}
+
+.close-button {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+    padding: 8px;
+    touch-action: manipulation;
+}
+
+/* Item Grid */
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.item {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.item:active {
+    transform: scale(0.98);
+    background: #e9ecef;
+}
+
+.item img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+/* User Inventory */
+.user-inventory {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    height: auto;
+    max-height: 50vh;
+}
+
+@media (min-width: 768px) {
+    .user-inventory {
+        height: calc(100vh - 40px);
+        position: sticky;
+        top: 20px;
+    }
+}
+
+.inventory-title {
+    font-size: clamp(16px, 5vw, 20px);
+    font-weight: bold;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+.inventory-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+    overflow-y: auto;
+    max-height: calc(100% - 50px);
+    padding: 5px;
+}
+
+.inventory-item {
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.inventory-item:active {
+    transform: scale(0.98);
+    background: #e9ecef;
+}
+
+.inventory-item img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+/* Game Start/Complete Screens */
+.game-start {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+.game-complete {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    display: none;  /* Changed from flex to none */
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+.game-start-content,
+.game-complete-content {
+    max-width: 90%;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 16px;
+    animation: fadeIn 1s ease-out;
+}
+
+.game-start h1,
+.game-complete h1 {
+    font-size: clamp(24px, 8vw, 48px);
+    margin-bottom: 20px;
+    /* Update these styles */
+    font-family: monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    color: #ffd700; /* Retro yellow instead of #4CAF50 */
+}
+
+.game-start .instructions {
+    font-size: clamp(14px, 4vw, 18px);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: left;
+    /* Add these styles */
+    font-family: monospace;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    color: #f0f0f0;
+}
+
+.start-button,
+.restart-button {
+    background: #4CAF50;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: clamp(16px, 5vw, 20px);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    touch-action: manipulation;
+}
+
+.start-button:active,
+.restart-button:active {
+    transform: scale(0.98);
+    background: #45a049;
+}
+
+/* Progress Bar */
+.mission-progress {
+    background: #f0f2f5;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.mission-progress-bar {
+    background: #e0e0e0;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.mission-progress-fill {
+    background: #4CAF50;
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 5px;
+}
+
+/* Mission Controls Container */
+.mission-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    padding: 0 10px;
+}
+
+/* Mission Buttons */
+.mission-button {
+    min-width: 120px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: clamp(14px, 4vw, 16px);
+    transition: background-color 0.2s, transform 0.1s;
+    touch-action: manipulation;
+}
+
+.mission-button:active {
+    transform: scale(0.98);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    height: auto;
+    max-height: 50vh;
+}
+
+@media (min-width: 768px) {
+    .user-inventory {
+        height: calc(100vh - 40px);
+        position: sticky;
+        top: 20px;
+    }
+}
+
+.inventory-title {
+    font-size: clamp(16px, 5vw, 20px);
+    font-weight: bold;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+.inventory-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+    overflow-y: auto;
+    max-height: calc(100% - 50px);
+    padding: 5px;
+}
+
+.inventory-item {
+    background: #4A4A4A;;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.inventory-item:active {
+    transform: scale(0.98);
+    background: #e9ecef;
+}
+
+.inventory-item img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+/* Game Start/Complete Screens */
+.game-start,
+.game-complete {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+.game-start-content,
+.game-complete-content {
+    max-width: 90%;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 16px;
+    animation: fadeIn 1s ease-out;
+}
+
+.game-start h1,
+.game-complete h1 {
+    font-size: clamp(24px, 8vw, 48px);
+    margin-bottom: 20px;
+    color: #4CAF50;
+}
+
+.game-start .instructions {
+    font-size: clamp(14px, 4vw, 18px);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.start-button,
+.restart-button {
+    background: #4CAF50;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: clamp(16px, 5vw, 20px);
+    cursor: pointer;
+    transition: background-color 0.3s;
+    touch-action: manipulation;
+}
+
+.start-button:active,
+.restart-button:active {
+    transform: scale(0.98);
+    background: #45a049;
+}
+
+/* Progress Bar */
+.mission-progress {
+    background: #f0f2f5;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.mission-progress-bar {
+    background: #e0e0e0;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.mission-progress-fill {
+    background: #4CAF50;
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 5px;
+}
+
+/* Mission Controls Container */
+.mission-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    padding: 0 10px;
+}
+
+/* Mission Buttons */
+.mission-button {
+    min-width: 120px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: clamp(14px, 4vw, 16px);
+    transition: background-color 0.2s, transform 0.1s;
+    touch-action: manipulation;
+}
+
+.mission-button:active {
+    transform: scale(0.98);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="task" id="task"></div>
-        <div class="cabinet-area">
-            <div class="cabinet">
-                <div class="drawer" onclick="toggleDrawer(1)">Drawer 1</div>
-                <div class="drawer" onclick="toggleDrawer(2)">Drawer 2</div>
-                <div class="drawer" onclick="toggleDrawer(3)">Drawer 3</div>
-                <div class="drawer" onclick="toggleDrawer(4)">Drawer 4</div>
+    <div class="mission-container">
+        <div class="mission-title" id="missionTitle">Current Mission</div>
+        <div class="mission-description" id="missionDescription"></div>
+        <div class="mission-progress">
+            <div class="mission-progress-bar">
+                <div class="mission-progress-fill" id="missionProgress"></div>
             </div>
-            <div id="drawer1" class="drawer-content"></div>
-            <div id="drawer2" class="drawer-content"></div>
-            <div id="drawer3" class="drawer-content"></div>
-            <div id="drawer4" class="drawer-content"></div>
-            <div class="game-info">
-                <div class="inventory-box">
-                    <div class="inventory-title">Inventory:</div>
-                    <div id="inventory"></div>
-                </div>
-                <div class="message-box" id="message"></div>
-                <div class="action-buttons">
-                    <button id="readyBtn" onclick="finishTask()">I'm Ready!</button>
-                    <button id="resetBtn" onclick="resetGame()" style="display: none;">Reset Game</button>
-                </div>
+            <div id="missionProgressText"></div>
+        </div>
+        <div class="mission-controls">
+            <button class="mission-button submit-button" onclick="submitMission()" id="submitButton">Submit Mission</button>
+            <button class="mission-button reset-button" onclick="resetInventory()">Reset Inventory</button>
+        </div>
+    </div>
+
+    <div class="inventory-container">
+        <div class="main-content">
+            <div class="inventory-grid">
+            <!-- Cabinet 1 -->
+            <div class="cabinet">
+                <div class="cabinet-title">Cabinet 1</div>
+                <div class="drawer" onclick="openDrawer(1, '1-1')">Drawer 1-1</div>
+                <div class="drawer" onclick="openDrawer(1, '1-2')">Drawer 1-2</div>
+                <div class="drawer" onclick="openDrawer(1, '1-3')">Drawer 1-3</div>
+            </div>
+
+            <!-- Cabinet 2 -->
+            <div class="cabinet">
+                <div class="cabinet-title">Cabinet 2</div>
+                <div class="drawer" onclick="openDrawer(2, '2-1')">Drawer 2-1</div>
+                <div class="drawer" onclick="openDrawer(2, '2-2')">Drawer 2-2</div>
+            </div>
+
+            <!-- Cabinet 3 -->
+            <div class="cabinet">
+                <div class="cabinet-title">Cabinet 3</div>
+                <div class="drawer" onclick="openDrawer(3, '3-1')">Drawer 3-1</div>
+                <div class="drawer" onclick="openDrawer(3, '3-2')">Drawer 3-2</div>
+                <div class="drawer" onclick="openDrawer(3, '3-3')">Drawer 3-3</div>
+                <div class="drawer" onclick="openDrawer(3, '3-4')">Drawer 3-4</div>
             </div>
         </div>
-       <div class="stats-display" id="statsDisplay"></div>
+    </div>
+
+    <div class="user-inventory">
+        <div class="inventory-title">My Inventory</div>
+        <div class="inventory-items" id="userInventory"></div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="close-button" onclick="closeModal()">&times;</button>
+            <div class="breadcrumb" id="modalBreadcrumb"></div>
+            <div class="item-grid" id="modalContent"></div>
+        </div>
     </div>
 
     <script>
-        let currentTask;
-        let taskAttempts = {};
-        let finalInventory; // Declare this at the top level of your script
-        let inventory = [];
-        let startTime;
-        let gameEnded = false;
-        let taskTimes = [];
-        let drawerContents = {
-            1: ['paper', 'scissors', 'stapler'],
-            2: ['glue', 'paper-clips', 'rubber-bands'],
-            3: ['flashlight', 'batteries', 'lighter'],
-            4: ['pencil', 'pen', 'eraser']
-        };
-        let taskAttemptInventories = {};
-        
-        const tasks = [
-            "Get what you need to create a book",
-            "Prepare for a camping trip",
-            "Gather items for a basic first aid kit",
-            "Collect supplies for a science experiment",
-            "Assemble tools for a home repair task",
-            "Put together items for an art project"
-        ];
-
-  function getRandomTask() {
-    currentTask = tasks[Math.floor(Math.random() * tasks.length)];
-    if (!taskAttempts[currentTask]) {
-        taskAttempts[currentTask] = 0;
-        taskAttemptInventories[currentTask] = [];
-    }
-    taskAttempts[currentTask]++;
-    return currentTask;
-}
-
-        function toggleDrawer(drawerNumber) {
-            const drawer = document.getElementById(`drawer${drawerNumber}`);
-            const allDrawers = document.getElementsByClassName('drawer-content');
-            
-            for (let i = 0; i < allDrawers.length; i++) {
-                if (allDrawers[i] !== drawer) {
-                    allDrawers[i].style.display = 'none';
+        const inventory = {
+            1: {
+                name: 'Cabinet 1',
+                drawers: {
+                    '1-1': ['Item 1', 'Item 2', 'Item 3'],
+                    '1-2': ['Item 4', 'Item 5', 'Item 6'],
+                    '1-3': ['Item 7', 'Item 8', 'Item 9']
+                }
+            },
+            2: {
+                name: 'Cabinet 2',
+                drawers: {
+                    '2-1': ['Item 10', 'Item 11', 'Item 12'],
+                    '2-2': ['Item 13', 'Item 14', 'Item 15']
+                }
+            },
+            3: {
+                name: 'Cabinet 3',
+                drawers: {
+                    '3-1': ['Item 16', 'Item 17', 'Item 18'],
+                    '3-2': ['Item 19', 'Item 20', 'Item 21'],
+                    '3-3': ['Item 22', 'Item 23', 'Item 24'],
+                    '3-4': ['Item 25', 'Item 26', 'Item 27']
                 }
             }
-            
-            drawer.style.display = drawer.style.display === 'block' ? 'none' : 'block';
+        };
+
+        // Define image paths for each item
+        const itemImages = {
+            'Item 1': '/images/item1.jpg',
+            'Item 2': '/images/item2.jpg',
+            'Item 3': '/images/item3.jpg',
+            'Item 4': '/images/item4.jpg',
+            'Item 5': '/images/item5.jpg',
+            'Item 6': 'path/to/item6.jpg',
+            'Item 7': 'path/to/item7.jpg',
+            'Item 8': 'path/to/item8.jpg',
+            'Item 9': 'path/to/item9.jpg',
+            'Item 10': 'path/to/item10.jpg',
+            'Item 11': 'path/to/item11.jpg',
+            'Item 12': 'path/to/item12.jpg',
+            'Item 13': 'path/to/item13.jpg',
+            'Item 14': 'path/to/item14.jpg',
+            'Item 15': 'path/to/item15.jpg',
+            'Item 16': 'path/to/item16.jpg',
+            'Item 17': 'path/to/item17.jpg',
+            'Item 18': 'path/to/item18.jpg',
+            'Item 19': 'path/to/item19.jpg',
+            'Item 20': 'path/to/item20.jpg',
+            'Item 21': 'path/to/item21.jpg',
+            'Item 22': 'path/to/item22.jpg',
+            'Item 23': 'path/to/item23.jpg',
+            'Item 24': 'path/to/item24.jpg',
+            'Item 25': 'path/to/item25.jpg',
+            'Item 26': 'path/to/item26.jpg',
+            'Item 27': 'path/to/item27.jpg'
+        };
+        
+        let currentCabinet = null;
+        let currentDrawer = null;
+        // Logging function
+        function logAction(action, details) {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`[${timestamp}] ${action}: ${details}`);
         }
 
-        function closeDrawer(drawerNumber) {
-            document.getElementById(`drawer${drawerNumber}`).style.display = 'none';
+        // Function to get image path for an item
+        function getItemImage(item) {
+            return itemImages[item] || '/path/to/default-image.jpg'; // Fallback to default image if not found
+        }
+        
+        // Mission System
+        const missions = [
+            {
+                id: 1,
+                title: "Cabinet Explorer I",
+                description: "Collect any three items from Drawer 1-1",
+                requirement: {
+                    type: "collect",
+                    drawer: "1-1",
+                    count: 3,
+                    fromSpecificDrawer: true
+                },
+                completed: false,
+                progress: 0
+            },
+            {
+                id: 2,
+                title: "Cabinet Explorer II",
+                description: "Collect any three items from Drawer 1-2",
+                requirement: {
+                    type: "collect",
+                    drawer: "1-2",
+                    count: 3,
+                    fromSpecificDrawer: true
+                },
+                completed: false,
+                progress: 0
+            },
+            {
+                id: 3,
+                title: "Specific Item Collector",
+                description: "Collect Item 7, Item 8, and Item 9 from Drawer 1-3",
+                requirement: {
+                    type: "collect_specific",
+                    drawer: "1-3",
+                    items: ["Item 7", "Item 8", "Item 9"],
+                    progress: {
+                        "Item 7": false,
+                        "Item 8": false,
+                        "Item 9": false
+                    }
+                },
+                completed: false,
+                progress: 0
+            }
+        ];
+
+        let currentMissionIndex = 0;
+
+        function updateMissionDisplay() {
+            const currentMission = missions[currentMissionIndex];
+            document.getElementById('missionTitle').textContent = currentMission.title;
+            document.getElementById('missionDescription').textContent = currentMission.description;
+
+            if (currentMission.requirement.type === "collect_specific") {
+                const progressCount = Object.values(currentMission.requirement.progress)
+                    .filter(Boolean).length;
+                const totalItems = currentMission.requirement.items.length;
+                const progressPercentage = (progressCount / totalItems) * 100;
+                document.getElementById('missionProgress').style.width = `${progressPercentage}%`;
+            } else {
+                const progressPercentage = (currentMission.progress / currentMission.requirement.count) * 100;
+                document.getElementById('missionProgress').style.width = `${progressPercentage}%`;
+            }
+        }
+        function checkMissionProgress(item, fromDrawer) {
+            const currentMission = missions[currentMissionIndex];
+            if (currentMission.completed) return;
+
+            if (currentMission.requirement.type === "collect_specific") {
+                if (fromDrawer === currentMission.requirement.drawer && 
+                    currentMission.requirement.items.includes(item)) {
+                    currentMission.requirement.progress[item] = true;
+                    logAction('Mission Progress', 
+                        `${currentMission.title}: Collected ${item}`);
+                    updateMissionDisplay();
+                }
+            } else if (currentMission.requirement.type === "collect") {
+                if (!currentMission.requirement.fromSpecificDrawer || 
+                    fromDrawer === currentMission.requirement.drawer) {
+                    currentMission.progress++;
+                    logAction('Mission Progress', 
+                        `${currentMission.title}: ${currentMission.progress}/${currentMission.requirement.count}`);
+                    updateMissionDisplay();
+                }
+            }
+        }
+
+        function returnAllItems() {
+            // Return all items to their original drawers
+            while (userInventory.length > 0) {
+                const item = userInventory[0];
+                const origin = itemOrigins[item];
+                inventory[origin.cabinet].drawers[origin.drawer].push(item);
+                userInventory.splice(0, 1);
+                delete itemOrigins[item];
+            }
+            updateInventoryDisplay();
+            if (currentCabinet && currentDrawer) {
+                openDrawer(currentCabinet, currentDrawer);
+            }
+            logAction('Inventory', 'All items returned to drawers');
+        }
+
+        function resetInventory() {
+            returnAllItems();
+            logAction('Inventory', 'Inventory reset');
+        }
+
+        function submitMission() {
+            const currentMission = missions[currentMissionIndex];
+            let isSuccessful = false;
+
+            if (currentMission.requirement.type === "collect_specific") {
+                isSuccessful = currentMission.requirement.items.every(item => 
+                    userInventory.includes(item) && 
+                    itemOrigins[item].drawer === currentMission.requirement.drawer
+                );
+            } else {
+                const itemsFromRequiredDrawer = userInventory.filter(item => 
+                    itemOrigins[item].drawer === currentMission.requirement.drawer
+                );
+                isSuccessful = itemsFromRequiredDrawer.length >= currentMission.requirement.count;
+            } 
+            
+            if (isSuccessful) {
+                currentMission.completed = true;
+                logAction('Mission Completed', currentMission.title);
+                alert('Mission Completed Successfully!');
+                
+                // Return items and move to next mission
+                returnAllItems();
+                if (currentMissionIndex < missions.length - 1) {
+                    currentMissionIndex++;
+                    updateMissionDisplay();
+                    logAction('New Mission', missions[currentMissionIndex].title);
+                } else {
+                    logAction('All Missions Completed', 'Congratulations!');
+                    showGameComplete();
+                }
+            } else {
+                alert('Mission Requirements Not Met - Try Again!');
+                logAction('Mission Failed', 'Requirements not met');
+            }
+        }
+
+        // Initialize mission display
+        updateMissionDisplay();
+        const userInventory = [];
+        const itemOrigins = {}; // Tracks which cabinet/drawer each item came from
+
+        function openDrawer(cabinetId, drawerId) {
+            currentCabinet = cabinetId;
+            currentDrawer = drawerId;
+            logAction('Drawer Opened', `${inventory[cabinetId].name} > Drawer ${drawerId}`);
+            const cabinet = inventory[cabinetId];
+            const items = cabinet.drawers[drawerId];
+            const modalContent = document.getElementById('modalContent');
+            const modalBreadcrumb = document.getElementById('modalBreadcrumb');
+
+            modalBreadcrumb.textContent = `${cabinet.name} > Drawer ${drawerId}`;
+            modalContent.innerHTML = '';
+
+            items.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                itemDiv.innerHTML = `
+                    <img src="${getItemImage(item)}" alt="${item}">
+                    <div>${item}</div>
+                `;
+                itemDiv.onclick = () => addToInventory(item);
+                modalContent.appendChild(itemDiv);
+            });
+
+            document.getElementById('modalOverlay').style.display = 'block';
         }
 
         function addToInventory(item) {
-            if (!gameEnded && !inventory.includes(item)) {
-                inventory.push(item);
+            // Remove item from drawer and store its origin
+            logAction('Item Added to Inventory', `${item} from ${inventory[currentCabinet].name} > Drawer ${currentDrawer}`);
+            const drawerItems = inventory[currentCabinet].drawers[currentDrawer];
+            const index = drawerItems.indexOf(item);
+            if (index > -1) {
+                drawerItems.splice(index, 1);
+                userInventory.push(item);
+                itemOrigins[item] = {
+                    cabinet: currentCabinet,
+                    drawer: currentDrawer
+                };
+                checkMissionProgress(item, currentDrawer);
                 updateInventoryDisplay();
-                setMessage(`Added ${item} to inventory.`);
-                removeFromDrawer(item);
-            } else if (inventory.includes(item)) {
-                setMessage(`${item} is already in your inventory.`);
+                openDrawer(currentCabinet, currentDrawer); // Refresh drawer display
             }
         }
 
         function removeFromInventory(item) {
-            if (!gameEnded) {
-                const index = inventory.indexOf(item);
-                if (index > -1) {
-                    inventory.splice(index, 1);
-                    updateInventoryDisplay();
-                    setMessage(`Removed ${item} from inventory.`);
-                    addToDrawer(item);
+            const index = userInventory.indexOf(item);
+            const origin = itemOrigins[item];
+            logAction('Item Returned to Drawer', `${item} to ${inventory[origin.cabinet].name} > Drawer ${origin.drawer}`);
+            if (index > -1) {
+                const origin = itemOrigins[item];
+                userInventory.splice(index, 1);
+                inventory[origin.cabinet].drawers[origin.drawer].push(item);
+                delete itemOrigins[item];
+                updateInventoryDisplay();
+                
+                // Only refresh drawer display if we're currently viewing the target drawer
+                if (currentCabinet === origin.cabinet && currentDrawer === origin.drawer) {
+                    openDrawer(currentCabinet, currentDrawer);
                 }
             }
         }
 
-        function updateInventoryDisplay() {
-            const inventoryElement = document.getElementById('inventory');
-            inventoryElement.innerHTML = inventory.map(item => 
-                `<span class="inventory-item" onclick="removeFromInventory('${item}')"><img src="/api/placeholder/30/30" alt="${item}" title="${item}"></span>`
-            ).join(' ');
-        }
+        // Update the inventory display code
+            function updateInventoryDisplay() {
+                const inventoryContainer = document.getElementById('userInventory');
+                inventoryContainer.innerHTML = '';
 
-        function removeFromDrawer(item) {
-            for (let drawer in drawerContents) {
-                const index = drawerContents[drawer].indexOf(item);
-                if (index > -1) {
-                    drawerContents[drawer].splice(index, 1);
-                    updateDrawerContent(drawer);
-                    break;
-                }
+                userInventory.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'inventory-item';
+                    itemDiv.innerHTML = `
+                        <img src="${getItemImage(item)}" alt="${item}">
+                        <div>${item}</div>
+                    `;
+                    const origin = itemOrigins[item];
+                    itemDiv.onclick = () => removeFromInventory(item);
+                    itemDiv.title = `Return to ${inventory[origin.cabinet].name}, Drawer ${origin.drawer}`;
+
+                    inventoryContainer.appendChild(itemDiv);
+                });
             }
-        }
 
-        function addToDrawer(item) {
-            for (let drawer in drawerContents) {
-                if (drawerContents[drawer].length < 3) {
-                    drawerContents[drawer].push(item);
-                    updateDrawerContent(drawer);
-                    break;
-                }
+        function closeModal() {
+            if (currentCabinet && currentDrawer) {
+                logAction('Drawer Closed', `${inventory[currentCabinet].name} > Drawer ${currentDrawer}`);
             }
+            document.getElementById('modalOverlay').style.display = 'none';
+            currentCabinet = null;
+            currentDrawer = null;
         }
 
-        function updateDrawerContent(drawer) {
-            const drawerElement = document.getElementById(`drawer${drawer}`);
-            drawerElement.innerHTML = `
-                <span class="close-btn" onclick="closeDrawer(${drawer})">&times;</span>
-                ${drawerContents[drawer].map(item => 
-                    `<span class="item" onclick="addToInventory('${item}')"><img src="/api/placeholder/50/50" alt="${item}" title="${item}"></span>`
-                ).join('')}
-            `;
+        // Close modal when clicking outside
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modalOverlay')) {
+                closeModal();
+            }
+        });
+
+        function showGameComplete() {
+            document.getElementById('gameComplete').style.display = 'flex';
+            logAction('Game Complete', 'All missions completed successfully');
         }
 
-        function initializeGame() {
-            inventory = [];
-            gameEnded = false;
-            document.getElementById('task').innerText = getRandomTask();
-            document.getElementById('inventory').innerText = "";
-            document.getElementById('message').innerText = "";
-            document.getElementById('readyBtn').style.display = 'block';
-            document.getElementById('resetBtn').style.display = 'none';
-            startTime = new Date();
+        function restartGame() {
+            // Reset all missions
+            missions.forEach(mission => {
+                mission.completed = false;
+                mission.progress = 0;
+                if (mission.requirement.type === "collect_specific") {
+                    Object.keys(mission.requirement.progress).forEach(key => {
+                        mission.requirement.progress[key] = false;
+                    });
+                }
+            });
             
-            drawerContents = {
-                1: ['paper', 'scissors', 'stapler'],
-                2: ['glue', 'paper-clips', 'rubber-bands'],
-                3: ['flashlight', 'batteries', 'lighter'],
-                4: ['pencil', 'pen', 'eraser']
-            };
+            // Reset current mission index
+            currentMissionIndex = 0;
             
-            for (let drawer in drawerContents) {
-                updateDrawerContent(drawer);
-            }
+            // Return all items and reset inventory
+            returnAllItems();
+            
+            // Update mission display
+            updateMissionDisplay();
+            
+            // Hide game complete screen
+            document.getElementById('gameComplete').style.display = 'none';
+            
+            logAction('Game Restart', 'Game has been reset');
+        }
+function showGameComplete() {
+            document.getElementById('gameComplete').style.display = 'flex';
+            logAction('Game Complete', 'All missions completed successfully');
         }
 
-function finishTask() {
-    if (!gameEnded) {
-        gameEnded = true;
-        const endTime = new Date();
-        const timeTaken = Math.floor((endTime - startTime) / 1000);
-        taskTimes.push(timeTaken);
-        
-        finalInventory = [...inventory];
-        
-        // Store the inventory for this attempt
-        taskAttemptInventories[currentTask].push(finalInventory);
-        
-        setMessage(`Task completed! Your final inventory: ${finalInventory.join(', ')}`);
-        document.getElementById('readyBtn').style.display = 'none';
-        document.getElementById('resetBtn').style.display = 'block';
-        
-        updateStatsDisplay();
-        
-        // Prepare data for Qualtrics
-        prepareDataForQualtrics();
-    }
-}
-
-        function resetGame() {
-            initializeGame();
-            finalInventory = null; 
-            document.getElementById('statsDisplay').textContent = '';
+        function startGame() {
+            document.getElementById('gameStart').style.display = 'none';
+            logAction('Game Started', 'Player started the game');
         }
 
-        function setMessage(msg) {
-            document.getElementById('message').innerText = msg;
+        function restartGame() {
+            // Reset all missions
+            missions.forEach(mission => {
+                mission.completed = false;
+                mission.progress = 0;
+                if (mission.requirement.type === "collect_specific") {
+                    Object.keys(mission.requirement.progress).forEach(key => {
+                        mission.requirement.progress[key] = false;
+                    });
+                }
+            });
+            
+            // Reset current mission index
+            currentMissionIndex = 0;
+            
+            // Return all items and reset inventory
+            returnAllItems();
+            
+            // Update mission display
+            updateMissionDisplay();
+            
+            // Hide game complete screen
+            document.getElementById('gameComplete').style.display = 'none';
+            
+            // Show start screen again
+            document.getElementById('gameStart').style.display = 'flex';
+            
+            logAction('Game Restart', 'Game has been reset');
         }
-      
-        function updateStatsDisplay() {
-    const statsDisplay = document.getElementById('statsDisplay');
-    let statsText = `
-Task prompt: "${currentTask}"
-Time taken for task: ${taskTimes[taskTimes.length - 1]} seconds
-All task times: ${taskTimes.join(', ')} seconds
-Final inventory: ${finalInventory ? finalInventory.join(', ') : 'N/A'}
-Number of attempts for this task: ${taskAttempts[currentTask]}
 
-All task attempts:
-`;
+        document.addEventListener('DOMContentLoaded', function() {
+        // Ensure game complete screen is hidden on load
+            document.getElementById('gameComplete').style.display = 'none';
+        });
+    
+        </script>
+        
+        <!-- Game Start Screen -->
+    <div class="game-start" id="gameStart">
+        <div class="game-start-content">
+            <h1>Cabinet Organization Game</h1>
+            <div class="instructions">
+                <p>Welcome to the Cabinet Organization Game! Here's how to play:</p>
+                <br>
+                <p>1. You'll be given different missions to complete</p>
+                <p>2. Each mission involves collecting specific items from cabinets</p>
+                <p>3. Click on cabinets to open drawers</p>
+                <p>4. Click on items to collect them into your inventory</p>
+                <p>5. Click on items in your inventory to return them</p>
+                <p>6. Submit your mission when you think you've completed it</p>
+                <br>
+                <p>Complete all missions to win the game!</p>
+            </div>
+            <button class="start-button" onclick="startGame()">Start Game</button>
+        </div>
+    </div>
 
-    for (let task in taskAttempts) {
-        statsText += `
-  ${task}: ${taskAttempts[task]} attempts
-    Inventories:
-${taskAttemptInventories[task].map((inv, i) => `      Attempt ${i + 1}: ${inv.join(', ')}`).join('\n')}
-`;
-    }
-
-    statsDisplay.textContent = statsText.trim();
-}
-      
-      function prepareDataForQualtrics() {
-    const gameData = {
-        taskAttempts: taskAttempts,
-        taskAttemptInventories: taskAttemptInventories,
-        taskTimes: taskTimes,
-        allTasks: tasks
-    };
-
-    // Make the data available to the parent window (Qualtrics)
-    window.gameData = gameData;
-
-    // Signal to Qualtrics that the data is ready
-    if (window.parent && window.parent.postMessage) {
-        window.parent.postMessage("gameDataReady", "*");
-    }
-
-    console.log("Game data prepared for Qualtrics:", gameData);
-}
-      
-        initializeGame();
-    </script>
+    <!-- Game Complete Screen -->
+    <div class="game-complete" id="gameComplete">
+        <div class="game-complete-content">
+            <h1>🎉 Congratulations! 🎉</h1>
+            <p>You've completed all missions!</p>
+            <button class="restart-button" onclick="restartGame()">Play Again</button>
+        </div>
+    </div>
+        
 </body>
 </html>
