@@ -1146,19 +1146,18 @@ function showGameComplete() {
 
 async function continueToSurvey() {
     try {
-        const formattedEntries = gameLogEntries.map(entry => 
-            JSON.stringify(entry).replace(/\r\n/g, '\n')
-        );
-        const jsonData = `{"gameLogEntries":[${formattedEntries.join(',')}]}`;
-        const encodedData = btoa(unescape(encodeURIComponent(jsonData)));
-        
+        const jsonData = {
+            gameLogEntries: gameLogEntries.join(' | ')  // Join array elements with delimiter
+        };
+        const encodedData = btoa(encodeURIComponent(JSON.stringify(jsonData)));
         window.location.href = "https://stonybrookuniversity.co1.qualtrics.com/jfe/form/SV_4U6HuNElynf0gd0?Q_EED=" + encodedData;
     } catch (err) {
-        console.error('Error redirecting to survey:', err);
+        console.error('Error:', err);
         alert('Error saving game data. Please try again.');
     }
 }
-        </script>
+    
+    </script>
         
         <!-- Game Start Screen -->
     <div class="game-start" id="gameStart">
