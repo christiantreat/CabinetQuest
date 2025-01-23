@@ -1145,18 +1145,17 @@ function showGameComplete() {
         // Function to handle survey continuation
 
 async function continueToSurvey() {
-    try {
-        // Format array entries to use double quotes
-        const formattedEntries = gameLogEntries.map(entry => `"${entry}"`);
-        const jsonData = `{"gameLogEntries":[${formattedEntries.join(',')}]}`;
-        const encodedData = btoa(encodeURIComponent(jsonData));
-        
-        window.location.href = "https://stonybrookuniversity.co1.qualtrics.com/jfe/form/SV_4U6HuNElynf0gd0?Q_EED=" + encodedData;
-    } catch (err) {
-        console.error('Error redirecting to survey:', err);
-        alert('Error saving game data. Please try again.');
-    }
-}     
+   try {
+       const jsonData = {
+           gameLog: gameLogEntries.join('\n')
+       };
+       const encodedData = btoa(encodeURIComponent(JSON.stringify(jsonData)));
+       window.location.href = "https://stonybrookuniversity.co1.qualtrics.com/jfe/form/SV_4U6HuNElynf0gd0?Q_EED=" + encodedData;
+   } catch (err) {
+       console.error('Error:', err);
+       alert('Error saving game data. Please try again.');
+   }
+}
         </script>
         
         <!-- Game Start Screen -->
