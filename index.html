@@ -1143,38 +1143,19 @@ function showGameComplete() {
         });
     
         // Function to handle survey continuation
+
 async function continueToSurvey() {
     try {
-        // Save logs to local storage
-        localStorage.setItem('gameLogEntries', JSON.stringify(gameLogEntries));
+        // Remove unnecessary localStorage since we're using Q_EED
+        const jsonData = JSON.stringify(gameLogEntries);
+        const encodedData = btoa(encodeURIComponent(jsonData)); // Add encodeURIComponent for special characters
         
-        // Create formatted log text
-        const logText = gameLogEntries.join('\n');
-        
-        // Copy to clipboard
-        // await navigator.clipboard.writeText(logText);
-        
-        // alert('Game logs have been saved and copied to clipboard! You can now proceed to the survey.');
-        
-        // Here you could redirect to your survey or open it in a new tab
-        // window.location.href = 'your-survey-url';
-        
+        window.location.href = "https://stonybrookuniversity.co1.qualtrics.com/jfe/form/SV_4U6HuNElynf0gd0?Q_EED=" + encodedData;
     } catch (err) {
-        console.error('Error handling survey continuation:', err);
-        alert('There was an error saving the game logs. Please try again.');
+        console.error('Error redirecting to survey:', err);
+        alert('Error saving game data. Please try again.');
     }
-}
-
-        // On your website before redirect
-    function redirectToQualtrics() {
-    // Convert gameLogEntries to JSON string
-    const jsonData = JSON.stringify(gameLogEntries);
-    // Base64 encode the JSON data
-    const encodedData = btoa(jsonData);
-    // Redirect with encoded data
-    window.location.href = "https://stonybrookuniversity.co1.qualtrics.com/jfe/form/SV_4U6HuNElynf0gd0?Q_EED=" + encodedData;
-    }
-        
+}        
         </script>
         
         <!-- Game Start Screen -->
