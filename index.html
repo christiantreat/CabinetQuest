@@ -203,7 +203,6 @@
                         }
 
                         .drawer:active {
-                            background: #4169e1;
                             transform: translate(2px, 2px);
                             box-shadow: none;
                         }
@@ -555,11 +554,11 @@
                            position: relative;
                         }
 
-                        .game-start .instructions p:nth-of-type(n+2):nth-of-type(-n+7) {
+                        .game-start .instructions p:nth-of-type(n+2):nth-of-type(-n+5) {
                            padding-left: 30px;
                         }
 
-                        .game-start .instructions p:nth-of-type(n+2):nth-of-type(-n+7)::before {
+                        .game-start .instructions p:nth-of-type(n+2):nth-of-type(-n+5)::before {
                            content: counter(instruction-counter) ".";
                            counter-increment: instruction-counter;
                            position: absolute;
@@ -1365,22 +1364,19 @@
                             Brave adventurer, your mission awaits!
                         </p>
                         <br />
-                        <p>You will receive specific organization tasks</p>
-                        <p>Each task requires collecting items from designated cabinets</p>
-                        <p>Select cabinets to access their drawers</p>
-                        <p>Select items to add them to your inventory</p>
-                        <p>Select inventory items to return them</p>
-                        <p>Submit when you've gathered the required items</p>
+                        <p>Collect specific items from designated cabinet drawers</p>
+                        <p>Click cabinets to open, click items to collect</p>
+                        <p>Click inventory items to return them</p>
+                        <p>Submit when your mission is complete</p>
                         <br />
                         <p>
                             Complete all quests to become <br />
-                            the <span> Cabinet Champion</span>!
+                            the <span>Cabinet Champion</span>!
                         </p>
                     </div>
                     <button class="start-button" onclick="startGame()">Start Game</button>
                 </div>
             </div>
-
             <!-- Game Complete Screen -->
             <div class="game-complete" id="gameComplete">
                 <div class="game-complete-content">
