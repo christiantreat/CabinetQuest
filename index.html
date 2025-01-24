@@ -24,6 +24,36 @@
                                                     touch-action: manipulation;
                                                 }
 
+    /* Touch device active states */
+.drawer:active,
+.item:active,
+.inventory-item:active,
+.submit-button:active,
+.reset-button:active,
+.survey-button:active,
+.restart-button:active,
+.start-button:active {
+    transform: translate(3px, 3px);
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent;
+    transition: none;  /* Ensures immediate response */
+}
+
+/* Common properties for touch interactions */
+.drawer,
+.item,
+.inventory-item,
+.submit-button,
+.reset-button,
+.survey-button,
+.restart-button,
+.start-button {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+            
 
                                                 /* Mission Container */
                         .mission-container {
