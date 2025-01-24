@@ -1,1195 +1,1402 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cabinet Inventory System</title>
-    <style>
-/* Base styles */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background: #2C2C2C;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    gap: 10px;
-    touch-action: manipulation;
-}
-
-/* Add Retro Styling Here */
-/* Retro Text Base Styling */
-.retro-text {
-    font-family: monospace;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: none;
-}
-
-/* SNES-inspired color palette */
-.text-retro-normal {
-    color: #f0f0f0;  /* Light gray */
-}
-
-.text-retro-title {
-    color: #ffd700;  /* Yellow */
-}
-
-.text-retro-menu {
-    color: #4169e1;  /* Royal blue */
-}
-
-.text-retro-warning {
-    color: #ff4444;  /* Red */
-}
-
-.text-retro-success {
-    color: #44ff44;  /* Green */
-}
-
-/* Mission Container */
-.mission-container {
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 15px;
-}
-
-.mission-title {
-    font-size: clamp(18px, 5vw, 24px);
-    font-weight: bold;
-    margin-bottom: 8px;
-    /* Update these styles */
-    font-family: monospace;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: none;
-    color: #ffd700;
-}
-
-.mission-description {
-    color: #666;
-    margin-bottom: 12px;
-    font-size: clamp(14px, 4vw, 16px);
-    /* Update these styles */
-    font-family: monospace;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: none;
-    color: #f0f0f0;
-}
-
-/* Submit and Reset buttons */
-.submit-button {
-    background: #4CAF50;
-    color: white;
-}
-
-.submit-button:hover,
-.submit-button:active {
-    background: #45a049;
-}
-
-.reset-button {
-    background: #f44336;
-    color: white;
-}
-
-.reset-button:hover,
-.reset-button:active {
-    background: #da190b;
-}
-
-#missionProgressText {
-    margin-top: 8px;
-    font-size: 14px;
-    color: #666;
-}
-
-.mission-controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.mission-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
-    font-size: 16px;
-    min-width: 120px;
-    touch-action: manipulation;
-}
-
-/* Inventory Layout */
-.inventory-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-@media (min-width: 768px) {
-    .inventory-container {
-        flex-direction: row;
-    }
-    
-    .main-content {
-        flex: 1;
-    }
-    
-    .user-inventory {
-      width: 300px;
-    }
-}
-
-/* Cabinet Grid */
-.inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-    padding: 10px;
-}
-
-.cabinet {
-    background: #4A4A4A;
-    border: 2px solid #666;  /* Subtle border */
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 12px;
-}
-
-.cabinet-title {
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #FFC107;
-    font-size: clamp(14px, 4vw, 16px);
-}
-
-.drawer {
-    background: #3A3A3A;
-    margin: 5px 0;
-    padding: 15px;
-    
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: clamp(14px, 4vw, 16px);
-    touch-action: manipulation;
-    /* Add these styles */
-    font-family: monospace;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: none;
-    color: #4169e1; /* Royal blue for interactive elements */
-}
-        
-.drawer:active {
-    background: #e9ecef;
-    transform: scale(0.98);
-}
-
-/* Modal Styles */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    touch-action: none;
-}
-
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    overflow-y: auto;
-    z-index: 1001;
-}
-
-.close-button {
-    position: absolute;
-    right: 15px;
-    top: 15px;
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-    color: #666;
-    padding: 8px;
-    touch-action: manipulation;
-}
-
-/* Item Grid */
-.item-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.item {
-    background: #f8f9fa;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-.item:active {
-    transform: scale(0.98);
-    background: #e9ecef;
-}
-
-.item img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4/3;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    object-fit: cover;
-}
-
-/* User Inventory */
-.user-inventory {
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    height: auto;
-    max-height: 50vh;
-}
-
-@media (min-width: 768px) {
-    .user-inventory {
-        height: calc(100vh - 40px);
-        position: sticky;
-        top: 20px;
-    }
-}
-
-.inventory-title {
-    font-size: clamp(16px, 5vw, 20px);
-    font-weight: bold;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #f0f2f5;
-}
-
-.inventory-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 10px;
-    overflow-y: auto;
-    max-height: calc(100% - 50px);
-    padding: 5px;
-}
-
-.inventory-item {
-    background: #f8f9fa;
-    padding: 8px;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-.inventory-item:active {
-    transform: scale(0.98);
-    background: #e9ecef;
-}
-
-.inventory-item img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4/3;
-    margin-bottom: 6px;
-    border-radius: 4px;
-    object-fit: cover;
-}
-
-/* Game Start/Complete Screens */
-.game-start {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 2000;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-}
-
-.game-complete {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 2000;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    display: none;  /* Changed from flex to none */
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-}
-        
-.game-complete-buttons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.survey-button {
-    background: #4169e1;
-    color: white;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 8px;
-    font-size: clamp(16px, 5vw, 20px);
-    cursor: pointer;
-    transition: background-color 0.3s;
-    touch-action: manipulation;
-}
-
-.survey-button:active {
-    transform: scale(0.98);
-    background: #3158d3;
-}
-
-.game-start-content,
-.game-complete-content {
-    max-width: 90%;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 16px;
-    animation: fadeIn 1s ease-out;
-}
-
-.game-start h1,
-.game-complete h1 {
-    font-size: clamp(24px, 8vw, 48px);
-    margin-bottom: 20px;
-    /* Update these styles */
-    font-family: monospace;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: none;
-    color: #ffd700; /* Retro yellow instead of #4CAF50 */
-}
-
-.game-start .instructions {
-    font-size: clamp(14px, 4vw, 18px);
-    line-height: 1.6;
-    margin-bottom: 20px;
-    text-align: left;
-    /* Add these styles */
-    font-family: monospace;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: none;
-    color: #f0f0f0;
-}
-
-.start-button,
-.restart-button {
-    background: #4CAF50;
-    color: white;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 8px;
-    font-size: clamp(16px, 5vw, 20px);
-    cursor: pointer;
-    transition: background-color 0.3s;
-    touch-action: manipulation;
-}
-
-.start-button:active,
-.restart-button:active {
-    transform: scale(0.98);
-    background: #45a049;
-}
-
-/* Progress Bar */
-.mission-progress {
-    background: #f0f2f5;
-    padding: 8px;
-    border-radius: 8px;
-    margin: 10px 0;
-    width: 100%;
-}
-
-.mission-progress-bar {
-    background: #e0e0e0;
-    height: 10px;
-    border-radius: 5px;
-    overflow: hidden;
-    width: 100%;
-    margin: 0 auto;
-}
-
-.mission-progress-fill {
-    background: #4CAF50;
-    height: 100%;
-    width: 0%;
-    transition: width 0.3s ease;
-    border-radius: 5px;
-}
-
-/* Mission Controls Container */
-.mission-controls {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
-    flex-wrap: wrap;
-    padding: 0 10px;
-}
-
-/* Mission Buttons */
-.mission-button {
-    min-width: 120px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: clamp(14px, 4vw, 16px);
-    transition: background-color 0.2s, transform 0.1s;
-    touch-action: manipulation;
-}
-
-.mission-button:active {
-    transform: scale(0.98);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    height: auto;
-    max-height: 50vh;
-}
-
-@media (min-width: 768px) {
-    .user-inventory {
-        height: calc(100vh - 40px);
-        position: sticky;
-        top: 20px;
-    }
-}
-
-.inventory-title {
-    font-size: clamp(16px, 5vw, 20px);
-    font-weight: bold;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid #f0f2f5;
-}
-
-.inventory-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 10px;
-    overflow-y: auto;
-    max-height: calc(100% - 50px);
-    padding: 5px;
-}
-
-.inventory-item {
-    background: #4A4A4A;;
-    padding: 8px;
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-.inventory-item:active {
-    transform: scale(0.98);
-    background: #e9ecef;
-}
-
-.inventory-item img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4/3;
-    margin-bottom: 6px;
-    border-radius: 4px;
-    object-fit: cover;
-}
-
-/* Game Start/Complete Screens */
-.game-start,
-.game-complete {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 2000;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow-y: auto;
-}
-
-.game-start-content,
-.game-complete-content {
-    max-width: 90%;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 16px;
-    animation: fadeIn 1s ease-out;
-}
-
-.game-start h1,
-.game-complete h1 {
-    font-size: clamp(24px, 8vw, 48px);
-    margin-bottom: 20px;
-    color: #4CAF50;
-}
-
-.game-start .instructions {
-    font-size: clamp(14px, 4vw, 18px);
-    line-height: 1.6;
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.start-button,
-.restart-button {
-    background: #4CAF50;
-    color: white;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 8px;
-    font-size: clamp(16px, 5vw, 20px);
-    cursor: pointer;
-    transition: background-color 0.3s;
-    touch-action: manipulation;
-}
-
-.start-button:active,
-.restart-button:active {
-    transform: scale(0.98);
-    background: #45a049;
-}
-
-/* Progress Bar */
-.mission-progress {
-    background: #f0f2f5;
-    padding: 8px;
-    border-radius: 8px;
-    margin: 10px 0;
-    width: 100%;
-}
-
-.mission-progress-bar {
-    background: #e0e0e0;
-    height: 10px;
-    border-radius: 5px;
-    overflow: hidden;
-    width: 100%;
-    margin: 0 auto;
-}
-
-.mission-progress-fill {
-    background: #4CAF50;
-    height: 100%;
-    width: 0%;
-    transition: width 0.3s ease;
-    border-radius: 5px;
-}
-
-/* Mission Controls Container */
-.mission-controls {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
-    flex-wrap: wrap;
-    padding: 0 10px;
-}
-
-/* Mission Buttons */
-.mission-button {
-    min-width: 120px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: clamp(14px, 4vw, 16px);
-    transition: background-color 0.2s, transform 0.1s;
-    touch-action: manipulation;
-}
-
-.mission-button:active {
-    transform: scale(0.98);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-    </style>
-</head>
-<body>
-    <div class="mission-container">
-        <div class="mission-title" id="missionTitle">Current Mission</div>
-        <div class="mission-description" id="missionDescription"></div>
-        <div class="mission-progress">
-            <div class="mission-progress-bar">
-                <div class="mission-progress-fill" id="missionProgress"></div>
-            </div>
-            <div id="missionProgressText"></div>
-        </div>
-        <div class="mission-controls">
-            <button class="mission-button submit-button" onclick="submitMission()" id="submitButton">Submit Mission</button>
-            <button class="mission-button reset-button" onclick="resetInventory()">Reset Inventory</button>
-        </div>
-    </div>
-
-    <div class="inventory-container">
-        <div class="main-content">
-            <div class="inventory-grid">
-            <!-- Cabinet 1 -->
-            <div class="cabinet">
-                <div class="cabinet-title">Cabinet 1</div>
-                <div class="drawer" onclick="openDrawer(1, '1-1')">Drawer 1-1</div>
-                <div class="drawer" onclick="openDrawer(1, '1-2')">Drawer 1-2</div>
-                <div class="drawer" onclick="openDrawer(1, '1-3')">Drawer 1-3</div>
-            </div>
-
-            <!-- Cabinet 2 -->
-            <div class="cabinet">
-                <div class="cabinet-title">Cabinet 2</div>
-                <div class="drawer" onclick="openDrawer(2, '2-1')">Drawer 2-1</div>
-                <div class="drawer" onclick="openDrawer(2, '2-2')">Drawer 2-2</div>
-            </div>
-
-            <!-- Cabinet 3 -->
-            <div class="cabinet">
-                <div class="cabinet-title">Cabinet 3</div>
-                <div class="drawer" onclick="openDrawer(3, '3-1')">Drawer 3-1</div>
-                <div class="drawer" onclick="openDrawer(3, '3-2')">Drawer 3-2</div>
-                <div class="drawer" onclick="openDrawer(3, '3-3')">Drawer 3-3</div>
-                <div class="drawer" onclick="openDrawer(3, '3-4')">Drawer 3-4</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="user-inventory">
-        <div class="inventory-title">My Inventory</div>
-        <div class="inventory-items" id="userInventory"></div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <button class="close-button" onclick="closeModal()">&times;</button>
-            <div class="breadcrumb" id="modalBreadcrumb"></div>
-            <div class="item-grid" id="modalContent"></div>
-        </div>
-    </div>
-
-    <script>
-        const inventory = {
-            1: {
-                name: 'Cabinet 1',
-                drawers: {
-                    '1-1': ['Item 1', 'Item 2', 'Item 3'],
-                    '1-2': ['Item 4', 'Item 5', 'Item 6'],
-                    '1-3': ['Item 7', 'Item 8', 'Item 9']
-                }
-            },
-            2: {
-                name: 'Cabinet 2',
-                drawers: {
-                    '2-1': ['Item 10', 'Item 11', 'Item 12'],
-                    '2-2': ['Item 13', 'Item 14', 'Item 15']
-                }
-            },
-            3: {
-                name: 'Cabinet 3',
-                drawers: {
-                    '3-1': ['Item 16', 'Item 17', 'Item 18'],
-                    '3-2': ['Item 19', 'Item 20', 'Item 21'],
-                    '3-3': ['Item 22', 'Item 23', 'Item 24'],
-                    '3-4': ['Item 25', 'Item 26', 'Item 27']
-                }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Cabinet Inventory System</title>
+        <style>
+                                                /* Base styles */
+                                                 * {
+                                                    //box-sizing: border-box;
+                                                    margin: 0;
+                                                    padding: 0;
+                                                    -webkit-tap-highlight-color: transparent;
+                                                }
+
+                                                body {
+                                                    font-family: Arial, sans-serif;
+                                                    background: rgba(0, 0, 0, 1);
+                                                    padding: 10px;
+                                                    display: flex;
+                                                    flex-direction: column;
+                                                    min-height: 100vh;
+                                                    gap: 10px;
+                                                    touch-action: manipulation;
+                                                }
+
+
+                                                /* Mission Container */
+                        .mission-container {
+                           padding: 15px;
+                           border-radius: 0;
+                           text-align: center;
+                           margin-bottom: 15px;
+                           background: #2C2C2C;
+                           box-shadow: 3px 3px 0 #000;
+                        }
+
+                        .mission-title {
+                           font-family: "Courier New", monospace;
+                           font-size: clamp(18px, 5vw, 24px);
+                           font-weight: bold;
+                           margin-bottom: 8px;
+                           -webkit-font-smoothing: none;
+                           -moz-osx-font-smoothing: none;
+                           color: #4CAF50;
+                           text-transform: uppercase;
+                           text-shadow: 1px 1px #000;
+                           letter-spacing: 2px;
+                           padding-bottom: 4px;
+                           border-bottom: 2px solid #ffd700;
+                        }
+
+                        .mission-description {
+                           font-family: "Courier New", monospace;
+                           margin-bottom: 12px;
+                           font-size: clamp(14px, 4vw, 16px);
+                           -webkit-font-smoothing: none;
+                           -moz-osx-font-smoothing: none;
+                           color: #f0f0f0;
+                           text-shadow: 1px 1px #000;
+                           letter-spacing: 1px;
+                           line-height: 1.6;
+                        }
+
+
+                        /* Submit and Reset buttons */
+                        .submit-button,
+                        .reset-button {
+                            font-family: "Courier New", monospace;
+                            color: white;
+                            padding: 12px 25px;
+                            border: 2px solid #fff;
+                            box-shadow: 3px 3px 0 #000;
+                            border-radius: 0 !important;
+                            font-weight: bold;
+                            letter-spacing: 2px;
+                            text-transform: uppercase;
+                            -webkit-font-smoothing: none;
+                            -moz-osx-font-smoothing: none;
+                        }
+
+                        .submit-button {
+                            background: #4CAF50;
+                        }
+
+                        .reset-button {
+                            background: #8b0000;
+                        }
+
+                        .submit-button:active{
+                            background: #45a049;
+                            transform: translate(3px, 3px);
+                            box-shadow: none;
+                        }
+
+                        .reset-button:active {
+                            background: #700000;
+                            transform: translate(3px, 3px);
+                            box-shadow: none;
+                        }
+
+
+                                                #missionProgressText {
+                                                    margin-top: 8px;
+                                                    font-size: 14px;
+                                                    color: #666;
+                                                }
+
+                                                .mission-controls {
+                                                    display: flex;
+                                                    flex-wrap: wrap;
+                                                    justify-content: center;
+                                                    gap: 10px;
+                                                    margin-top: 12px;
+                                                }
+
+                                                .mission-button {
+                                                    padding: 12px 20px;
+                                                    border: none;
+                                                    border-radius: 8px;
+                                                    cursor: pointer;
+                                                    font-weight: bold;
+                                                    transition: background-color 0.2s;
+                                                    font-size: 16px;
+                                                    min-width: 120px;
+                                                    touch-action: manipulation;
+                                                }
+
+                        /* Inventory Layout */
+                        .inventory-container {
+                           display: flex;
+                           flex-direction: column;
+                           gap: 15px;
+                           background: #2C2C2C;
+                           border: 3px solid #2C2C2C;
+                           padding: 15px;
+                           box-shadow: 3px 3px 0 #000;
+                        }
+
+                        @media (min-width: 768px) {
+                           .inventory-container {
+                               flex-direction: row;
+                           }
+
+                           .main-content {
+                               flex: 1;
+                               border-right: 0px solid #4169e1;
+                               padding-right: 15px;
+                           }
+
+                           .user-inventory {
+                               width: 300px;
+                               background: #2C2C2C;
+                               border: 2px solid #ffd700;
+                           }
+                        }
+
+                        /* Cabinet Grid */
+                        .inventory-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+                            gap: 15px;
+                            padding: 10px;
+                        }
+
+                        .cabinet {
+                            background: #2C2C2C;
+                            border: 3px solid #4CAF50;
+                            border-radius: 0;
+                            box-shadow: 3px 3px 0 #000;
+                            padding: 12px;
+                        }
+
+                        .cabinet-title {
+                            font-family: "Courier New", monospace;
+                            font-weight: bold;
+                            margin-bottom: 8px;
+                            color: #ffd700;
+                            font-size: clamp(14px, 4vw, 16px);
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            text-shadow: 1px 1px #000;
+                            -webkit-font-smoothing: none;
+                            -moz-osx-font-smoothing: none;
+                            border-bottom: 2px solid #4CAF50;
+                            padding-bottom: 4px;
+                        }
+
+                        .drawer {
+                            background: #1a1a1a;
+                            margin: 5px 0;
+                            padding: 15px;
+                            border: 2px solid #45a049;
+                            border-radius: 0;
+                            cursor: pointer;
+                            font-size: clamp(14px, 4vw, 16px);
+                            touch-action: manipulation;
+                            font-family: "Courier New", monospace;
+                            -webkit-font-smoothing: none;
+                            -moz-osx-font-smoothing: none;
+                            color: #1a1a1a;
+                            transition: all 0.2s;
+                        }
+
+                        .drawer:active {
+                            background: #4169e1;
+                            transform: translate(2px, 2px);
+                            box-shadow: none;
+                        }
+
+                        /* Modal Styles */
+                        .modal-overlay {
+                            display: none;
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0,0,0,0.8);
+                            z-index: 1000;
+                            touch-action: none;
+                        }
+
+                        .modal {
+                            position: fixed;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            width: 90%;
+                            max-width: 600px;
+                            max-height: 90vh;
+                            background: #2C2C2C;
+                            padding: 20px;
+                            border: 3px solid #2C2C2C;
+                            border-radius: 0;
+                            box-shadow: 5px 5px 0 #000;
+                            overflow-y: auto;
+                            z-index: 1001;
+                        }
+
+                        .breadcrumb {
+                           font-family: "Courier New", monospace;
+                           color: #2C2C2C;
+                           font-size: clamp(14px, 4vw, 16px);
+                           -webkit-font-smoothing: none;
+                           -moz-osx-font-smoothing: none;
+                           letter-spacing: 2px;
+                           padding: 10px 0;
+                           border-bottom: 2px solid #45a049;
+                        }
+
+                        .close-button {
+                            position: absolute;
+                            right: 15px;
+                            top: 15px;
+                            background: none;
+                            border: 2px solid #ffd700;
+                            font-family: "Courier New", monospace;
+                            font-size: 28px;
+                            cursor: pointer;
+                            color: #ffd700;
+                            padding: 0 10px;
+                            touch-action: manipulation;
+                        }
+
+                        /* Item Grid */
+                        .item-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                            gap: 10px;
+                            margin-top: 15px;
+                        }
+
+                        .item {
+                            background: #1a1a1a;
+                            padding: 10px;
+                            border: 2px solid #45a049;
+                            border-radius: 0;
+                            text-align: center;
+                            cursor: pointer;
+                            touch-action: manipulation;
+                            box-shadow: 2px 2px 0 #000;
+                            color: #f0f0f0;
+                            font-family: "Courier New", monospace;
+                        }
+
+                        .item:active {
+                            transform: translate(2px, 2px);
+                            box-shadow: none;
+                            background: #4169e1;
+                        }
+
+                        .item img {
+                            width: 100%;
+                            height: auto;
+                            aspect-ratio: 4/3;
+                            margin-bottom: 8px;
+                            border-radius: 0;
+                            object-fit: cover;
+                            border: 0px solid #ffd700;
+                        }
+
+                        /* User Inventory */
+                        .user-inventory {
+                           background: #2C2C2C;
+                           border: 3px solid #ffd700;
+                           border-radius: 0;
+                           box-shadow: 3px 3px 0 #000;
+                           padding: 15px;
+                           height: auto;
+                           max-height: 50vh;
+                        }
+
+                        @media (min-width: 768px) {
+                           .user-inventory {
+                               height: calc(100vh - 40px);
+                               position: sticky;
+                               top: 20px;
+                           }
+                        }
+
+                        .inventory-title {
+                           font-family: "Courier New", monospace;
+                           font-size: clamp(16px, 5vw, 20px);
+                           font-weight: bold;
+                           color: #4CAF50; // #ffd700 #4CAF50
+                           margin-bottom: 12px;
+                           padding-bottom: 8px;
+                           border-bottom: 2px solid #ffd700 !important;
+                           text-transform: uppercase;
+                           letter-spacing: 2px;
+                           text-shadow: 1px 1px #000;
+                           -webkit-font-smoothing: none;
+                           -moz-osx-font-smoothing: none;
+                        }
+
+                        .inventory-items {
+                           display: grid;
+                           grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                           gap: 10px;
+                           overflow-y: auto;
+                           max-height: calc(100% - 50px);
+                           padding: 5px;
+
+                        }
+
+                        .inventory-item {
+                           background: #1a1a1a;
+                           padding: 8px;
+                           border: 2px solid #ffd700;
+                           border-radius: 0;
+                           text-align: center;
+                           cursor: pointer;
+                           touch-action: manipulation;
+                           box-shadow: 2px 2px 0 #000;
+                           color: #f0f0f0;
+                           font-family: "Courier New", monospace;
+                        }
+
+                        .inventory-item:active {
+                           transform: translate(2px, 2px);
+                           box-shadow: none;
+                           background: #4169e1;
+                        }
+
+                        .inventory-item img {
+                           width: 100%;
+                           height: auto;
+                           aspect-ratio: 4/3;
+                           margin-bottom: 6px;
+                           border-radius: 0;
+                           border: 0px solid #ffd700;
+                           object-fit: cover;
+                        }
+
+                                                /* Game Start/Complete Screens */
+                                                .game-start {
+                                                    position: fixed;
+                                                    top: 0;
+                                                    left: 0;
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    background: rgba(0, 0, 0, 1) !important;
+                                                    z-index: 2000;
+                                                    color: white;
+                                                    text-align: center;
+                                                    padding: min(0px, 1vw) !important;
+                                                    display: flex;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    overflow-y: auto;
+                                                   }
+
+                                                .game-complete {
+                                                    position: fixed;
+                                                    top: 0;
+                                                    left: 0;
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    background: rgba(0, 0, 0, 1) !important;
+                                                    z-index: 2000;
+                                                    color: white;
+                                                    text-align: center;
+                                                    padding: 20px;
+                                                    display: none;  /* Changed from flex to none */
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    overflow-y: auto;
+                                                }
+
+                                                .game-complete-buttons {
+                                                    display: flex;
+                                                    gap: 15px;
+                                                    justify-content: center;
+                                                    margin-top: 20px;
+                                                    flex-wrap: wrap;
+                                                }
+
+                        .restart-button {
+                font-family: "Courier New", monospace;
+                background: #4CAF50;  /* Keeping original color */
+                color: white;
+                padding: 12px 25px;   /* Matches survey button */
+                border: 0px solid #fff;
+                box-shadow: 3px 3px 0 #000;
+                border-radius: 0 !important;
+                font-size: 16px;
+                font-weight: bold;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                -webkit-font-smoothing: none;
+                -moz-osx-font-smoothing: none;
+                cursor: pointer;
+                touch-action: manipulation;
             }
-        };
 
-        // Define image paths for each item
-        const itemImages = {
-            'Item 1': '/images/item1.jpg',
-            'Item 2': '/images/item2.jpg',
-            'Item 3': '/images/item3.jpg',
-            'Item 4': '/images/item4.jpg',
-            'Item 5': '/images/item5.jpg',
-            'Item 6': 'path/to/item6.jpg',
-            'Item 7': 'path/to/item7.jpg',
-            'Item 8': 'path/to/item8.jpg',
-            'Item 9': 'path/to/item9.jpg',
-            'Item 10': 'path/to/item10.jpg',
-            'Item 11': 'path/to/item11.jpg',
-            'Item 12': 'path/to/item12.jpg',
-            'Item 13': 'path/to/item13.jpg',
-            'Item 14': 'path/to/item14.jpg',
-            'Item 15': 'path/to/item15.jpg',
-            'Item 16': 'path/to/item16.jpg',
-            'Item 17': 'path/to/item17.jpg',
-            'Item 18': 'path/to/item18.jpg',
-            'Item 19': 'path/to/item19.jpg',
-            'Item 20': 'path/to/item20.jpg',
-            'Item 21': 'path/to/item21.jpg',
-            'Item 22': 'path/to/item22.jpg',
-            'Item 23': 'path/to/item23.jpg',
-            'Item 24': 'path/to/item24.jpg',
-            'Item 25': 'path/to/item25.jpg',
-            'Item 26': 'path/to/item26.jpg',
-            'Item 27': 'path/to/item27.jpg'
-        };
-        
-        let currentCabinet = null;
-        let currentDrawer = null;
-        // Logging function
-        // Array to store all log entries
-            let gameLogEntries = [];
-        
-        function logAction(action, details) {
-            const timestamp = new Date().toLocaleTimeString();
-            const logEntry = `[${timestamp}] ${action}: ${details}`;
-            console.log(logEntry);
-            gameLogEntries.push(logEntry);
-        }
+            .restart-button:active {
+                background: #45a049;  /* Darker shade for active state */
+                transform: translate(3px, 3px);
+                box-shadow: none;
+            }
 
-        // Function to get image path for an item
-        function getItemImage(item) {
-            return itemImages[item] || '/path/to/default-image.jpg'; // Fallback to default image if not found
-        }
-        
-        // Mission System
-        const missions = [
-            {
-                id: 1,
-                title: "Cabinet Explorer I",
-                description: "Collect any three items from Drawer 1-1",
-                requirement: {
-                    type: "collect",
-                    drawer: "1-1",
-                    count: 3,
-                    fromSpecificDrawer: true
-                },
-                completed: false,
-                progress: 0
-            },
-            {
-                id: 2,
-                title: "Cabinet Explorer II",
-                description: "Collect any three items from Drawer 1-2",
-                requirement: {
-                    type: "collect",
-                    drawer: "1-2",
-                    count: 3,
-                    fromSpecificDrawer: true
-                },
-                completed: false,
-                progress: 0
-            },
-            {
-                id: 3,
-                title: "Specific Item Collector",
-                description: "Collect Item 7, Item 8, and Item 9 from Drawer 1-3",
-                requirement: {
-                    type: "collect_specific",
-                    drawer: "1-3",
-                    items: ["Item 7", "Item 8", "Item 9"],
-                    progress: {
-                        "Item 7": false,
-                        "Item 8": false,
-                        "Item 9": false
+            .survey-button {
+                /* Base styling */
+                font-family: "Courier New", monospace;
+                background: #4169e1;
+                color: white;
+                padding: 12px 25px;          /* Match the submit/reset padding */
+                border: 0px solid #fff;      /* Add border like submit/reset */
+                box-shadow: 3px 3px 0 #000;
+                border-radius: 0 !important;
+
+                /* Typography */
+                font-size: 16px;            /* Fixed size instead of clamp */
+                font-weight: bold;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                -webkit-font-smoothing: none;
+                -moz-osx-font-smoothing: none;
+
+                /* Interactive */
+                cursor: pointer;
+                touch-action: manipulation;
+            }
+
+            .survey-button:active {
+                background: #3558c0;        /* Darker shade for active state */
+                transform: translate(3px, 3px);
+                box-shadow: none;
+            }
+
+                                                .game-start-content,
+                                                .game-complete-content {
+                                                    max-height: 90vh;
+                                                    max-width: 90%;
+                                                    margin: 0 auto;
+                                                    background: rgba(255, 255, 255, 1);
+                                                    padding: min(20px, 4vw);
+                                                    border-radius: 0px !important;
+                                                    animation: pixelFadeIn 0.8s steps(8) forwards;
+                                                    image-rendering: pixelated;
+                                                }
+
+                                    .game-start h1,
+                                    .game-complete h1 {
+                                       font-family: "Courier New", monospace !important;
+                                       letter-spacing: 9px;
+                                       font-size: clamp(24px, 8vw, 48px);
+                                       margin-bottom: 20px;
+                                       -webkit-font-smoothing: none;
+                                       -moz-osx-font-smoothing: none;
+                                       color: #ffd700;
+                                       text-transform: uppercase;
+                                       text-shadow: 2px 2px #000;
+                                       font-weight: bold;
+                                       padding-bottom: 4px;
+                                       border-bottom: 2px solid #ffd700;
+                                    }
+
+
+                        .game-complete h1 {
+                            font-family: "Courier New", monospace !important;
+                            letter-spacing: 9px;
+                            font-size: clamp(24px, 6vw, 48px);
+                            margin-bottom: 20px;
+                            -webkit-font-smoothing: none;
+                            -moz-osx-font-smoothing: none;
+                            color: #ffd700;
+                            text-transform: uppercase;
+                            text-shadow: 2px 2px #000;
+                            font-weight: bold;
+                            padding-bottom: 4px;
+                            border-bottom: 2px solid #ffd700;
+                        }
+
+                        .game-complete p {
+                            font-family: "Courier New", monospace;
+                            font-size: clamp(14px, 4vw, 18px);
+                            line-height: 1.6;
+                            margin-bottom: 20px;
+                            text-align: center;
+                            -webkit-font-smoothing: none;
+                            -moz-osx-font-smoothing: none;
+                            color: #f0f0f0;
+                            text-shadow: 1px 1px #000;
+                            letter-spacing: 1px;
+                        }
+
+                        .game-complete span {
+                            font-family: "Courier New", monospace !important;
+                            -webkit-font-smoothing: none;
+                            -moz-osx-font-smoothing: none;
+                            color: #ffd700;
+                            text-transform: uppercase;
+                            text-shadow: 2px 2px #000;
+                            letter-spacing: 5px;
+                        }
+
+                        .game-start .instructions {
+                           font-family: "Courier New", monospace;
+                           font-size: clamp(14px, 4vw, 18px);
+                           line-height: 1.6;
+                           margin-bottom: 20px;
+                           text-align: left;
+                           -webkit-font-smoothing: none;
+                           -moz-osx-font-smoothing: none;
+                           color: #f0f0f0;
+                           text-shadow: 1px 1px #000;
+                           letter-spacing: 1px;
+                           padding: 10px;
+                             counter-reset: instruction-counter;
+                        }
+
+                        .game-start .instructions p {
+                           position: relative;
+                        }
+
+                        .game-start .instructions p:nth-of-type(n+2):nth-of-type(-n+7) {
+                           padding-left: 30px;
+                        }
+
+                        .game-start .instructions p:nth-of-type(n+2):nth-of-type(-n+7)::before {
+                           content: counter(instruction-counter) ".";
+                           counter-increment: instruction-counter;
+                           position: absolute;
+                           left: 0;
+                           color: #ffd700;
+                        }
+
+                                    .game-start .instructions span {
+                           font-family: "Courier New", monospace !important;
+                           -webkit-font-smoothing: none;
+                           -moz-osx-font-smoothing: none;
+                           color: #ffd700;
+                           text-transform: uppercase;
+                           text-shadow: 2px 2px #000;
+                           letter-spacing: 5px;
+                        }
+
+                        .start-button {
+                           background: #4169e1;
+                           color: #fff;
+                           padding: 15px 30px;
+                           border: 3px solid #fff;
+                           box-shadow: 3px 3px 0 #000;
+                           border-radius: 0px !important;
+                           font-family: "Courier New", monospace;
+                           font-size: clamp(14px,3.5vw, 16px);
+                           font-weight: bold;
+                           letter-spacing: 2px;
+                           text-transform: uppercase;
+                           -webkit-font-smoothing: none;
+                           -moz-osx-font-smoothing: none;
+                           cursor: pointer;
+                           transition: transform 0.1s;
+                           touch-action: manipulation;
+                        }
+
+                        .start-button:active{
+                           transform: translate(3px, 3px);
+                           box-shadow: none;
+                        }
+
+                                                /* Mission Controls Container */
+                                                .mission-controls {
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    gap: 10px;
+                                                    margin-top: 15px;
+                                                    flex-wrap: wrap;
+                                                    padding: 0 10px;
+                                                }
+
+                                                /* Mission Buttons */
+                                                .mission-button {
+                                                    min-width: 120px;
+                                                    padding: 12px 20px;
+                                                    border: none;
+                                                    border-radius: 8px;
+                                                    cursor: pointer;
+                                                    font-weight: bold;
+                                                    font-size: clamp(14px, 4vw, 16px);
+                                                    transition: background-color 0.2s, transform 0.1s;
+                                                    touch-action: manipulation;
+                                                }
+
+                                                .mission-button:active {
+                                                    transform: scale(0.98);
+                                                }
+
+                        @keyframes pixelFadeIn {
+                           0% {
+                               opacity: 0;
+                               transform: scale(0.5);
+                               image-rendering: pixelated;
+                           }
+                           50% {
+                               opacity: 0.5;
+                               transform: scale(0.8);
+                           }
+                           100% {
+                               opacity: 1;
+                               transform: scale(1);
+                           }
+                        }
+
+                                                    background: white;
+                                                    border-radius: 8px;
+                                                    padding: 15px;
+                                                    height: auto;
+                                                    max-height: 50vh;
+                                                }
+
+                                                @media (min-width: 768px) {
+                                                    .user-inventory {
+                                                        height: calc(100vh - 40px);
+                                                        position: sticky;
+                                                        top: 20px;
+                                                    }
+                                                }
+
+                                                .inventory-title {
+                                                    font-size: clamp(16px, 5vw, 20px);
+                                                    font-weight: bold;
+                                                    margin-bottom: 12px;
+                                                    padding-bottom: 8px;
+                                                    border-bottom: 2px solid #f0f2f5;
+                                                }
+
+                                                .inventory-items {
+                                                    display: grid;
+                                                    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                                                    gap: 10px;
+                                                    overflow-y: auto;
+                                                    max-height: calc(100% - 50px);
+                                                    padding: 5px;
+                                                }
+
+                                                .inventory-item {
+                                                    background: #4A4A4A;;
+                                                    padding: 8px;
+                                                    border-radius: 8px;
+                                                    text-align: center;
+                                                    cursor: pointer;
+                                                    touch-action: manipulation;
+                                                }
+
+                                                .inventory-item:active {
+                                                    transform: scale(0.98);
+                                                    background: #e9ecef;
+                                                }
+
+                                                .inventory-item img {
+                                                    width: 100%;
+                                                    height: auto;
+                                                    aspect-ratio: 4/3;
+                                                    margin-bottom: 6px;
+                                                    border-radius: 4px;
+                                                    object-fit: cover;
+                                                }
+
+                                                /* Game Start/Complete Screens */
+                                                .game-start,
+                                                .game-complete {
+                                                    position: fixed;
+                                                    top: 0;
+                                                    left: 0;
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    background: rgba(0, 0, 0, 0.9);
+                                                    z-index: 2000;
+                                                    color: white;
+                                                    text-align: center;
+                                                    padding: 20px;
+                                                    display: flex;
+                                                    align-items: center;
+                                                    justify-content: center;
+                                                    overflow-y: auto;
+                                                }
+
+                                                .game-start-content,
+                                                .game-complete-content {
+                                                    max-width: 90%;
+                                                    margin: 0 auto;
+                                                    background: rgba(255, 255, 255, 0.1);
+                                                    padding: 20px;
+                                                    border-radius: 16px;
+                                                    animation: pixelFadeIn 2.1s steps(5) forwards;
+                                                }
+
+                                                .game-start h1,
+                                                .game-complete h1 {
+                                                    font-size: clamp(24px, 8vw, 48px);
+                                                    margin-bottom: 20px;
+                                                    color: #4CAF50;
+                                                }
+
+                                                .game-start .instructions {
+                                                    font-size: clamp(14px, 4vw, 18px);
+                                                    line-height: 1.6;
+                                                    margin-bottom: 20px;
+                                                    text-align: left;
+                                                }
+
+                                                .start-button{
+                                                    background: #4CAF50;
+                                                    color: white;
+                                                    padding: 15px 30px;
+                                                    border: none;
+                                                    border-radius: 8px;
+                                                    font-size: clamp(16px, 5vw, 20px);
+                                                    cursor: pointer;
+                                                    transition: background-color 0.3s;
+                                                    touch-action: manipulation;
+                                                }
+
+                                                .start-button:active{
+                                                    transform: scale(0.98);
+                                                    background: #45a049;
+                                                }
+
+                                                /* Progress Bar */
+                                                .mission-progress {
+                                                    display: none;
+                                                    background: #f0f2f5;
+                                                    padding: 8px;
+                                                    border-radius: 8px;
+                                                    margin: 10px 0;
+                                                    width: 100%;
+                                                }
+
+                                                .mission-progress-bar {
+                                                    background: #e0e0e0;
+                                                    height: 10px;
+                                                    border-radius: 5px;
+                                                    overflow: hidden;
+                                                    width: 100%;
+                                                    margin: 0 auto;
+                                                }
+
+                                                .mission-progress-fill {
+                                                    background: #4CAF50;
+                                                    height: 100%;
+                                                    width: 0%;
+                                                    transition: width 0.3s ease;
+                                                    border-radius: 5px;
+                                                }
+
+                                                /* Mission Controls Container */
+                                                .mission-controls {
+                                                    display: flex;
+                                                    justify-content: center;
+                                                    gap: 10px;
+                                                    margin-top: 15px;
+                                                    flex-wrap: wrap;
+                                                    padding: 0 10px;
+                                                }
+
+                                                /* Mission Buttons */
+                                                .mission-button {
+                                                    min-width: 120px;
+                                                    padding: 12px 20px;
+                                                    border: none;
+                                                    border-radius: 8px;
+                                                    cursor: pointer;
+                                                    font-weight: bold;
+                                                    font-size: clamp(14px, 4vw, 16px);
+                                                    transition: background-color 0.2s, transform 0.1s;
+                                                    touch-action: manipulation;
+                                                }
+
+                                                .mission-button:active {
+                                                    transform: scale(0.98);
+                                                }
+
+                                                @keyframes fadeIn {
+                                                    from {
+                                                        opacity: 0;
+                                                        transform: translateY(-20px);
+                                                    }
+                                                    to {
+                                                        opacity: 1;
+                                                        transform: translateY(0);
+                                                    }
+                                                }
+        </style>
+    </head>
+    <body>
+        <div class="mission-container">
+            <div class="mission-title" id="missionTitle">Current Mission</div>
+            <div class="mission-description" id="missionDescription"></div>
+            <div class="mission-progress">
+                <div class="mission-progress-bar">
+                    <div class="mission-progress-fill" id="missionProgress"></div>
+                </div>
+                <div id="missionProgressText"></div>
+            </div>
+            <div class="mission-controls">
+                <button class="mission-button submit-button" onclick="submitMission()" id="submitButton">
+                    Submit Mission
+                </button>
+                <button class="mission-button reset-button" onclick="resetInventory()">Reset Inventory</button>
+            </div>
+        </div>
+
+        <div class="inventory-container">
+            <div class="main-content">
+                <div class="inventory-grid">
+                    <!-- Cabinet 1 -->
+                    <div class="cabinet">
+                        <div class="cabinet-title">Cabinet 1</div>
+                        <div class="drawer" onclick="openDrawer(1, '1-1')">Drawer 1-1</div>
+                        <div class="drawer" onclick="openDrawer(1, '1-2')">Drawer 1-2</div>
+                        <div class="drawer" onclick="openDrawer(1, '1-3')">Drawer 1-3</div>
+                    </div>
+
+                    <!-- Cabinet 2 -->
+                    <div class="cabinet">
+                        <div class="cabinet-title">Cabinet 2</div>
+                        <div class="drawer" onclick="openDrawer(2, '2-1')">Drawer 2-1</div>
+                        <div class="drawer" onclick="openDrawer(2, '2-2')">Drawer 2-2</div>
+                    </div>
+
+                    <!-- Cabinet 3 -->
+                    <div class="cabinet">
+                        <div class="cabinet-title">Cabinet 3</div>
+                        <div class="drawer" onclick="openDrawer(3, '3-1')">Drawer 3-1</div>
+                        <div class="drawer" onclick="openDrawer(3, '3-2')">Drawer 3-2</div>
+                        <div class="drawer" onclick="openDrawer(3, '3-3')">Drawer 3-3</div>
+                        <div class="drawer" onclick="openDrawer(3, '3-4')">Drawer 3-4</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-inventory">
+                <div class="inventory-title">My Inventory</div>
+                <div class="inventory-items" id="userInventory"></div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal-overlay" id="modalOverlay">
+                <div class="modal">
+                    <button class="close-button" onclick="closeModal()">&times;</button>
+                    <div class="breadcrumb" id="modalBreadcrumb"></div>
+                    <div class="item-grid" id="modalContent"></div>
+                </div>
+            </div>
+
+            <script>
+                const inventory = {
+                    1: {
+                        name: "Cabinet 1",
+                        drawers: {
+                            "1-1": ["Item 1", "Item 2", "Item 3"],
+                            "1-2": ["Item 4", "Item 5", "Item 6"],
+                            "1-3": ["Item 7", "Item 8", "Item 9"]
+                        }
+                    },
+                    2: {
+                        name: "Cabinet 2",
+                        drawers: {
+                            "2-1": ["Item 10", "Item 11", "Item 12"],
+                            "2-2": ["Item 13", "Item 14", "Item 15"]
+                        }
+                    },
+                    3: {
+                        name: "Cabinet 3",
+                        drawers: {
+                            "3-1": ["Item 16", "Item 17", "Item 18"],
+                            "3-2": ["Item 19", "Item 20", "Item 21"],
+                            "3-3": ["Item 22", "Item 23", "Item 24"],
+                            "3-4": ["Item 25", "Item 26", "Item 27"]
+                        }
                     }
-                },
-                completed: false,
-                progress: 0
-            }
-        ];
+                };
 
-        let currentMissionIndex = 0;
+                // Define image paths for each item
+                const itemImages = {
+                    "Item 1": "/images/item1.jpg",
+                    "Item 2": "/images/item2.jpg",
+                    "Item 3": "/images/item3.jpg",
+                    "Item 4": "/images/item4.jpg",
+                    "Item 5": "/images/item5.jpg",
+                    "Item 6": "path/to/item6.jpg",
+                    "Item 7": "path/to/item7.jpg",
+                    "Item 8": "path/to/item8.jpg",
+                    "Item 9": "path/to/item9.jpg",
+                    "Item 10": "path/to/item10.jpg",
+                    "Item 11": "path/to/item11.jpg",
+                    "Item 12": "path/to/item12.jpg",
+                    "Item 13": "path/to/item13.jpg",
+                    "Item 14": "path/to/item14.jpg",
+                    "Item 15": "path/to/item15.jpg",
+                    "Item 16": "path/to/item16.jpg",
+                    "Item 17": "path/to/item17.jpg",
+                    "Item 18": "path/to/item18.jpg",
+                    "Item 19": "path/to/item19.jpg",
+                    "Item 20": "path/to/item20.jpg",
+                    "Item 21": "path/to/item21.jpg",
+                    "Item 22": "path/to/item22.jpg",
+                    "Item 23": "path/to/item23.jpg",
+                    "Item 24": "path/to/item24.jpg",
+                    "Item 25": "path/to/item25.jpg",
+                    "Item 26": "path/to/item26.jpg",
+                    "Item 27": "path/to/item27.jpg"
+                };
 
-        function updateMissionDisplay() {
-            const currentMission = missions[currentMissionIndex];
-            document.getElementById('missionTitle').textContent = currentMission.title;
-            document.getElementById('missionDescription').textContent = currentMission.description;
+                let currentCabinet = null;
+                let currentDrawer = null;
+                // Logging function
+                // Array to store all log entries
+                let gameLogEntries = [];
 
-            if (currentMission.requirement.type === "collect_specific") {
-                const progressCount = Object.values(currentMission.requirement.progress)
-                    .filter(Boolean).length;
-                const totalItems = currentMission.requirement.items.length;
-                const progressPercentage = (progressCount / totalItems) * 100;
-                document.getElementById('missionProgress').style.width = `${progressPercentage}%`;
-            } else {
-                const progressPercentage = (currentMission.progress / currentMission.requirement.count) * 100;
-                document.getElementById('missionProgress').style.width = `${progressPercentage}%`;
-            }
-        }
-        function checkMissionProgress(item, fromDrawer) {
-            const currentMission = missions[currentMissionIndex];
-            if (currentMission.completed) return;
+                function logAction(action, details) {
+                    const actionCodes = {
+                        "Mission Progress": "MP",
+                        "Mission Completed": "MC",
+                        "Mission Failed": "MF",
+                        "New Mission": "NM",
+                        "All Missions Completed": "AC",
+                        "Item Added to Inventory": "AI",
+                        "Item Returned to Drawer": "RD",
+                        Inventory: "IV",
+                        "Drawer Opened": "DO",
+                        "Drawer Closed": "DC",
+                        "Game Started": "GS",
+                        "Game Complete": "GC",
+                        "Game Restart": "GR"
+                    };
 
-            if (currentMission.requirement.type === "collect_specific") {
-                if (fromDrawer === currentMission.requirement.drawer && 
-                    currentMission.requirement.items.includes(item)) {
-                    currentMission.requirement.progress[item] = true;
-                    logAction('Mission Progress', 
-                        `${currentMission.title}: Collected ${item}`);
-                    updateMissionDisplay();
+                    const replacements = {
+                        "Cabinet ": "C",
+                        "Drawer ": "D",
+                        " > ": ".",
+                        "Item ": "I",
+                        " from ": "f",
+                        "CExplorer ": "CE",
+                        "Specific ICollector": "SIC",
+                        "Collected ": "",
+                        ": ": ": ",
+                        "Congratulations!": "",
+                        "All missions completed successfully": "",
+                        "All items returned to drawers": ""
+                    };
+
+                    const time = new Date().toLocaleTimeString("en-US", {
+                        hour12: false,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit"
+                    });
+
+                    let compressedDetails = details;
+                    for (const [key, value] of Object.entries(replacements)) {
+                        compressedDetails = compressedDetails.replace(new RegExp(key, "g"), value);
+                    }
+
+                    const logEntry = `${time}|${actionCodes[action]}|${compressedDetails}`;
+                    gameLogEntries.push(logEntry);
                 }
-            } else if (currentMission.requirement.type === "collect") {
-                if (!currentMission.requirement.fromSpecificDrawer || 
-                    fromDrawer === currentMission.requirement.drawer) {
-                    currentMission.progress++;
-                    logAction('Mission Progress', 
-                        `${currentMission.title}: ${currentMission.progress}/${currentMission.requirement.count}`);
-                    updateMissionDisplay();
+
+                // Function to get image path for an item
+                function getItemImage(item) {
+                    return itemImages[item] || "/path/to/default-image.jpg"; // Fallback to default image if not found
                 }
-            }
-        }
 
-        function returnAllItems() {
-            // Return all items to their original drawers
-            while (userInventory.length > 0) {
-                const item = userInventory[0];
-                const origin = itemOrigins[item];
-                inventory[origin.cabinet].drawers[origin.drawer].push(item);
-                userInventory.splice(0, 1);
-                delete itemOrigins[item];
-            }
-            updateInventoryDisplay();
-            if (currentCabinet && currentDrawer) {
-                openDrawer(currentCabinet, currentDrawer);
-            }
-            logAction('Inventory', 'All items returned to drawers');
-        }
+                // Mission System
+                const missions = [
+                    {
+                        id: 1,
+                        title: "Cabinet Explorer I",
+                        description: "Collect any three items from Drawer 1-1",
+                        requirement: {
+                            type: "collect",
+                            drawer: "1-1",
+                            count: 3,
+                            fromSpecificDrawer: true
+                        },
+                        completed: false,
+                        progress: 0
+                    },
+                    {
+                        id: 2,
+                        title: "Cabinet Explorer II",
+                        description: "Collect any three items from Drawer 1-2",
+                        requirement: {
+                            type: "collect",
+                            drawer: "1-2",
+                            count: 3,
+                            fromSpecificDrawer: true
+                        },
+                        completed: false,
+                        progress: 0
+                    },
+                    {
+                        id: 3,
+                        title: "Specific Item Collector",
+                        description: "Collect Item 7, Item 8, and Item 9 from Drawer 1-3",
+                        requirement: {
+                            type: "collect_specific",
+                            drawer: "1-3",
+                            items: ["Item 7", "Item 8", "Item 9"],
+                            progress: {
+                                "Item 7": false,
+                                "Item 8": false,
+                                "Item 9": false
+                            }
+                        },
+                        completed: false,
+                        progress: 0
+                    }
+                ];
 
-        function resetInventory() {
-            returnAllItems();
-            logAction('Inventory', 'Inventory reset');
-        }
+                let currentMissionIndex = 0;
 
-        function submitMission() {
-            const currentMission = missions[currentMissionIndex];
-            let isSuccessful = false;
+                function updateMissionDisplay() {
+                    const currentMission = missions[currentMissionIndex];
+                    document.getElementById("missionTitle").textContent = currentMission.title;
+                    document.getElementById("missionDescription").textContent = currentMission.description;
 
-            if (currentMission.requirement.type === "collect_specific") {
-                isSuccessful = currentMission.requirement.items.every(item => 
-                    userInventory.includes(item) && 
-                    itemOrigins[item].drawer === currentMission.requirement.drawer
-                );
-            } else {
-                const itemsFromRequiredDrawer = userInventory.filter(item => 
-                    itemOrigins[item].drawer === currentMission.requirement.drawer
-                );
-                isSuccessful = itemsFromRequiredDrawer.length >= currentMission.requirement.count;
-            } 
-            
-            if (isSuccessful) {
-                currentMission.completed = true;
-                logAction('Mission Completed', currentMission.title);
-                alert('Mission Completed Successfully!');
-                
-                // Return items and move to next mission
-                returnAllItems();
-                if (currentMissionIndex < missions.length - 1) {
-                    currentMissionIndex++;
-                    updateMissionDisplay();
-                    logAction('New Mission', missions[currentMissionIndex].title);
-                } else {
-                    logAction('All Missions Completed', 'Congratulations!');
-                    showGameComplete();
+                    if (currentMission.requirement.type === "collect_specific") {
+                        const progressCount = Object.values(currentMission.requirement.progress).filter(Boolean).length;
+                        const totalItems = currentMission.requirement.items.length;
+                        const progressPercentage = (progressCount / totalItems) * 100;
+                        document.getElementById("missionProgress").style.width = `${progressPercentage}%`;
+                    } else {
+                        const progressPercentage = (currentMission.progress / currentMission.requirement.count) * 100;
+                        document.getElementById("missionProgress").style.width = `${progressPercentage}%`;
+                    }
                 }
-            } else {
-                alert('Mission Requirements Not Met - Try Again!');
-                logAction('Mission Failed', 'Requirements not met');
-            }
-        }
+                function checkMissionProgress(item, fromDrawer) {
+                    const currentMission = missions[currentMissionIndex];
+                    if (currentMission.completed) return;
 
-        // Initialize mission display
-        updateMissionDisplay();
-        const userInventory = [];
-        const itemOrigins = {}; // Tracks which cabinet/drawer each item came from
+                    if (currentMission.requirement.type === "collect_specific") {
+                        if (
+                            fromDrawer === currentMission.requirement.drawer &&
+                            currentMission.requirement.items.includes(item)
+                        ) {
+                            currentMission.requirement.progress[item] = true;
+                            logAction("Mission Progress", `${currentMission.title}: Collected ${item}`);
+                            updateMissionDisplay();
+                        }
+                    } else if (currentMission.requirement.type === "collect") {
+                        if (
+                            !currentMission.requirement.fromSpecificDrawer ||
+                            fromDrawer === currentMission.requirement.drawer
+                        ) {
+                            currentMission.progress++;
+                            logAction(
+                                "Mission Progress",
+                                `${currentMission.title}: ${currentMission.progress}/${currentMission.requirement.count}`
+                            );
+                            updateMissionDisplay();
+                        }
+                    }
+                }
 
-        function openDrawer(cabinetId, drawerId) {
-            currentCabinet = cabinetId;
-            currentDrawer = drawerId;
-            logAction('Drawer Opened', `${inventory[cabinetId].name} > Drawer ${drawerId}`);
-            const cabinet = inventory[cabinetId];
-            const items = cabinet.drawers[drawerId];
-            const modalContent = document.getElementById('modalContent');
-            const modalBreadcrumb = document.getElementById('modalBreadcrumb');
+                function returnAllItems() {
+                    // Return all items to their original drawers
+                    while (userInventory.length > 0) {
+                        const item = userInventory[0];
+                        const origin = itemOrigins[item];
+                        inventory[origin.cabinet].drawers[origin.drawer].push(item);
+                        userInventory.splice(0, 1);
+                        delete itemOrigins[item];
+                    }
+                    updateInventoryDisplay();
+                    if (currentCabinet && currentDrawer) {
+                        openDrawer(currentCabinet, currentDrawer);
+                    }
+                    logAction("Inventory", "All items returned to drawers");
+                }
 
-            modalBreadcrumb.textContent = `${cabinet.name} > Drawer ${drawerId}`;
-            modalContent.innerHTML = '';
+                function resetInventory() {
+                    returnAllItems();
+                    logAction("Inventory", "Inventory reset");
+                }
 
-            items.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'item';
-                itemDiv.innerHTML = `
+                function submitMission() {
+                    const currentMission = missions[currentMissionIndex];
+                    let isSuccessful = false;
+
+                    if (currentMission.requirement.type === "collect_specific") {
+                        isSuccessful = currentMission.requirement.items.every(
+                            (item) =>
+                                userInventory.includes(item) &&
+                                itemOrigins[item].drawer === currentMission.requirement.drawer
+                        );
+                    } else {
+                        const itemsFromRequiredDrawer = userInventory.filter(
+                            (item) => itemOrigins[item].drawer === currentMission.requirement.drawer
+                        );
+                        isSuccessful = itemsFromRequiredDrawer.length >= currentMission.requirement.count;
+                    }
+
+                    if (isSuccessful) {
+                        currentMission.completed = true;
+                        logAction("Mission Completed", currentMission.title);
+                        alert("Mission Completed Successfully!");
+
+                        // Return items and move to next mission
+                        returnAllItems();
+                        if (currentMissionIndex < missions.length - 1) {
+                            currentMissionIndex++;
+                            updateMissionDisplay();
+                            logAction("New Mission", missions[currentMissionIndex].title);
+                        } else {
+                            logAction("All Missions Completed", "Congratulations!");
+                            showGameComplete();
+                        }
+                    } else {
+                        alert("Mission Requirements Not Met - Try Again!");
+                        logAction("Mission Failed", "Requirements not met");
+                    }
+                }
+
+                // Initialize mission display
+                updateMissionDisplay();
+                const userInventory = [];
+                const itemOrigins = {}; // Tracks which cabinet/drawer each item came from
+
+                function openDrawer(cabinetId, drawerId) {
+                    currentCabinet = cabinetId;
+                    currentDrawer = drawerId;
+                    logAction("Drawer Opened", `${inventory[cabinetId].name} > Drawer ${drawerId}`);
+                    const cabinet = inventory[cabinetId];
+                    const items = cabinet.drawers[drawerId];
+                    const modalContent = document.getElementById("modalContent");
+                    const modalBreadcrumb = document.getElementById("modalBreadcrumb");
+
+                    modalBreadcrumb.textContent = `${cabinet.name} > Drawer ${drawerId}`;
+                    modalContent.innerHTML = "";
+
+                    items.forEach((item) => {
+                        const itemDiv = document.createElement("div");
+                        itemDiv.className = "item";
+                        itemDiv.innerHTML = `
                     <img src="${getItemImage(item)}" alt="${item}">
                     <div>${item}</div>
                 `;
-                itemDiv.onclick = () => addToInventory(item);
-                modalContent.appendChild(itemDiv);
-            });
+                        itemDiv.onclick = () => addToInventory(item);
+                        modalContent.appendChild(itemDiv);
+                    });
 
-            document.getElementById('modalOverlay').style.display = 'block';
-        }
-
-        function addToInventory(item) {
-            // Remove item from drawer and store its origin
-            logAction('Item Added to Inventory', `${item} from ${inventory[currentCabinet].name} > Drawer ${currentDrawer}`);
-            const drawerItems = inventory[currentCabinet].drawers[currentDrawer];
-            const index = drawerItems.indexOf(item);
-            if (index > -1) {
-                drawerItems.splice(index, 1);
-                userInventory.push(item);
-                itemOrigins[item] = {
-                    cabinet: currentCabinet,
-                    drawer: currentDrawer
-                };
-                checkMissionProgress(item, currentDrawer);
-                updateInventoryDisplay();
-                openDrawer(currentCabinet, currentDrawer); // Refresh drawer display
-            }
-        }
-
-        function removeFromInventory(item) {
-            const index = userInventory.indexOf(item);
-            const origin = itemOrigins[item];
-            logAction('Item Returned to Drawer', `${item} to ${inventory[origin.cabinet].name} > Drawer ${origin.drawer}`);
-            if (index > -1) {
-                const origin = itemOrigins[item];
-                userInventory.splice(index, 1);
-                inventory[origin.cabinet].drawers[origin.drawer].push(item);
-                delete itemOrigins[item];
-                updateInventoryDisplay();
-                
-                // Only refresh drawer display if we're currently viewing the target drawer
-                if (currentCabinet === origin.cabinet && currentDrawer === origin.drawer) {
-                    openDrawer(currentCabinet, currentDrawer);
+                    document.getElementById("modalOverlay").style.display = "block";
                 }
-            }
-        }
 
-        // Update the inventory display code
-            function updateInventoryDisplay() {
-                const inventoryContainer = document.getElementById('userInventory');
-                inventoryContainer.innerHTML = '';
+                function addToInventory(item) {
+                    // Remove item from drawer and store its origin
+                    logAction(
+                        "Item Added to Inventory",
+                        `${item} from ${inventory[currentCabinet].name} > Drawer ${currentDrawer}`
+                    );
+                    const drawerItems = inventory[currentCabinet].drawers[currentDrawer];
+                    const index = drawerItems.indexOf(item);
+                    if (index > -1) {
+                        drawerItems.splice(index, 1);
+                        userInventory.push(item);
+                        itemOrigins[item] = {
+                            cabinet: currentCabinet,
+                            drawer: currentDrawer
+                        };
+                        checkMissionProgress(item, currentDrawer);
+                        updateInventoryDisplay();
+                        openDrawer(currentCabinet, currentDrawer); // Refresh drawer display
+                    }
+                }
 
-                userInventory.forEach(item => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'inventory-item';
-                    itemDiv.innerHTML = `
+                function removeFromInventory(item) {
+                    const index = userInventory.indexOf(item);
+                    const origin = itemOrigins[item];
+                    logAction(
+                        "Item Returned to Drawer",
+                        `${item} to ${inventory[origin.cabinet].name} > Drawer ${origin.drawer}`
+                    );
+                    if (index > -1) {
+                        const origin = itemOrigins[item];
+                        userInventory.splice(index, 1);
+                        inventory[origin.cabinet].drawers[origin.drawer].push(item);
+                        delete itemOrigins[item];
+                        updateInventoryDisplay();
+
+                        // Only refresh drawer display if we're currently viewing the target drawer
+                        if (currentCabinet === origin.cabinet && currentDrawer === origin.drawer) {
+                            openDrawer(currentCabinet, currentDrawer);
+                        }
+                    }
+                }
+
+                // Update the inventory display code
+                function updateInventoryDisplay() {
+                    const inventoryContainer = document.getElementById("userInventory");
+                    inventoryContainer.innerHTML = "";
+
+                    userInventory.forEach((item) => {
+                        const itemDiv = document.createElement("div");
+                        itemDiv.className = "inventory-item";
+                        itemDiv.innerHTML = `
                         <img src="${getItemImage(item)}" alt="${item}">
                         <div>${item}</div>
                     `;
-                    const origin = itemOrigins[item];
-                    itemDiv.onclick = () => removeFromInventory(item);
-                    itemDiv.title = `Return to ${inventory[origin.cabinet].name}, Drawer ${origin.drawer}`;
+                        const origin = itemOrigins[item];
+                        itemDiv.onclick = () => removeFromInventory(item);
+                        itemDiv.title = `Return to ${inventory[origin.cabinet].name}, Drawer ${origin.drawer}`;
 
-                    inventoryContainer.appendChild(itemDiv);
+                        inventoryContainer.appendChild(itemDiv);
+                    });
+                }
+
+                function closeModal() {
+                    if (currentCabinet && currentDrawer) {
+                        logAction("Drawer Closed", `${inventory[currentCabinet].name} > Drawer ${currentDrawer}`);
+                    }
+                    document.getElementById("modalOverlay").style.display = "none";
+                    currentCabinet = null;
+                    currentDrawer = null;
+                }
+
+                // Close modal when clicking outside
+                document.getElementById("modalOverlay").addEventListener("click", (e) => {
+                    if (e.target === document.getElementById("modalOverlay")) {
+                        closeModal();
+                    }
                 });
-            }
 
-        function closeModal() {
-            if (currentCabinet && currentDrawer) {
-                logAction('Drawer Closed', `${inventory[currentCabinet].name} > Drawer ${currentDrawer}`);
-            }
-            document.getElementById('modalOverlay').style.display = 'none';
-            currentCabinet = null;
-            currentDrawer = null;
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('modalOverlay').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('modalOverlay')) {
-                closeModal();
-            }
-        });
-
-        function showGameComplete() {
-            document.getElementById('gameComplete').style.display = 'flex';
-            logAction('Game Complete', 'All missions completed successfully');
-        }
-
-        function restartGame() {
-            // Reset all missions
-            missions.forEach(mission => {
-                mission.completed = false;
-                mission.progress = 0;
-                if (mission.requirement.type === "collect_specific") {
-                    Object.keys(mission.requirement.progress).forEach(key => {
-                        mission.requirement.progress[key] = false;
-                    });
+                function showGameComplete() {
+                    document.getElementById("gameComplete").style.display = "flex";
+                    logAction("Game Complete", "All missions completed successfully");
                 }
-            });
-            
-            // Reset current mission index
-            currentMissionIndex = 0;
-            
-            // Return all items and reset inventory
-            returnAllItems();
-            
-            // Update mission display
-            updateMissionDisplay();
-            
-            // Hide game complete screen
-            document.getElementById('gameComplete').style.display = 'none';
-            
-            logAction('Game Restart', 'Game has been reset');
-        }
-function showGameComplete() {
-            document.getElementById('gameComplete').style.display = 'flex';
-            logAction('Game Complete', 'All missions completed successfully');
-        }
 
-        function startGame() {
-            document.getElementById('gameStart').style.display = 'none';
-            logAction('Game Started', 'Player started the game');
-        }
-
-        function restartGame() {
-            // Reset all missions
-            missions.forEach(mission => {
-                mission.completed = false;
-                mission.progress = 0;
-                if (mission.requirement.type === "collect_specific") {
-                    Object.keys(mission.requirement.progress).forEach(key => {
-                        mission.requirement.progress[key] = false;
+                function restartGame() {
+                    // Reset all missions
+                    missions.forEach((mission) => {
+                        mission.completed = false;
+                        mission.progress = 0;
+                        if (mission.requirement.type === "collect_specific") {
+                            Object.keys(mission.requirement.progress).forEach((key) => {
+                                mission.requirement.progress[key] = false;
+                            });
+                        }
                     });
+
+                    // Reset current mission index
+                    currentMissionIndex = 0;
+
+                    // Return all items and reset inventory
+                    returnAllItems();
+
+                    // Update mission display
+                    updateMissionDisplay();
+
+                    // Hide game complete screen
+                    document.getElementById("gameComplete").style.display = "none";
+
+                    logAction("Game Restart", "Game has been reset");
                 }
-            });
-            
-            // Reset current mission index
-            currentMissionIndex = 0;
-            
-            // Return all items and reset inventory
-            returnAllItems();
-            
-            // Update mission display
-            updateMissionDisplay();
-            
-            // Hide game complete screen
-            document.getElementById('gameComplete').style.display = 'none';
-            
-            // Show start screen again
-            document.getElementById('gameStart').style.display = 'flex';
-            
-            logAction('Game Restart', 'Game has been reset');
-        }
+                function showGameComplete() {
+                    document.getElementById("gameComplete").style.display = "flex";
+                    logAction("Game Complete", "All missions completed successfully");
+                }
 
-        document.addEventListener('DOMContentLoaded', function() {
-        // Ensure game complete screen is hidden on load
-            document.getElementById('gameComplete').style.display = 'none';
-        });
-    
-        // Function to handle survey continuation
+                function startGame() {
+                    document.getElementById("gameStart").style.display = "none";
+                    logAction("Game Started", "Player started the game");
+                }
 
-async function continueToSurvey() {
-    try {
-        const jsonData = {
-            gameLogEntries: gameLogEntries.join(' | ')  // Join array elements with delimiter
-        };
-        const encodedData = btoa(encodeURIComponent(JSON.stringify(jsonData)));
-        window.location.href = "https://stonybrookuniversity.co1.qualtrics.com/jfe/form/SV_4U6HuNElynf0gd0?Q_EED=" + encodedData;
-    } catch (err) {
-        console.error('Error:', err);
-        alert('Error saving game data. Please try again.');
-    }
-}
-    
-    </script>
-        
-        <!-- Game Start Screen -->
-    <div class="game-start" id="gameStart">
-        <div class="game-start-content">
-            <h1>Cabinet Organization Game</h1>
-            <div class="instructions">
-                <p>Welcome to the Cabinet Organization Game! Here's how to play:</p>
-                <br>
-                <p>1. You'll be given different missions to complete</p>
-                <p>2. Each mission involves collecting specific items from cabinets</p>
-                <p>3. Click on cabinets to open drawers</p>
-                <p>4. Click on items to collect them into your inventory</p>
-                <p>5. Click on items in your inventory to return them</p>
-                <p>6. Submit your mission when you think you've completed it</p>
-                <br>
-                <p>Complete all missions to win the game!</p>
+                function restartGame() {
+                    // Reset all missions
+                    missions.forEach((mission) => {
+                        mission.completed = false;
+                        mission.progress = 0;
+                        if (mission.requirement.type === "collect_specific") {
+                            Object.keys(mission.requirement.progress).forEach((key) => {
+                                mission.requirement.progress[key] = false;
+                            });
+                        }
+                    });
+
+                    // Reset current mission index
+                    currentMissionIndex = 0;
+
+                    // Return all items and reset inventory
+                    returnAllItems();
+
+                    // Update mission display
+                    updateMissionDisplay();
+
+                    // Hide game complete screen
+                    document.getElementById("gameComplete").style.display = "none";
+
+                    // Show start screen again
+                    document.getElementById("gameStart").style.display = "flex";
+
+                    logAction("Game Restart", "Game has been reset");
+                }
+
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Ensure game complete screen is hidden on load
+                    document.getElementById("gameComplete").style.display = "none";
+                });
+
+                async function continueToSurvey() {
+                    try {
+                        const logString = gameLogEntries.join(" | ");
+                        const jsonData = `{"gameLogEntries":"${logString}"}`;
+                        const encodedData = btoa(jsonData);
+                        window.location.href =
+                            "https://stonybrookuniversity.co1.qualtrics.com/jfe/form/SV_4U6HuNElynf0gd0?Q_EED=" +
+                            encodedData;
+                    } catch (err) {
+                        console.error("Error:", err);
+                        alert("Error saving game data.");
+                    }
+                }
+            </script>
+
+            <!-- Game Start Screen -->
+            <div class="game-start" id="gameStart">
+                <div class="game-start-content">
+                    <h1>Cabinet Quest</h1>
+                    <div class="instructions">
+                        <p>
+                            Welcome to <span>Cabinet Quest</span>! <br /><br />
+                            Brave adventurer, your mission awaits!
+                        </p>
+                        <br />
+                        <p>You will receive specific organization tasks</p>
+                        <p>Each task requires collecting items from designated cabinets</p>
+                        <p>Select cabinets to access their drawers</p>
+                        <p>Select items to add them to your inventory</p>
+                        <p>Select inventory items to return them</p>
+                        <p>Submit when you've gathered the required items</p>
+                        <br />
+                        <p>
+                            Complete all quests to become <br />
+                            the <span> Cabinet Champion</span>!
+                        </p>
+                    </div>
+                    <button class="start-button" onclick="startGame()">Start Game</button>
+                </div>
             </div>
-            <button class="start-button" onclick="startGame()">Start Game</button>
-        </div>
-    </div>
 
-    <!-- Game Complete Screen -->
-        <div class="game-complete" id="gameComplete">
-        <div class="game-complete-content">
-        <h1>🎉 Congratulations! 🎉</h1>
-        <p>You've completed all missions!</p>
-        <div class="game-complete-buttons">
-            <button class="restart-button" onclick="restartGame()">Play Again</button>
-            <button class="survey-button" onclick="continueToSurvey()">Continue to Survey</button>
-            </div>
+            <!-- Game Complete Screen -->
+            <div class="game-complete" id="gameComplete">
+                <div class="game-complete-content">
+                    <h1>Well Done!</h1>
+                    <p>
+                        You are now a <br />
+                        <br />
+                        <span> Cabinet Champion </span> <br />
+                        <br />
+                    </p>
+                    <div class="game-complete-buttons">
+                        <button class="restart-button" onclick="restartGame()">Play Again</button>
+                        <button class="survey-button" onclick="continueToSurvey()">Continue to Survey</button>
+                    </div>
+                </div>
             </div>
         </div>
-        
-</body>
+    </body>
 </html>
