@@ -442,6 +442,299 @@
                                        object-fit: cover;
                                     }
 
+                                                            /* Scenario Setup Screen */
+                                    .scenario-setup {
+                                        position: fixed;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                        background: rgba(0, 0, 0, 1);
+                                        z-index: 2100;
+                                        color: white;
+                                        padding: 20px;
+                                        overflow-y: auto;
+                                        display: flex;
+                                        flex-direction: column;
+                                    }
+
+                                    .scenario-setup-content {
+                                        max-width: 900px;
+                                        margin: 0 auto;
+                                        width: 100%;
+                                    }
+
+                                    .scenario-setup h1 {
+                                        font-family: "Courier New", monospace;
+                                        font-size: clamp(24px, 6vw, 36px);
+                                        color: #ffd700;
+                                        text-transform: uppercase;
+                                        text-shadow: 2px 2px #000;
+                                        letter-spacing: 4px;
+                                        margin-bottom: 10px;
+                                        text-align: center;
+                                        border-bottom: 2px solid #ffd700;
+                                        padding-bottom: 10px;
+                                    }
+
+                                    .scenario-setup h2 {
+                                        font-family: "Courier New", monospace;
+                                        font-size: clamp(16px, 4vw, 20px);
+                                        color: #4CAF50;
+                                        text-transform: uppercase;
+                                        letter-spacing: 2px;
+                                        margin: 20px 0 10px 0;
+                                    }
+
+                                    .scenario-list {
+                                        display: flex;
+                                        flex-direction: column;
+                                        gap: 15px;
+                                        margin: 20px 0;
+                                    }
+
+                                    .scenario-card {
+                                        background: #2C2C2C;
+                                        border: 2px solid #4CAF50;
+                                        box-shadow: 3px 3px 0 #000;
+                                        padding: 15px;
+                                        display: flex;
+                                        gap: 15px;
+                                        align-items: flex-start;
+                                    }
+
+                                    .scenario-card.selected {
+                                        border-color: #ffd700;
+                                        background: #3a3a3a;
+                                    }
+
+                                    .scenario-checkbox {
+                                        width: 24px;
+                                        height: 24px;
+                                        cursor: pointer;
+                                        flex-shrink: 0;
+                                    }
+
+                                    .scenario-details {
+                                        flex: 1;
+                                    }
+
+                                    .scenario-title {
+                                        font-family: "Courier New", monospace;
+                                        font-size: clamp(16px, 4vw, 18px);
+                                        color: #ffd700;
+                                        font-weight: bold;
+                                        margin-bottom: 5px;
+                                        letter-spacing: 1px;
+                                    }
+
+                                    .scenario-description {
+                                        font-family: "Courier New", monospace;
+                                        font-size: clamp(14px, 3.5vw, 16px);
+                                        color: #f0f0f0;
+                                        margin-bottom: 8px;
+                                        line-height: 1.4;
+                                    }
+
+                                    .scenario-meta {
+                                        font-family: "Courier New", monospace;
+                                        font-size: clamp(12px, 3vw, 14px);
+                                        color: #4CAF50;
+                                        margin-top: 8px;
+                                    }
+
+                                    .scenario-actions {
+                                        display: flex;
+                                        gap: 10px;
+                                        flex-shrink: 0;
+                                        flex-direction: column;
+                                    }
+
+                                    .edit-scenario-btn, .delete-scenario-btn {
+                                        font-family: "Courier New", monospace;
+                                        padding: 8px 15px;
+                                        border: 2px solid #fff;
+                                        box-shadow: 2px 2px 0 #000;
+                                        font-weight: bold;
+                                        letter-spacing: 1px;
+                                        text-transform: uppercase;
+                                        font-size: 12px;
+                                        cursor: pointer;
+                                        background: #4169e1;
+                                        color: white;
+                                    }
+
+                                    .delete-scenario-btn {
+                                        background: #8b0000;
+                                    }
+
+                                    .edit-scenario-btn:active, .delete-scenario-btn:active {
+                                        transform: translate(2px, 2px);
+                                        box-shadow: none;
+                                    }
+
+                                    .setup-controls {
+                                        display: flex;
+                                        gap: 15px;
+                                        justify-content: center;
+                                        margin: 30px 0;
+                                        flex-wrap: wrap;
+                                    }
+
+                                    .add-scenario-btn, .start-selected-btn {
+                                        font-family: "Courier New", monospace;
+                                        padding: 12px 25px;
+                                        border: 2px solid #fff;
+                                        box-shadow: 3px 3px 0 #000;
+                                        font-weight: bold;
+                                        letter-spacing: 2px;
+                                        text-transform: uppercase;
+                                        font-size: clamp(14px, 3.5vw, 16px);
+                                        cursor: pointer;
+                                        color: white;
+                                    }
+
+                                    .add-scenario-btn {
+                                        background: #4169e1;
+                                    }
+
+                                    .start-selected-btn {
+                                        background: #4CAF50;
+                                    }
+
+                                    .add-scenario-btn:active, .start-selected-btn:active {
+                                        transform: translate(3px, 3px);
+                                        box-shadow: none;
+                                    }
+
+                                    /* Edit Scenario Modal */
+                                    .edit-modal-overlay {
+                                        display: none;
+                                        position: fixed;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                        background: rgba(0,0,0,0.9);
+                                        z-index: 2200;
+                                    }
+
+                                    .edit-modal {
+                                        position: fixed;
+                                        top: 50%;
+                                        left: 50%;
+                                        transform: translate(-50%, -50%);
+                                        width: 90%;
+                                        max-width: 600px;
+                                        max-height: 90vh;
+                                        background: #2C2C2C;
+                                        padding: 25px;
+                                        border: 3px solid #4CAF50;
+                                        box-shadow: 5px 5px 0 #000;
+                                        overflow-y: auto;
+                                        z-index: 2201;
+                                    }
+
+                                    .edit-modal h2 {
+                                        font-family: "Courier New", monospace;
+                                        font-size: clamp(18px, 4vw, 24px);
+                                        color: #ffd700;
+                                        text-transform: uppercase;
+                                        letter-spacing: 2px;
+                                        margin-bottom: 20px;
+                                        border-bottom: 2px solid #ffd700;
+                                        padding-bottom: 10px;
+                                    }
+
+                                    .form-group {
+                                        margin-bottom: 20px;
+                                    }
+
+                                    .form-group label {
+                                        font-family: "Courier New", monospace;
+                                        color: #4CAF50;
+                                        font-size: clamp(14px, 3.5vw, 16px);
+                                        display: block;
+                                        margin-bottom: 8px;
+                                        letter-spacing: 1px;
+                                        text-transform: uppercase;
+                                    }
+
+                                    .form-group input[type="text"],
+                                    .form-group input[type="number"],
+                                    .form-group select,
+                                    .form-group textarea {
+                                        width: 100%;
+                                        padding: 10px;
+                                        background: #1a1a1a;
+                                        border: 2px solid #45a049;
+                                        color: #f0f0f0;
+                                        font-family: "Courier New", monospace;
+                                        font-size: 14px;
+                                        box-sizing: border-box;
+                                    }
+
+                                    .form-group textarea {
+                                        min-height: 80px;
+                                        resize: vertical;
+                                    }
+
+                                    .items-selector {
+                                        display: grid;
+                                        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                                        gap: 10px;
+                                        margin-top: 10px;
+                                    }
+
+                                    .item-option {
+                                        background: #1a1a1a;
+                                        border: 2px solid #45a049;
+                                        padding: 8px;
+                                        cursor: pointer;
+                                        text-align: center;
+                                        font-family: "Courier New", monospace;
+                                        font-size: 12px;
+                                        color: #f0f0f0;
+                                    }
+
+                                    .item-option.selected {
+                                        border-color: #ffd700;
+                                        background: #4CAF50;
+                                    }
+
+                                    .modal-buttons {
+                                        display: flex;
+                                        gap: 15px;
+                                        justify-content: center;
+                                        margin-top: 25px;
+                                    }
+
+                                    .save-btn, .cancel-btn {
+                                        font-family: "Courier New", monospace;
+                                        padding: 12px 25px;
+                                        border: 2px solid #fff;
+                                        box-shadow: 3px 3px 0 #000;
+                                        font-weight: bold;
+                                        letter-spacing: 2px;
+                                        text-transform: uppercase;
+                                        font-size: 14px;
+                                        cursor: pointer;
+                                        color: white;
+                                    }
+
+                                    .save-btn {
+                                        background: #4CAF50;
+                                    }
+
+                                    .cancel-btn {
+                                        background: #8b0000;
+                                    }
+
+                                    .save-btn:active, .cancel-btn:active {
+                                        transform: translate(3px, 3px);
+                                        box-shadow: none;
+                                    }
+
                                                             /* Game Start/Complete Screens */
                                                             .game-start {
                                                                 position: fixed;
@@ -454,7 +747,7 @@
                                                                 color: white;
                                                                 text-align: center;
                                                                 padding: min(0px, 1vw) !important;
-                                                                display: flex;
+                                                                display: none;
                                                                 align-items: center;
                                                                 justify-content: center;
                                                                 overflow-y: auto;
@@ -1351,8 +1644,8 @@
                 }
 
                 function restartGame() {
-                    // Reset all missions
-                    missions.forEach((mission) => {
+                    // Reset all missions in allScenarios
+                    allScenarios.forEach((mission) => {
                         mission.completed = false;
                         mission.progress = 0;
                         if (mission.requirement.type === "collect_specific") {
@@ -1368,14 +1661,12 @@
                     // Return all items and reset inventory
                     returnAllItems();
 
-                    // Update mission display
-                    updateMissionDisplay();
-
                     // Hide game complete screen
                     document.getElementById("gameComplete").style.display = "none";
 
-                    // Show start screen again
-                    document.getElementById("gameStart").style.display = "flex";
+                    // Show scenario setup screen again
+                    document.getElementById("scenarioSetup").style.display = "flex";
+                    renderScenarioList();
 
                     logAction("Game Restart", "Game has been reset");
                 }
@@ -1383,7 +1674,284 @@
                 document.addEventListener("DOMContentLoaded", function () {
                     // Ensure game complete screen is hidden on load
                     document.getElementById("gameComplete").style.display = "none";
+                    // Initialize scenario setup
+                    renderScenarioList();
                 });
+
+                // ===== SCENARIO SETUP SYSTEM =====
+                let allScenarios = [...missions]; // Copy of all available scenarios
+                let selectedScenarioIds = [1, 2, 3]; // IDs of scenarios selected to play
+                let editingScenarioIndex = null; // Index of scenario being edited
+                let isAddingNew = false; // Flag for add vs edit mode
+
+                function renderScenarioList() {
+                    const scenarioList = document.getElementById('scenarioList');
+                    scenarioList.innerHTML = '';
+
+                    allScenarios.forEach((scenario, index) => {
+                        const isSelected = selectedScenarioIds.includes(scenario.id);
+                        const card = document.createElement('div');
+                        card.className = `scenario-card ${isSelected ? 'selected' : ''}`;
+
+                        // Get meta information based on scenario type
+                        let metaInfo = '';
+                        if (scenario.requirement.type === 'collect') {
+                            metaInfo = `Type: Collect Any | Drawer: ${scenario.requirement.drawer} | Count: ${scenario.requirement.count}`;
+                        } else if (scenario.requirement.type === 'collect_specific') {
+                            metaInfo = `Type: Specific Items | Drawer: ${scenario.requirement.drawer} | Items: ${scenario.requirement.items.join(', ')}`;
+                        }
+
+                        card.innerHTML = `
+                            <input type="checkbox" class="scenario-checkbox"
+                                ${isSelected ? 'checked' : ''}
+                                onchange="toggleScenarioSelection(${scenario.id})">
+                            <div class="scenario-details">
+                                <div class="scenario-title">${scenario.title}</div>
+                                <div class="scenario-description">${scenario.description}</div>
+                                <div class="scenario-meta">${metaInfo}</div>
+                            </div>
+                            <div class="scenario-actions">
+                                <button class="edit-scenario-btn" onclick="openEditScenario(${index})">Edit</button>
+                                <button class="delete-scenario-btn" onclick="deleteScenario(${index})">Delete</button>
+                            </div>
+                        `;
+                        scenarioList.appendChild(card);
+                    });
+
+                    // Update selection counter
+                    updateSelectionCounter();
+                }
+
+                function updateSelectionCounter() {
+                    const counterText = `${selectedScenarioIds.length} scenario${selectedScenarioIds.length !== 1 ? 's' : ''} selected`;
+                    const startBtn = document.querySelector('.start-selected-btn');
+                    if (startBtn) {
+                        startBtn.textContent = `Start Game (${counterText})`;
+                    }
+                }
+
+                function toggleScenarioSelection(scenarioId) {
+                    const index = selectedScenarioIds.indexOf(scenarioId);
+                    if (index > -1) {
+                        selectedScenarioIds.splice(index, 1);
+                    } else {
+                        selectedScenarioIds.push(scenarioId);
+                    }
+                    renderScenarioList();
+                }
+
+                function openEditScenario(index) {
+                    editingScenarioIndex = index;
+                    isAddingNew = false;
+                    const scenario = allScenarios[index];
+
+                    document.getElementById('modalTitle').textContent = 'Edit Scenario';
+                    document.getElementById('scenarioTitleInput').value = scenario.title;
+                    document.getElementById('scenarioDescInput').value = scenario.description;
+                    document.getElementById('scenarioTypeInput').value = scenario.requirement.type;
+                    document.getElementById('scenarioDrawerInput').value = scenario.requirement.drawer;
+
+                    if (scenario.requirement.type === 'collect') {
+                        document.getElementById('scenarioCountInput').value = scenario.requirement.count;
+                    }
+
+                    updateScenarioTypeFields();
+
+                    if (scenario.requirement.type === 'collect_specific') {
+                        populateItemsSelector(scenario.requirement.drawer, scenario.requirement.items);
+                    }
+
+                    document.getElementById('editModalOverlay').style.display = 'block';
+                }
+
+                function openAddScenario() {
+                    editingScenarioIndex = null;
+                    isAddingNew = true;
+
+                    document.getElementById('modalTitle').textContent = 'Add New Scenario';
+                    document.getElementById('scenarioTitleInput').value = '';
+                    document.getElementById('scenarioDescInput').value = '';
+                    document.getElementById('scenarioTypeInput').value = 'collect';
+                    document.getElementById('scenarioDrawerInput').value = '1-1';
+                    document.getElementById('scenarioCountInput').value = 3;
+
+                    updateScenarioTypeFields();
+                    document.getElementById('editModalOverlay').style.display = 'block';
+                }
+
+                function updateScenarioTypeFields() {
+                    const type = document.getElementById('scenarioTypeInput').value;
+                    const drawer = document.getElementById('scenarioDrawerInput').value;
+
+                    if (type === 'collect') {
+                        document.getElementById('collectCountGroup').style.display = 'block';
+                        document.getElementById('specificItemsGroup').style.display = 'none';
+                    } else {
+                        document.getElementById('collectCountGroup').style.display = 'none';
+                        document.getElementById('specificItemsGroup').style.display = 'block';
+                        populateItemsSelector(drawer, []);
+                    }
+                }
+
+                function populateItemsSelector(drawer, selectedItems = []) {
+                    const itemsSelector = document.getElementById('itemsSelector');
+                    itemsSelector.innerHTML = '';
+
+                    // Get items from the selected drawer
+                    const drawerItems = inventory[1].drawers[drawer] || [];
+
+                    // Get all items from 1 to 21
+                    const allItems = [];
+                    for (let i = 1; i <= 21; i++) {
+                        allItems.push(`Item ${i}`);
+                    }
+
+                    allItems.forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = `item-option ${selectedItems.includes(item) ? 'selected' : ''}`;
+                        itemDiv.textContent = item;
+                        itemDiv.onclick = function() {
+                            itemDiv.classList.toggle('selected');
+                        };
+                        itemsSelector.appendChild(itemDiv);
+                    });
+                }
+
+                // Update items selector when drawer changes
+                document.addEventListener('DOMContentLoaded', function() {
+                    const drawerSelect = document.getElementById('scenarioDrawerInput');
+                    if (drawerSelect) {
+                        drawerSelect.addEventListener('change', function() {
+                            if (document.getElementById('scenarioTypeInput').value === 'collect_specific') {
+                                populateItemsSelector(this.value, []);
+                            }
+                        });
+                    }
+                });
+
+                function saveScenario() {
+                    const title = document.getElementById('scenarioTitleInput').value.trim();
+                    const description = document.getElementById('scenarioDescInput').value.trim();
+                    const type = document.getElementById('scenarioTypeInput').value;
+                    const drawer = document.getElementById('scenarioDrawerInput').value;
+
+                    if (!title || !description) {
+                        alert('Please fill in all required fields');
+                        return;
+                    }
+
+                    const newScenario = {
+                        id: isAddingNew ? (Math.max(...allScenarios.map(s => s.id)) + 1) : allScenarios[editingScenarioIndex].id,
+                        title: title,
+                        description: description,
+                        requirement: {},
+                        completed: false,
+                        progress: 0
+                    };
+
+                    if (type === 'collect') {
+                        const count = parseInt(document.getElementById('scenarioCountInput').value);
+                        newScenario.requirement = {
+                            type: 'collect',
+                            drawer: drawer,
+                            count: count,
+                            fromSpecificDrawer: true
+                        };
+                    } else {
+                        const selectedItems = Array.from(document.querySelectorAll('.item-option.selected'))
+                            .map(el => el.textContent);
+
+                        if (selectedItems.length === 0) {
+                            alert('Please select at least one item for specific collection');
+                            return;
+                        }
+
+                        const progress = {};
+                        selectedItems.forEach(item => {
+                            progress[item] = false;
+                        });
+
+                        newScenario.requirement = {
+                            type: 'collect_specific',
+                            drawer: drawer,
+                            items: selectedItems,
+                            progress: progress
+                        };
+                    }
+
+                    if (isAddingNew) {
+                        allScenarios.push(newScenario);
+                        selectedScenarioIds.push(newScenario.id);
+                    } else {
+                        allScenarios[editingScenarioIndex] = newScenario;
+                    }
+
+                    closeEditModal();
+                    renderScenarioList();
+                }
+
+                function deleteScenario(index) {
+                    if (confirm('Are you sure you want to delete this scenario?')) {
+                        const scenarioId = allScenarios[index].id;
+                        allScenarios.splice(index, 1);
+
+                        // Remove from selected if it was selected
+                        const selectedIndex = selectedScenarioIds.indexOf(scenarioId);
+                        if (selectedIndex > -1) {
+                            selectedScenarioIds.splice(selectedIndex, 1);
+                        }
+
+                        renderScenarioList();
+                    }
+                }
+
+                function closeEditModal() {
+                    document.getElementById('editModalOverlay').style.display = 'none';
+                }
+
+                // Close edit modal when clicking outside
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('editModalOverlay').addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            closeEditModal();
+                        }
+                    });
+                });
+
+                function startWithSelectedScenarios() {
+                    if (selectedScenarioIds.length === 0) {
+                        alert('Please select at least one scenario to play');
+                        return;
+                    }
+
+                    // Update missions array with only selected scenarios, in order
+                    missions.length = 0;
+                    selectedScenarioIds.sort((a, b) => a - b).forEach(id => {
+                        const scenario = allScenarios.find(s => s.id === id);
+                        if (scenario) {
+                            // Create a deep copy to avoid reference issues
+                            const scenarioCopy = JSON.parse(JSON.stringify(scenario));
+                            missions.push(scenarioCopy);
+                        }
+                    });
+
+                    // Reset mission state
+                    currentMissionIndex = 0;
+                    missions.forEach(mission => {
+                        mission.completed = false;
+                        mission.progress = 0;
+                        if (mission.requirement.type === 'collect_specific') {
+                            Object.keys(mission.requirement.progress).forEach(key => {
+                                mission.requirement.progress[key] = false;
+                            });
+                        }
+                    });
+
+                    // Update the display and show game start screen
+                    updateMissionDisplay();
+                    document.getElementById('scenarioSetup').style.display = 'none';
+                    document.getElementById('gameStart').style.display = 'flex';
+                }
 
                 async function continueToSurvey() {
                     try {
@@ -1399,6 +1967,77 @@
                     }
                 }
             </script>
+
+            <!-- Scenario Setup Screen -->
+            <div class="scenario-setup" id="scenarioSetup">
+                <div class="scenario-setup-content">
+                    <h1>Teaching Scenario Setup</h1>
+                    <p style="text-align: center; font-family: 'Courier New', monospace; color: #f0f0f0; margin-bottom: 20px; font-size: clamp(14px, 3.5vw, 16px);">
+                        Configure which teaching scenarios to include in your game session
+                    </p>
+
+                    <h2>Available Scenarios</h2>
+                    <div class="scenario-list" id="scenarioList"></div>
+
+                    <div class="setup-controls">
+                        <button class="add-scenario-btn" onclick="openAddScenario()">+ Add New Scenario</button>
+                        <button class="start-selected-btn" onclick="startWithSelectedScenarios()">Start Game</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit/Add Scenario Modal -->
+            <div class="edit-modal-overlay" id="editModalOverlay">
+                <div class="edit-modal">
+                    <h2 id="modalTitle">Edit Scenario</h2>
+
+                    <div class="form-group">
+                        <label>Scenario Title</label>
+                        <input type="text" id="scenarioTitleInput" placeholder="e.g., Cabinet Explorer I">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="scenarioDescInput" placeholder="e.g., Collect any three items from Drawer 1-1"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mission Type</label>
+                        <select id="scenarioTypeInput" onchange="updateScenarioTypeFields()">
+                            <option value="collect">Collect Any Items</option>
+                            <option value="collect_specific">Collect Specific Items</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Drawer</label>
+                        <select id="scenarioDrawerInput">
+                            <option value="1-1">Drawer 1-1</option>
+                            <option value="1-2">Drawer 1-2</option>
+                            <option value="1-3">Drawer 1-3</option>
+                            <option value="1-4">Drawer 1-4</option>
+                            <option value="1-5">Drawer 1-5</option>
+                            <option value="1-6">Drawer 1-6</option>
+                            <option value="1-7">Drawer 1-7</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="collectCountGroup">
+                        <label>Number of Items to Collect</label>
+                        <input type="number" id="scenarioCountInput" min="1" max="10" value="3">
+                    </div>
+
+                    <div class="form-group" id="specificItemsGroup" style="display: none;">
+                        <label>Select Specific Items (click to toggle)</label>
+                        <div class="items-selector" id="itemsSelector"></div>
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button class="save-btn" onclick="saveScenario()">Save</button>
+                        <button class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- Game Start Screen -->
             <div class="game-start" id="gameStart">
