@@ -566,6 +566,258 @@
             font-size: 14px;
             font-weight: bold;
         }
+
+        /* Tutorial Overlay - Progressive Onboarding */
+        .tutorial-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .tutorial-overlay.active {
+            display: flex;
+        }
+
+        .tutorial-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: tutorialSlideIn 0.4s ease-out;
+        }
+
+        @keyframes tutorialSlideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .tutorial-content h2 {
+            color: #007bff;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tutorial-content p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .tutorial-content ul {
+            margin: 15px 0;
+            padding-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .tutorial-steps {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .tutorial-step-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s;
+        }
+
+        .tutorial-step-indicator.active {
+            background: #007bff;
+            width: 30px;
+            border-radius: 5px;
+        }
+
+        .tutorial-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tutorial-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tutorial-btn.primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .tutorial-btn.primary:active {
+            transform: scale(0.98);
+            background: #0056b3;
+        }
+
+        .tutorial-btn.secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .tutorial-highlight {
+            position: absolute;
+            border: 3px solid #007bff;
+            border-radius: 10px;
+            box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.7);
+            pointer-events: none;
+            z-index: 1999;
+            transition: all 0.4s ease;
+        }
+
+        /* Tooltip System */
+        .tooltip {
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            z-index: 500;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            max-width: 200px;
+            text-align: center;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #333;
+        }
+
+        /* Progress Bar for Scenarios */
+        .progress-container {
+            margin: 10px 0;
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #00d4ff);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        /* Animation for item collection */
+        @keyframes itemCollected {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 0 20px rgba(40, 167, 69, 0.6);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .item-collected-animation {
+            animation: itemCollected 0.4s ease-out;
+        }
+
+        /* Pulse animation for hints */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .pulse-hint {
+            animation: pulse 2s infinite;
+        }
+
+        /* Points popup */
+        .points-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 2500;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes popupShow {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -70%) scale(1);
+            }
+        }
+
+        .points-popup.show {
+            animation: popupShow 1.5s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -603,6 +855,7 @@
                     Inventory
                     <span class="badge" id="inventory-badge">0</span>
                 </div>
+                <div class="drawer-tab" data-tab="stats">Stats</div>
                 <div class="drawer-tab" data-tab="feedback">Results</div>
             </div>
 
@@ -620,6 +873,13 @@
                     <button class="submit-btn" id="submit-btn" onclick="submitInventory()" disabled>
                         Submit for Feedback
                     </button>
+                </div>
+
+                <!-- Stats Tab -->
+                <div class="drawer-pane" id="pane-stats">
+                    <div id="stats-content">
+                        <div class="empty-state">Loading your stats...</div>
+                    </div>
                 </div>
 
                 <!-- Feedback Tab -->
@@ -650,6 +910,25 @@
             <button class="add-items-btn" onclick="addSelectedItems()">Add to Inventory</button>
         </div>
     </div>
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorial-overlay" class="tutorial-overlay">
+        <div class="tutorial-content">
+            <h2 id="tutorial-title"></h2>
+            <div id="tutorial-body"></div>
+            <div class="tutorial-steps" id="tutorial-steps"></div>
+            <div class="tutorial-actions">
+                <button class="tutorial-btn secondary" id="tutorial-skip" onclick="skipTutorial()">Skip</button>
+                <button class="tutorial-btn primary" id="tutorial-next" onclick="nextTutorialStep()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Points Popup -->
+    <div id="points-popup" class="points-popup"></div>
+
+    <!-- Tooltip Container -->
+    <div id="tooltip" class="tooltip"></div>
 
     <script src="data:text/javascript;base64,<?php echo base64_encode(file_get_contents('script.js')); ?>"></script>
     <script>
@@ -747,7 +1026,14 @@
             selectedDrawer: null,
             startTime: null,
             sessionId: Date.now(),
-            drawerState: 'peek' // peek, half, full
+            drawerState: 'peek', // peek, half, full
+            tutorialStep: 0,
+            tutorialActive: false,
+            points: 0,
+            totalPoints: 0,
+            achievements: [],
+            completedScenarios: [],
+            streakDays: 0
         };
 
         // ===== DRAWER HANDLING =====
@@ -819,15 +1105,20 @@
         document.querySelectorAll('.drawer-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabName = tab.dataset.tab;
-                
+
                 // Update tabs
                 document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
+
                 // Update panes
                 document.querySelectorAll('.drawer-pane').forEach(p => p.classList.remove('active'));
                 document.getElementById(`pane-${tabName}`).classList.add('active');
-                
+
+                // Refresh stats when stats tab is opened
+                if (tabName === 'stats') {
+                    updateStatsDisplay();
+                }
+
                 // Expand drawer when switching tabs
                 if (state.drawerState === 'peek') {
                     setDrawerState('half');
@@ -835,11 +1126,417 @@
             });
         });
 
+        // ===== TUTORIAL SYSTEM (Progressive Onboarding) =====
+        const tutorialSteps = [
+            {
+                title: '👋 Welcome to Trauma Room Trainer!',
+                body: '<p>This training simulator helps you learn where medical supplies are located in a trauma room.</p><p>You\'ll practice collecting items from different carts to prepare for various medical procedures.</p>'
+            },
+            {
+                title: '🎯 How It Works',
+                body: '<p>Your goal is to collect the correct supplies for each medical scenario as quickly as possible.</p><ul><li>Select a scenario from the drawer below</li><li>Tap carts to open them</li><li>Choose items from drawers</li><li>Submit when ready</li></ul>'
+            },
+            {
+                title: '⭐ Scoring & Achievements',
+                body: '<p>You earn points for:</p><ul><li>Collecting essential items (+100 pts)</li><li>Speed bonuses (under 60 seconds)</li><li>Perfect completion (all items)</li><li>Completing multiple scenarios</li></ul><p>Track your progress and compete for high scores!</p>'
+            },
+            {
+                title: '🚀 Ready to Start!',
+                body: '<p>Let\'s begin your training. Remember:</p><ul><li>Take your time to learn cart locations</li><li>Essential items are required to pass</li><li>Optional items give bonus points</li></ul><p>Good luck!</p>'
+            }
+        ];
+
+        function startTutorial() {
+            const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+            if (hasSeenTutorial) return;
+
+            state.tutorialActive = true;
+            state.tutorialStep = 0;
+            showTutorialStep(0);
+        }
+
+        function showTutorialStep(stepIndex) {
+            const overlay = document.getElementById('tutorial-overlay');
+            const title = document.getElementById('tutorial-title');
+            const body = document.getElementById('tutorial-body');
+            const stepsContainer = document.getElementById('tutorial-steps');
+            const nextBtn = document.getElementById('tutorial-next');
+
+            if (stepIndex >= tutorialSteps.length) {
+                endTutorial();
+                return;
+            }
+
+            const step = tutorialSteps[stepIndex];
+            title.innerHTML = step.title;
+            body.innerHTML = step.body;
+
+            // Update step indicators
+            stepsContainer.innerHTML = '';
+            tutorialSteps.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = 'tutorial-step-indicator' + (i === stepIndex ? ' active' : '');
+                stepsContainer.appendChild(dot);
+            });
+
+            // Update button text
+            nextBtn.textContent = stepIndex === tutorialSteps.length - 1 ? 'Start Training!' : 'Next';
+
+            overlay.classList.add('active');
+            playSound('tutorial');
+        }
+
+        function nextTutorialStep() {
+            state.tutorialStep++;
+            showTutorialStep(state.tutorialStep);
+        }
+
+        function skipTutorial() {
+            endTutorial();
+        }
+
+        function endTutorial() {
+            document.getElementById('tutorial-overlay').classList.remove('active');
+            localStorage.setItem('hasSeenTutorial', 'true');
+            state.tutorialActive = false;
+            loadUserProgress();
+        }
+
+        // ===== SOUND EFFECTS & HAPTIC FEEDBACK =====
+        const sounds = {
+            itemCollect: () => playTone(800, 0.1, 'sine'),
+            itemRemove: () => playTone(400, 0.1, 'sine'),
+            success: () => playTone(1200, 0.3, 'sine'),
+            error: () => playTone(200, 0.3, 'square'),
+            tutorial: () => playTone(600, 0.15, 'sine'),
+            achievement: () => {
+                playTone(800, 0.1, 'sine');
+                setTimeout(() => playTone(1000, 0.1, 'sine'), 100);
+                setTimeout(() => playTone(1200, 0.2, 'sine'), 200);
+            }
+        };
+
+        function playSound(type) {
+            if (sounds[type]) {
+                try {
+                    sounds[type]();
+                } catch (e) {
+                    // Ignore audio errors
+                }
+            }
+        }
+
+        function playTone(frequency, duration, type = 'sine') {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                // Audio not supported
+            }
+        }
+
+        function triggerHaptic(intensity = 'medium') {
+            if (navigator.vibrate) {
+                const patterns = {
+                    light: 10,
+                    medium: 20,
+                    heavy: 50
+                };
+                navigator.vibrate(patterns[intensity] || 20);
+            }
+        }
+
+        // ===== POINTS & REWARDS SYSTEM =====
+        function awardPoints(amount, reason) {
+            state.points += amount;
+            state.totalPoints += amount;
+
+            // Show points popup
+            showPointsPopup(`+${amount} pts`, reason);
+            playSound('itemCollect');
+            triggerHaptic('light');
+
+            // Save to localStorage
+            saveUserProgress();
+        }
+
+        function showPointsPopup(text, reason) {
+            const popup = document.getElementById('points-popup');
+            popup.innerHTML = text + (reason ? `<div style="font-size: 14px; margin-top: 5px;">${reason}</div>` : '');
+            popup.classList.add('show');
+
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 1500);
+        }
+
+        // ===== ACHIEVEMENTS SYSTEM =====
+        const achievements = [
+            {
+                id: 'first-scenario',
+                title: 'First Steps',
+                description: 'Complete your first scenario',
+                icon: '🎯',
+                check: () => state.completedScenarios.length >= 1
+            },
+            {
+                id: 'perfect-score',
+                title: 'Perfectionist',
+                description: 'Get 100% on any scenario',
+                icon: '⭐',
+                check: () => false // checked during submission
+            },
+            {
+                id: 'speed-demon',
+                title: 'Speed Demon',
+                description: 'Complete a scenario in under 30 seconds',
+                icon: '⚡',
+                check: () => false // checked during submission
+            },
+            {
+                id: 'all-scenarios',
+                title: 'Master Trainer',
+                description: 'Complete all scenarios',
+                icon: '🏆',
+                check: () => state.completedScenarios.length >= DATA.scenarios.length
+            },
+            {
+                id: 'streak-3',
+                title: '3-Day Streak',
+                description: 'Train for 3 days in a row',
+                icon: '🔥',
+                check: () => state.streakDays >= 3
+            }
+        ];
+
+        function checkAchievements() {
+            achievements.forEach(achievement => {
+                if (!state.achievements.includes(achievement.id) && achievement.check()) {
+                    unlockAchievement(achievement);
+                }
+            });
+        }
+
+        function unlockAchievement(achievement) {
+            state.achievements.push(achievement.id);
+            showAchievementPopup(achievement);
+            playSound('achievement');
+            triggerHaptic('heavy');
+            awardPoints(500, 'Achievement Unlocked!');
+            saveUserProgress();
+        }
+
+        function showAchievementPopup(achievement) {
+            const popup = document.getElementById('points-popup');
+            popup.innerHTML = `
+                <div style="font-size: 40px; margin-bottom: 10px;">${achievement.icon}</div>
+                <div style="font-size: 18px;">Achievement Unlocked!</div>
+                <div style="font-size: 16px; margin-top: 5px;">${achievement.title}</div>
+            `;
+            popup.classList.add('show');
+
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 2500);
+        }
+
+        // ===== TOOLTIP SYSTEM =====
+        function showTooltip(element, text, duration = 2000) {
+            const tooltip = document.getElementById('tooltip');
+            const rect = element.getBoundingClientRect();
+
+            tooltip.textContent = text;
+            tooltip.style.left = rect.left + rect.width / 2 + 'px';
+            tooltip.style.top = rect.top - 40 + 'px';
+            tooltip.classList.add('visible');
+
+            setTimeout(() => {
+                tooltip.classList.remove('visible');
+            }, duration);
+        }
+
+        // ===== USER PROGRESS & PERSISTENCE =====
+        function loadUserProgress() {
+            const saved = localStorage.getItem('userProgress');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                state.totalPoints = progress.totalPoints || 0;
+                state.achievements = progress.achievements || [];
+                state.completedScenarios = progress.completedScenarios || [];
+                state.streakDays = calculateStreak(progress.lastVisit);
+            }
+        }
+
+        function saveUserProgress() {
+            const progress = {
+                totalPoints: state.totalPoints,
+                achievements: state.achievements,
+                completedScenarios: state.completedScenarios,
+                lastVisit: new Date().toISOString()
+            };
+            localStorage.setItem('userProgress', JSON.stringify(progress));
+        }
+
+        function calculateStreak(lastVisit) {
+            if (!lastVisit) return 0;
+
+            const last = new Date(lastVisit);
+            const today = new Date();
+            const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                return (state.streakDays || 0) + 1;
+            } else if (diffDays === 0) {
+                return state.streakDays || 1;
+            } else {
+                return 0;
+            }
+        }
+
+        // ===== STATS & LEADERBOARD =====
+        function updateStatsDisplay() {
+            const statsContent = document.getElementById('stats-content');
+
+            // Get analytics data
+            const analytics = JSON.parse(localStorage.getItem('analytics') || '[]');
+            const totalSessions = analytics.length;
+            const completedSessions = analytics.filter(a => a.correct).length;
+            const averageScore = analytics.length > 0
+                ? analytics.reduce((sum, a) => sum + (a.score || 0), 0) / analytics.length
+                : 0;
+            const fastestTime = analytics.length > 0
+                ? Math.min(...analytics.map(a => a.timeElapsed))
+                : 0;
+
+            // Get best scores per scenario
+            const scenarioBests = {};
+            DATA.scenarios.forEach(scenario => {
+                const scenarioSessions = analytics.filter(a => a.scenarioId === scenario.id);
+                if (scenarioSessions.length > 0) {
+                    const bestScore = Math.max(...scenarioSessions.map(s => s.score || 0));
+                    const bestTime = Math.min(...scenarioSessions.filter(s => s.correct).map(s => s.timeElapsed || 999));
+                    scenarioBests[scenario.id] = { bestScore, bestTime, attempts: scenarioSessions.length };
+                }
+            });
+
+            // Create achievements display
+            const achievementsHTML = achievements.map(achievement => {
+                const unlocked = state.achievements.includes(achievement.id);
+                return `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: ${unlocked ? '#d4edda' : '#f8f9fa'}; border-radius: 8px; margin-bottom: 8px; opacity: ${unlocked ? '1' : '0.5'};">
+                        <div style="font-size: 30px;">${achievement.icon}</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; font-size: 13px; color: #333;">${achievement.title}</div>
+                            <div style="font-size: 11px; color: #666;">${achievement.description}</div>
+                        </div>
+                        ${unlocked ? '<div style="color: #28a745; font-weight: bold;">✓</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+
+            statsContent.innerHTML = `
+                <div style="padding: 5px 0;">
+                    <h3 style="font-size: 16px; color: #333; margin-bottom: 15px;">📊 Your Statistics</h3>
+
+                    <!-- Overall Stats -->
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 10px;">
+                            <div style="font-size: 24px; font-weight: bold;">${state.totalPoints}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Total Points</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 15px; border-radius: 10px;">
+                            <div style="font-size: 24px; font-weight: bold;">${state.achievements.length}/${achievements.length}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Achievements</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 15px; border-radius: 10px;">
+                            <div style="font-size: 24px; font-weight: bold;">${totalSessions}</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Total Attempts</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; padding: 15px; border-radius: 10px;">
+                            <div style="font-size: 24px; font-weight: bold;">${averageScore.toFixed(0)}%</div>
+                            <div style="font-size: 12px; opacity: 0.9;">Avg. Score</div>
+                        </div>
+                    </div>
+
+                    <!-- Scenario Best Scores -->
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 10px;">🏆 Best Scores</h4>
+                    <div style="margin-bottom: 20px;">
+                        ${DATA.scenarios.map(scenario => {
+                            const best = scenarioBests[scenario.id];
+                            if (!best) {
+                                return `
+                                    <div style="padding: 10px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px;">
+                                        <div style="font-weight: bold; font-size: 13px; color: #666;">${scenario.name}</div>
+                                        <div style="font-size: 11px; color: #999; margin-top: 3px;">Not attempted yet</div>
+                                    </div>
+                                `;
+                            }
+                            return `
+                                <div style="padding: 10px; background: #e7f3ff; border-left: 4px solid #007bff; border-radius: 8px; margin-bottom: 8px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="font-weight: bold; font-size: 13px; color: #333;">${scenario.name}</div>
+                                        <div style="font-weight: bold; font-size: 14px; color: #007bff;">${best.bestScore.toFixed(0)}%</div>
+                                    </div>
+                                    <div style="font-size: 11px; color: #666; margin-top: 3px;">
+                                        Best time: ${formatTime(best.bestTime)} · ${best.attempts} attempts
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Achievements -->
+                    <h4 style="font-size: 14px; color: #333; margin-bottom: 10px;">🎖 Achievements</h4>
+                    <div style="margin-bottom: 20px;">
+                        ${achievementsHTML}
+                    </div>
+
+                    <!-- Quick Stats -->
+                    ${state.streakDays > 0 ? `
+                    <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 30px; margin-bottom: 5px;">🔥</div>
+                        <div style="font-size: 18px; font-weight: bold;">${state.streakDays} Day Streak!</div>
+                        <div style="font-size: 12px; opacity: 0.9;">Keep training daily to maintain your streak</div>
+                    </div>
+                    ` : ''}
+
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button onclick="replayTutorial()" style="flex: 1; padding: 12px; background: #007bff; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                            🎓 Replay Tutorial
+                        </button>
+                        <button onclick="exportAnalytics()" style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                            📥 Export Data
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function replayTutorial() {
+            state.tutorialActive = true;
+            state.tutorialStep = 0;
+            showTutorialStep(0);
+        }
+
         // ===== INIT =====
         function init() {
             loadScenarios();
             drawRoom();
             setupCanvas();
+            startTutorial();
         }
 
         function loadScenarios() {
@@ -847,9 +1544,25 @@
             DATA.scenarios.forEach(scenario => {
                 const div = document.createElement('div');
                 div.className = 'scenario-item';
+
+                // Check if scenario is completed
+                const isCompleted = state.completedScenarios.includes(scenario.id);
+                const completionBadge = isCompleted ? '<span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 10px;">✓ Completed</span>' : '';
+
+                // Calculate difficulty
+                const totalItems = scenario.essential.length + scenario.optional.length;
+                const difficulty = totalItems <= 4 ? 'Easy' : totalItems <= 7 ? 'Medium' : 'Hard';
+                const difficultyColor = difficulty === 'Easy' ? '#28a745' : difficulty === 'Medium' ? '#ffc107' : '#dc3545';
+
                 div.innerHTML = `
-                    <h3>${scenario.name}</h3>
-                    <p>${scenario.description}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 5px;">
+                        <h3 style="margin: 0;">${scenario.name}${completionBadge}</h3>
+                        <span style="background: ${difficultyColor}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: bold;">${difficulty}</span>
+                    </div>
+                    <p style="margin: 5px 0;">${scenario.description}</p>
+                    <p style="font-size: 11px; color: #999; margin-top: 5px;">
+                        ${scenario.essential.length} essential · ${scenario.optional.length} optional
+                    </p>
                 `;
                 div.onclick = () => selectScenario(scenario, div);
                 list.appendChild(div);
@@ -860,17 +1573,22 @@
             state.currentScenario = scenario;
             state.inventory = [];
             state.startTime = Date.now();
-            
+            state.points = 0; // Reset session points for new scenario
+
             // Update UI
             document.querySelectorAll('.scenario-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
             document.getElementById('scenario-name').textContent = scenario.name;
             document.getElementById('room-hint').textContent = 'Tap a cart to open';
             document.getElementById('feedback-content').innerHTML = '<div class="empty-state">Complete scenario to see results</div>';
-            
+
             updateInventoryDisplay();
             updateStats();
-            
+
+            // Play sound and haptic
+            playSound('tutorial');
+            triggerHaptic('light');
+
             // Switch to inventory tab and minimize drawer
             setTimeout(() => {
                 document.querySelector('[data-tab="inventory"]').click();
@@ -1077,6 +1795,22 @@
                         cart: state.selectedCart.name,
                         drawer: state.selectedDrawer.name
                     });
+
+                    // Award points for collecting items
+                    const scenario = state.currentScenario;
+                    if (scenario) {
+                        if (scenario.essential.includes(item.id)) {
+                            awardPoints(100, 'Essential item!');
+                        } else if (scenario.optional.includes(item.id)) {
+                            awardPoints(50, 'Optional item');
+                        } else {
+                            awardPoints(10, 'Item collected');
+                        }
+                    }
+
+                    // Play sound and haptic feedback
+                    playSound('itemCollect');
+                    triggerHaptic('light');
                 }
             });
 
@@ -1096,17 +1830,63 @@
             badge.textContent = state.inventory.length;
 
             if (state.inventory.length === 0) {
-                list.innerHTML = '<div class="empty-state">Tap carts to collect items</div>';
+                const emptyMessage = state.currentScenario
+                    ? `<div class="empty-state">
+                        <div style="font-size: 40px; margin-bottom: 10px;">📦</div>
+                        <p style="font-weight: bold; margin-bottom: 5px;">No items collected yet</p>
+                        <p>Tap a cart in the room above to start collecting items for this scenario.</p>
+                      </div>`
+                    : `<div class="empty-state">
+                        <div style="font-size: 40px; margin-bottom: 10px;">🎯</div>
+                        <p style="font-weight: bold; margin-bottom: 5px;">Ready to begin?</p>
+                        <p>Select a scenario from the Scenarios tab to start your training.</p>
+                      </div>`;
+                list.innerHTML = emptyMessage;
                 submitBtn.disabled = true;
             } else {
                 list.innerHTML = '';
+
+                // Add progress bar if scenario is selected
+                if (state.currentScenario) {
+                    const scenario = state.currentScenario;
+                    const collectedIds = state.inventory.map(i => i.id);
+                    const foundEssential = scenario.essential.filter(id => collectedIds.includes(id));
+                    const progress = (foundEssential.length / scenario.essential.length) * 100;
+
+                    const progressDiv = document.createElement('div');
+                    progressDiv.innerHTML = `
+                        <div style="margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                <span style="font-size: 12px; font-weight: bold; color: #666;">Essential Items Progress</span>
+                                <span style="font-size: 12px; font-weight: bold; color: #007bff;">${foundEssential.length}/${scenario.essential.length}</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: ${progress}%;">${progress.toFixed(0)}%</div>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(progressDiv);
+                }
+
                 state.inventory.forEach((item, index) => {
                     const div = document.createElement('div');
-                    div.className = 'inventory-item';
+                    div.className = 'inventory-item item-collected-animation';
+
+                    // Check if item is essential or optional
+                    const scenario = state.currentScenario;
+                    let itemBadge = '';
+                    if (scenario) {
+                        if (scenario.essential.includes(item.id)) {
+                            itemBadge = '<span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; margin-left: 5px;">ESSENTIAL</span>';
+                        } else if (scenario.optional.includes(item.id)) {
+                            itemBadge = '<span style="background: #007bff; color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; margin-left: 5px;">OPTIONAL</span>';
+                        }
+                    }
+
                     div.innerHTML = `
                         <div class="item-icon">${item.name.substring(0, 2).toUpperCase()}</div>
                         <div class="item-info">
-                            <strong>${item.name}</strong>
+                            <strong>${item.name}${itemBadge}</strong>
                             <small>${item.cart} → ${item.drawer}</small>
                         </div>
                         <button class="remove-btn" onclick="removeItem(${index})">✕</button>
@@ -1127,12 +1907,12 @@
         function submitInventory() {
             const scenario = state.currentScenario;
             const collectedIds = state.inventory.map(i => i.id);
-            
+
             const foundEssential = scenario.essential.filter(id => collectedIds.includes(id));
             const missingEssential = scenario.essential.filter(id => !collectedIds.includes(id));
             const foundOptional = scenario.optional.filter(id => collectedIds.includes(id));
             const missingOptional = scenario.optional.filter(id => !collectedIds.includes(id));
-            const extra = collectedIds.filter(id => 
+            const extra = collectedIds.filter(id =>
                 !scenario.essential.includes(id) && !scenario.optional.includes(id));
 
             const timeElapsed = Math.floor((Date.now() - state.startTime) / 1000);
@@ -1140,20 +1920,64 @@
             const allRequired = allEssential && missingOptional.length === 0;
 
             let feedbackClass, feedbackTitle, feedbackMessage;
-            
+            let bonusPoints = 0;
+
             if (allRequired) {
                 feedbackClass = 'success';
                 feedbackTitle = '✓ Perfect!';
                 feedbackMessage = 'You collected all required items correctly!';
+                bonusPoints = 500;
+                playSound('success');
+                triggerHaptic('heavy');
+
+                // Check for perfect score achievement
+                if (!state.achievements.includes('perfect-score')) {
+                    const perfectAchievement = achievements.find(a => a.id === 'perfect-score');
+                    unlockAchievement(perfectAchievement);
+                }
             } else if (allEssential) {
                 feedbackClass = 'partial';
                 feedbackTitle = '⚠ Good, but incomplete';
                 feedbackMessage = 'You got all essential items, but missed some recommended ones.';
+                bonusPoints = 200;
+                playSound('success');
+                triggerHaptic('medium');
             } else {
                 feedbackClass = 'error';
                 feedbackTitle = '✗ Missing Critical Items';
                 feedbackMessage = 'You are missing essential items for this procedure.';
+                playSound('error');
+                triggerHaptic('heavy');
             }
+
+            // Speed bonus
+            if (timeElapsed < 60 && allEssential) {
+                bonusPoints += 300;
+                feedbackMessage += ' Amazing speed!';
+            }
+
+            if (timeElapsed < 30 && allEssential) {
+                if (!state.achievements.includes('speed-demon')) {
+                    const speedAchievement = achievements.find(a => a.id === 'speed-demon');
+                    unlockAchievement(speedAchievement);
+                }
+            }
+
+            // Award completion bonus
+            if (bonusPoints > 0) {
+                setTimeout(() => {
+                    awardPoints(bonusPoints, 'Completion Bonus!');
+                }, 500);
+            }
+
+            // Track completed scenario
+            if (allEssential && !state.completedScenarios.includes(scenario.id)) {
+                state.completedScenarios.push(scenario.id);
+                saveUserProgress();
+            }
+
+            // Check achievements
+            checkAchievements();
 
             let detailsHTML = '<ul>';
             if (missingEssential.length > 0) {
@@ -1170,12 +1994,18 @@
             }
             detailsHTML += '</ul>';
 
+            const score = (foundEssential.length / scenario.essential.length) * 100;
             const feedbackHTML = `
                 <div class="feedback ${feedbackClass}">
                     <h3>${feedbackTitle}</h3>
                     <p>${feedbackMessage}</p>
                     ${detailsHTML}
-                    <p style="margin-top: 10px;"><strong>Time:</strong> ${formatTime(timeElapsed)}</p>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 5px;">
+                        <p style="margin: 5px 0;"><strong>Time:</strong> ${formatTime(timeElapsed)}</p>
+                        <p style="margin: 5px 0;"><strong>Score:</strong> ${score.toFixed(0)}%</p>
+                        <p style="margin: 5px 0;"><strong>Session Points:</strong> +${state.points} pts</p>
+                        <p style="margin: 5px 0;"><strong>Total Points:</strong> ${state.totalPoints} pts</p>
+                    </div>
                     <div class="feedback-actions">
                         <button onclick="tryAgain()">Try Another Scenario</button>
                     </div>
@@ -1188,7 +2018,7 @@
             document.querySelector('[data-tab="feedback"]').click();
             setDrawerState('full');
 
-            // Save analytics
+            // Save analytics with enhanced data
             saveAnalytics({
                 sessionId: state.sessionId,
                 scenarioId: scenario.id,
@@ -1197,7 +2027,10 @@
                 timeElapsed: timeElapsed,
                 itemsCollected: collectedIds,
                 correct: allRequired,
-                score: (foundEssential.length / scenario.essential.length) * 100
+                score: score,
+                pointsEarned: state.points,
+                totalPoints: state.totalPoints,
+                achievements: state.achievements.length
             });
         }
 
