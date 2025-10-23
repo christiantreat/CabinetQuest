@@ -566,9 +566,579 @@
             font-size: 14px;
             font-weight: bold;
         }
+
+        /* Tutorial Overlay */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tutorial-overlay.active {
+            display: flex;
+        }
+
+        .tutorial-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        .tutorial-box h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .tutorial-box p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .tutorial-step {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #007bff;
+            text-align: left;
+        }
+
+        .tutorial-step strong {
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .tutorial-step small {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .tutorial-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .tutorial-skip {
+            background: transparent;
+            color: #999;
+            border: none;
+            padding: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Gamification Elements */
+        .achievement-popup {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1500;
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 280px;
+        }
+
+        .achievement-popup.show {
+            transform: translateX(0);
+        }
+
+        .achievement-popup .achievement-icon {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+
+        .achievement-popup h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+
+        .achievement-popup p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .score-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 150;
+            display: none;
+        }
+
+        .score-display.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+
+        .score-display .score-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-display .score-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-left: 5px;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+            position: relative;
+        }
+
+        .badge.locked {
+            background: #ddd;
+            filter: grayscale(100%);
+            opacity: 0.5;
+        }
+
+        .badge-tooltip {
+            position: absolute;
+            bottom: -30px;
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 10px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .badge:hover .badge-tooltip {
+            opacity: 1;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        /* Visual Feedback Animations */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 20px;
+            animation: particleRise 1s ease-out forwards;
+            z-index: 3000;
+        }
+
+        @keyframes particleRise {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
+        .success-checkmark {
+            position: absolute;
+            font-size: 60px;
+            color: #28a745;
+            animation: checkmarkPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+            z-index: 3000;
+        }
+
+        @keyframes checkmarkPop {
+            0% {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(0deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .pulse-effect {
+            animation: pulse 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Settings Panel */
+        .settings-icon {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            z-index: 150;
+            font-size: 20px;
+        }
+
+        .settings-icon:active {
+            transform: scale(0.95);
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            z-index: 200;
+            display: none;
+            min-width: 200px;
+        }
+
+        .settings-panel.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .settings-option:last-child {
+            border-bottom: none;
+        }
+
+        .settings-option label {
+            font-size: 13px;
+            color: #333;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #28a745;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 22px;
+        }
+
+        /* Star Rating */
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            font-size: 30px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+
+        .star {
+            color: #ddd;
+        }
+
+        .star.filled {
+            color: #ffd700;
+            animation: starPop 0.3s ease;
+        }
+
+        @keyframes starPop {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.3);
+            }
+        }
+
+        /* Improved Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-hint {
+            font-size: 13px;
+            color: #999;
+            line-height: 1.5;
+        }
+
+        /* Contextual Tooltip */
+        .contextual-hint {
+            position: absolute;
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 500;
+            box-shadow: 0 3px 10px rgba(0, 123, 255, 0.3);
+            animation: bounce 2s infinite;
+            pointer-events: none;
+        }
+
+        .contextual-hint::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .contextual-hint.top::after {
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px 8px 0 8px;
+            border-color: #007bff transparent transparent transparent;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Settings Icon -->
+    <div class="settings-icon" id="settings-icon" onclick="toggleSettings()">
+        ⚙️
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settings-panel">
+        <div class="settings-option">
+            <label>Sound Effects</label>
+            <div class="toggle-switch" id="sound-toggle" onclick="toggleSound()"></div>
+        </div>
+        <div class="settings-option">
+            <label>Haptic Feedback</label>
+            <div class="toggle-switch" id="haptic-toggle" onclick="toggleHaptic()"></div>
+        </div>
+        <div class="settings-option">
+            <label>Show Tutorial</label>
+            <div class="toggle-switch" id="tutorial-toggle" onclick="showTutorial()"></div>
+        </div>
+    </div>
+
+    <!-- Score Display -->
+    <div class="score-display" id="score-display">
+        <span class="score-label">SCORE</span>
+        <span class="score-value" id="score-value">0</span>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievement-popup">
+        <div class="achievement-icon" id="achievement-icon">🏆</div>
+        <h4 id="achievement-title">Achievement Unlocked!</h4>
+        <p id="achievement-desc">First Cart Opened</p>
+    </div>
+
+    <!-- Tutorial Overlay -->
+    <div class="tutorial-overlay" id="tutorial-overlay">
+        <div class="tutorial-box">
+            <h2>👋 Welcome to Trauma Room Trainer!</h2>
+            <p>Learn how to efficiently collect medical supplies in emergency scenarios.</p>
+
+            <div class="tutorial-step">
+                <strong>📋 Step 1: Choose a Scenario</strong>
+                <small>Select a training scenario from the bottom drawer</small>
+            </div>
+
+            <div class="tutorial-step">
+                <strong>🚑 Step 2: Explore Carts</strong>
+                <small>Tap on colored carts to view their drawers</small>
+            </div>
+
+            <div class="tutorial-step">
+                <strong>📦 Step 3: Collect Items</strong>
+                <small>Select items from drawers and add them to your inventory</small>
+            </div>
+
+            <div class="tutorial-step">
+                <strong>✅ Step 4: Submit & Learn</strong>
+                <small>Review your performance and earn badges!</small>
+            </div>
+
+            <button class="tutorial-btn" onclick="closeTutorial()">Let's Start!</button>
+            <button class="tutorial-skip" onclick="closeTutorial()">Skip Tutorial</button>
+        </div>
+    </div>
+
     <div class="app-container">
         <!-- Compact Header -->
         <div class="header">
@@ -615,17 +1185,29 @@
                 <!-- Inventory Tab -->
                 <div class="drawer-pane" id="pane-inventory">
                     <div class="inventory-list" id="inventory-list">
-                        <div class="empty-state">Select a scenario and tap carts to collect items</div>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📦</div>
+                            <div class="empty-state-title">No Items Collected Yet</div>
+                            <div class="empty-state-hint">
+                                Choose a scenario and tap on carts to collect medical supplies
+                            </div>
+                        </div>
                     </div>
                     <button class="submit-btn" id="submit-btn" onclick="submitInventory()" disabled>
-                        Submit for Feedback
+                        ✅ Submit for Feedback
                     </button>
                 </div>
 
                 <!-- Feedback Tab -->
                 <div class="drawer-pane" id="pane-feedback">
                     <div id="feedback-content">
-                        <div class="empty-state">Complete a scenario to see your results</div>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📊</div>
+                            <div class="empty-state-title">No Results Yet</div>
+                            <div class="empty-state-hint">
+                                Complete a scenario and submit your inventory to see performance feedback
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -747,8 +1329,226 @@
             selectedDrawer: null,
             startTime: null,
             sessionId: Date.now(),
-            drawerState: 'peek' // peek, half, full
+            drawerState: 'peek', // peek, half, full
+            score: 0,
+            achievements: [],
+            soundEnabled: true,
+            hapticEnabled: true,
+            tutorialCompleted: false,
+            cartsOpened: 0,
+            drawersOpened: 0,
+            itemsCollected: 0,
+            scenariosCompleted: 0,
+            perfectScores: 0
         };
+
+        // ===== GAMIFICATION & ACHIEVEMENTS =====
+        const ACHIEVEMENTS = [
+            { id: 'first-cart', name: 'Curious Explorer', desc: 'Open your first cart', icon: '🚪', points: 10 },
+            { id: 'first-item', name: 'Item Collector', desc: 'Collect your first item', icon: '📦', points: 10 },
+            { id: 'first-scenario', name: 'Getting Started', desc: 'Complete your first scenario', icon: '🎯', points: 25 },
+            { id: 'perfect-score', name: 'Perfectionist', desc: 'Get a perfect score', icon: '⭐', points: 50 },
+            { id: 'speed-demon', name: 'Speed Demon', desc: 'Complete scenario in under 60 seconds', icon: '⚡', points: 75 },
+            { id: 'three-scenarios', name: 'Dedicated Learner', desc: 'Complete all 3 scenarios', icon: '🏆', points: 100 },
+            { id: 'efficient', name: 'Efficient Collector', desc: 'Complete scenario with no extra items', icon: '💎', points: 50 }
+        ];
+
+        // Load saved state
+        function loadSavedState() {
+            const saved = localStorage.getItem('userState');
+            if (saved) {
+                const savedState = JSON.parse(saved);
+                state.achievements = savedState.achievements || [];
+                state.score = savedState.score || 0;
+                state.tutorialCompleted = savedState.tutorialCompleted || false;
+                state.scenariosCompleted = savedState.scenariosCompleted || 0;
+                state.perfectScores = savedState.perfectScores || 0;
+                state.soundEnabled = savedState.soundEnabled !== undefined ? savedState.soundEnabled : true;
+                state.hapticEnabled = savedState.hapticEnabled !== undefined ? savedState.hapticEnabled : true;
+            }
+        }
+
+        // Save state
+        function saveState() {
+            localStorage.setItem('userState', JSON.stringify({
+                achievements: state.achievements,
+                score: state.score,
+                tutorialCompleted: state.tutorialCompleted,
+                scenariosCompleted: state.scenariosCompleted,
+                perfectScores: state.perfectScores,
+                soundEnabled: state.soundEnabled,
+                hapticEnabled: state.hapticEnabled
+            }));
+        }
+
+        // Check and award achievement
+        function checkAchievement(achievementId) {
+            if (state.achievements.includes(achievementId)) return;
+
+            const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+            if (achievement) {
+                state.achievements.push(achievementId);
+                state.score += achievement.points;
+                showAchievement(achievement);
+                updateScoreDisplay();
+                saveState();
+                playSound('achievement');
+                triggerHaptic('medium');
+            }
+        }
+
+        // Show achievement popup
+        function showAchievement(achievement) {
+            const popup = document.getElementById('achievement-popup');
+            document.getElementById('achievement-icon').textContent = achievement.icon;
+            document.getElementById('achievement-title').textContent = achievement.name;
+            document.getElementById('achievement-desc').textContent = `${achievement.desc} (+${achievement.points} pts)`;
+
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update score display
+        function updateScoreDisplay() {
+            document.getElementById('score-value').textContent = state.score;
+            if (state.score > 0) {
+                document.getElementById('score-display').classList.add('show');
+            }
+        }
+
+        // ===== SOUND EFFECTS =====
+        function playSound(type) {
+            if (!state.soundEnabled) return;
+
+            // Using Web Audio API for simple beeps
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            switch(type) {
+                case 'click':
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.value = 0.1;
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.05);
+                    break;
+                case 'collect':
+                    oscillator.frequency.value = 1000;
+                    gainNode.gain.value = 0.15;
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                    break;
+                case 'achievement':
+                    oscillator.frequency.value = 1200;
+                    gainNode.gain.value = 0.2;
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                    break;
+                case 'success':
+                    oscillator.frequency.value = 1400;
+                    gainNode.gain.value = 0.2;
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                    break;
+                case 'error':
+                    oscillator.frequency.value = 300;
+                    gainNode.gain.value = 0.15;
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                    break;
+            }
+        }
+
+        // ===== HAPTIC FEEDBACK =====
+        function triggerHaptic(intensity = 'light') {
+            if (!state.hapticEnabled) return;
+            if ('vibrate' in navigator) {
+                switch(intensity) {
+                    case 'light':
+                        navigator.vibrate(10);
+                        break;
+                    case 'medium':
+                        navigator.vibrate(25);
+                        break;
+                    case 'strong':
+                        navigator.vibrate(50);
+                        break;
+                }
+            }
+        }
+
+        // ===== VISUAL FEEDBACK =====
+        function createParticle(x, y, emoji) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.textContent = emoji;
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            document.body.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 1000);
+        }
+
+        function showSuccessCheckmark(x, y) {
+            const checkmark = document.createElement('div');
+            checkmark.className = 'success-checkmark';
+            checkmark.textContent = '✓';
+            checkmark.style.left = x + 'px';
+            checkmark.style.top = y + 'px';
+            document.body.appendChild(checkmark);
+
+            setTimeout(() => {
+                checkmark.remove();
+            }, 600);
+        }
+
+        function pulseElement(element) {
+            element.classList.add('pulse-effect');
+            setTimeout(() => {
+                element.classList.remove('pulse-effect');
+            }, 300);
+        }
+
+        // ===== SETTINGS =====
+        function toggleSettings() {
+            const panel = document.getElementById('settings-panel');
+            panel.classList.toggle('show');
+            playSound('click');
+        }
+
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            const toggle = document.getElementById('sound-toggle');
+            toggle.classList.toggle('active');
+            playSound('click');
+            saveState();
+        }
+
+        function toggleHaptic() {
+            state.hapticEnabled = !state.hapticEnabled;
+            const toggle = document.getElementById('haptic-toggle');
+            toggle.classList.toggle('active');
+            triggerHaptic('light');
+            saveState();
+        }
+
+        // ===== TUTORIAL =====
+        function showTutorial() {
+            document.getElementById('tutorial-overlay').classList.add('active');
+        }
+
+        function closeTutorial() {
+            document.getElementById('tutorial-overlay').classList.remove('active');
+            state.tutorialCompleted = true;
+            saveState();
+        }
 
         // ===== DRAWER HANDLING =====
         /* ADJUSTMENT: Modify drawer behavior here */
@@ -837,9 +1637,26 @@
 
         // ===== INIT =====
         function init() {
+            loadSavedState();
             loadScenarios();
             drawRoom();
             setupCanvas();
+            updateScoreDisplay();
+
+            // Initialize settings toggles
+            if (state.soundEnabled) {
+                document.getElementById('sound-toggle').classList.add('active');
+            }
+            if (state.hapticEnabled) {
+                document.getElementById('haptic-toggle').classList.add('active');
+            }
+
+            // Show tutorial for first-time users
+            if (!state.tutorialCompleted) {
+                setTimeout(() => {
+                    showTutorial();
+                }, 500);
+            }
         }
 
         function loadScenarios() {
@@ -860,17 +1677,30 @@
             state.currentScenario = scenario;
             state.inventory = [];
             state.startTime = Date.now();
-            
+
             // Update UI
             document.querySelectorAll('.scenario-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
             document.getElementById('scenario-name').textContent = scenario.name;
             document.getElementById('room-hint').textContent = 'Tap a cart to open';
-            document.getElementById('feedback-content').innerHTML = '<div class="empty-state">Complete scenario to see results</div>';
-            
+            document.getElementById('feedback-content').innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <div class="empty-state-title">No Results Yet</div>
+                    <div class="empty-state-hint">
+                        Complete the scenario and submit your inventory to see performance feedback
+                    </div>
+                </div>
+            `;
+
             updateInventoryDisplay();
             updateStats();
-            
+
+            // UX Enhancements
+            playSound('click');
+            triggerHaptic('light');
+            pulseElement(element);
+
             // Switch to inventory tab and minimize drawer
             setTimeout(() => {
                 document.querySelector('[data-tab="inventory"]').click();
@@ -1001,6 +1831,7 @@
         // ===== CART & DRAWER =====
         function openCart(cart) {
             state.selectedCart = cart;
+            state.cartsOpened++;
             document.getElementById('cart-modal-title').textContent = cart.name;
 
             const grid = document.getElementById('drawer-grid');
@@ -1010,23 +1841,32 @@
                 const itemCount = drawer.items.length;
                 const div = document.createElement('div');
                 div.className = 'drawer-item';
-                
-                const badge = itemCount > 0 
+
+                const badge = itemCount > 0
                     ? `<span class="drawer-badge">${itemCount}</span>`
                     : `<span class="drawer-badge empty">Empty</span>`;
-                
+
                 div.innerHTML = `<strong>${drawer.name}${badge}</strong><small style="margin-top: 4px; display: block; color: #666;">${itemCount > 0 ? 'Tap to view' : 'No items'}</small>`;
-                
+
                 if (itemCount > 0) {
                     div.onclick = () => openDrawer(drawer);
                 } else {
                     div.style.opacity = '0.5';
                 }
-                
+
                 grid.appendChild(div);
             });
 
             document.getElementById('cart-modal').classList.add('active');
+
+            // UX Enhancements
+            playSound('click');
+            triggerHaptic('light');
+
+            // Check achievement
+            if (state.cartsOpened === 1) {
+                checkAchievement('first-cart');
+            }
         }
 
         function openDrawer(drawer) {
@@ -1070,6 +1910,8 @@
         }
 
         function addSelectedItems() {
+            const newItemsCount = state.selectedItems.length;
+
             state.selectedItems.forEach(item => {
                 if (!state.inventory.find(i => i.id === item.id)) {
                     state.inventory.push({
@@ -1077,8 +1919,39 @@
                         cart: state.selectedCart.name,
                         drawer: state.selectedDrawer.name
                     });
+                    state.itemsCollected++;
                 }
             });
+
+            // UX Enhancements - Visual Feedback
+            if (newItemsCount > 0) {
+                // Play collect sound
+                playSound('collect');
+                triggerHaptic('medium');
+
+                // Create particles at modal center
+                const modal = document.getElementById('item-modal');
+                const rect = modal.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                for (let i = 0; i < newItemsCount; i++) {
+                    setTimeout(() => {
+                        createParticle(
+                            centerX + (Math.random() - 0.5) * 100,
+                            centerY + (Math.random() - 0.5) * 100,
+                            '✨'
+                        );
+                    }, i * 100);
+                }
+
+                // Check achievement
+                if (state.itemsCollected === 1) {
+                    setTimeout(() => {
+                        checkAchievement('first-item');
+                    }, 500);
+                }
+            }
 
             state.selectedItems = [];
             updateInventoryDisplay();
@@ -1096,7 +1969,15 @@
             badge.textContent = state.inventory.length;
 
             if (state.inventory.length === 0) {
-                list.innerHTML = '<div class="empty-state">Tap carts to collect items</div>';
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <div class="empty-state-title">No Items Collected Yet</div>
+                        <div class="empty-state-hint">
+                            ${state.currentScenario ? 'Tap on carts to collect medical supplies' : 'Choose a scenario to begin'}
+                        </div>
+                    </div>
+                `;
                 submitBtn.disabled = true;
             } else {
                 list.innerHTML = '';
@@ -1127,57 +2008,117 @@
         function submitInventory() {
             const scenario = state.currentScenario;
             const collectedIds = state.inventory.map(i => i.id);
-            
+
             const foundEssential = scenario.essential.filter(id => collectedIds.includes(id));
             const missingEssential = scenario.essential.filter(id => !collectedIds.includes(id));
             const foundOptional = scenario.optional.filter(id => collectedIds.includes(id));
             const missingOptional = scenario.optional.filter(id => !collectedIds.includes(id));
-            const extra = collectedIds.filter(id => 
+            const extra = collectedIds.filter(id =>
                 !scenario.essential.includes(id) && !scenario.optional.includes(id));
 
             const timeElapsed = Math.floor((Date.now() - state.startTime) / 1000);
             const allEssential = missingEssential.length === 0;
             const allRequired = allEssential && missingOptional.length === 0;
+            const noExtras = extra.length === 0;
+
+            // Calculate score and stars
+            const essentialScore = (foundEssential.length / scenario.essential.length) * 100;
+            const optionalScore = scenario.optional.length > 0 ? (foundOptional.length / scenario.optional.length) * 50 : 0;
+            const penaltyScore = extra.length * 5;
+            const totalScore = Math.max(0, Math.round(essentialScore + optionalScore - penaltyScore));
+
+            let stars = 0;
+            if (allRequired && noExtras && timeElapsed < 60) stars = 5;
+            else if (allRequired && noExtras) stars = 4;
+            else if (allRequired) stars = 3;
+            else if (allEssential) stars = 2;
+            else if (foundEssential.length > 0) stars = 1;
 
             let feedbackClass, feedbackTitle, feedbackMessage;
-            
+
             if (allRequired) {
                 feedbackClass = 'success';
                 feedbackTitle = '✓ Perfect!';
                 feedbackMessage = 'You collected all required items correctly!';
+                playSound('success');
+                triggerHaptic('strong');
             } else if (allEssential) {
                 feedbackClass = 'partial';
                 feedbackTitle = '⚠ Good, but incomplete';
                 feedbackMessage = 'You got all essential items, but missed some recommended ones.';
+                playSound('collect');
+                triggerHaptic('medium');
             } else {
                 feedbackClass = 'error';
                 feedbackTitle = '✗ Missing Critical Items';
                 feedbackMessage = 'You are missing essential items for this procedure.';
+                playSound('error');
+                triggerHaptic('light');
             }
 
-            let detailsHTML = '<ul>';
+            // Star rating HTML
+            let starsHTML = '<div class="star-rating">';
+            for (let i = 0; i < 5; i++) {
+                starsHTML += `<span class="star ${i < stars ? 'filled' : ''}">★</span>`;
+            }
+            starsHTML += '</div>';
+
+            // Progress bars
+            const essentialProgress = (foundEssential.length / scenario.essential.length) * 100;
+            const optionalProgress = scenario.optional.length > 0 ? (foundOptional.length / scenario.optional.length) * 100 : 0;
+
+            let detailsHTML = '<div style="margin: 15px 0;">';
+            detailsHTML += '<div style="margin-bottom: 10px;">';
+            detailsHTML += '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">';
+            detailsHTML += '<small><strong>Essential Items</strong></small>';
+            detailsHTML += `<small>${foundEssential.length}/${scenario.essential.length}</small>`;
+            detailsHTML += '</div>';
+            detailsHTML += '<div class="progress-container">';
+            detailsHTML += `<div class="progress-bar" style="width: ${essentialProgress}%"></div>`;
+            detailsHTML += '</div>';
+            detailsHTML += '</div>';
+
+            if (scenario.optional.length > 0) {
+                detailsHTML += '<div style="margin-bottom: 10px;">';
+                detailsHTML += '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">';
+                detailsHTML += '<small><strong>Optional Items</strong></small>';
+                detailsHTML += `<small>${foundOptional.length}/${scenario.optional.length}</small>`;
+                detailsHTML += '</div>';
+                detailsHTML += '<div class="progress-container">';
+                detailsHTML += `<div class="progress-bar" style="width: ${optionalProgress}%"></div>`;
+                detailsHTML += '</div>';
+                detailsHTML += '</div>';
+            }
+            detailsHTML += '</div>';
+
+            // Detailed feedback
+            detailsHTML += '<ul style="margin: 10px 0;">';
             if (missingEssential.length > 0) {
-                detailsHTML += '<li><strong>Missing Essential:</strong> ' +
+                detailsHTML += '<li style="color: #dc3545;"><strong>Missing Essential:</strong> ' +
                     missingEssential.map(id => DATA.items.find(i => i.id === id)?.name).join(', ') + '</li>';
             }
             if (missingOptional.length > 0) {
-                detailsHTML += '<li><strong>Missing Recommended:</strong> ' +
+                detailsHTML += '<li style="color: #ffc107;"><strong>Missing Recommended:</strong> ' +
                     missingOptional.map(id => DATA.items.find(i => i.id === id)?.name).join(', ') + '</li>';
             }
             if (extra.length > 0) {
-                detailsHTML += '<li><strong>Extra Items:</strong> ' +
+                detailsHTML += '<li style="color: #666;"><strong>Extra Items:</strong> ' +
                     extra.map(id => DATA.items.find(i => i.id === id)?.name).join(', ') + '</li>';
             }
             detailsHTML += '</ul>';
 
             const feedbackHTML = `
                 <div class="feedback ${feedbackClass}">
+                    ${starsHTML}
                     <h3>${feedbackTitle}</h3>
                     <p>${feedbackMessage}</p>
+                    <p style="font-size: 24px; font-weight: bold; color: #007bff; margin: 10px 0;">
+                        Score: ${totalScore}/100
+                    </p>
                     ${detailsHTML}
-                    <p style="margin-top: 10px;"><strong>Time:</strong> ${formatTime(timeElapsed)}</p>
+                    <p style="margin-top: 10px; font-size: 13px;"><strong>⏱️ Time:</strong> ${formatTime(timeElapsed)}</p>
                     <div class="feedback-actions">
-                        <button onclick="tryAgain()">Try Another Scenario</button>
+                        <button onclick="tryAgain()">🔄 Try Another Scenario</button>
                     </div>
                 </div>
             `;
@@ -1188,7 +2129,32 @@
             document.querySelector('[data-tab="feedback"]').click();
             setDrawerState('full');
 
-            // Save analytics
+            // Update gamification state
+            state.scenariosCompleted++;
+            if (allRequired) {
+                state.perfectScores++;
+            }
+
+            // Check achievements
+            setTimeout(() => {
+                if (state.scenariosCompleted === 1) {
+                    checkAchievement('first-scenario');
+                }
+                if (allRequired && timeElapsed < 60) {
+                    checkAchievement('speed-demon');
+                }
+                if (allRequired) {
+                    checkAchievement('perfect-score');
+                }
+                if (allRequired && noExtras) {
+                    checkAchievement('efficient');
+                }
+                if (state.scenariosCompleted >= 3) {
+                    checkAchievement('three-scenarios');
+                }
+            }, 800);
+
+            // Save analytics with enhanced data
             saveAnalytics({
                 sessionId: state.sessionId,
                 scenarioId: scenario.id,
@@ -1196,26 +2162,39 @@
                 timestamp: new Date().toISOString(),
                 timeElapsed: timeElapsed,
                 itemsCollected: collectedIds,
+                foundEssential: foundEssential,
+                missingEssential: missingEssential,
+                foundOptional: foundOptional,
+                extra: extra,
                 correct: allRequired,
-                score: (foundEssential.length / scenario.essential.length) * 100
+                score: totalScore,
+                stars: stars,
+                cartsOpened: state.cartsOpened,
+                achievements: state.achievements
             });
+
+            saveState();
         }
 
         function tryAgain() {
             state.inventory = [];
             state.currentScenario = null;
             state.startTime = null;
-            
+            state.cartsOpened = 0;
+            state.drawersOpened = 0;
+
             document.querySelectorAll('.scenario-item').forEach(el => el.classList.remove('active'));
             document.getElementById('scenario-name').textContent = 'Select a scenario below ↓';
             document.getElementById('room-hint').textContent = 'Select a scenario from the drawer below to begin';
             document.getElementById('room-hint').classList.remove('hidden');
-            
+
             updateInventoryDisplay();
             updateStats();
-            
+
             document.querySelector('[data-tab="scenarios"]').click();
             setDrawerState('half');
+
+            playSound('click');
         }
 
         // ===== STATS =====
