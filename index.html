@@ -1264,28 +1264,44 @@
         const canvas = document.getElementById('room-canvas');
         const ctx = canvas.getContext('2d');
 
+        // Store DPR and dimensions for consistent access
+        let canvasDPR = 1;
+        let canvasWidth = 0;
+        let canvasHeight = 0;
+
         function resizeCanvas() {
             // Get device pixel ratio for crisp rendering on retina displays
-            const dpr = window.devicePixelRatio || 1;
+            canvasDPR = window.devicePixelRatio || 1;
 
-            // Get CSS dimensions
+            // Get CSS dimensions (use getBoundingClientRect for sub-pixel accuracy)
             const rect = canvas.getBoundingClientRect();
+            canvasWidth = rect.width;
+            canvasHeight = rect.height;
 
             // Set internal canvas resolution accounting for DPR
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
+            canvas.width = canvasWidth * canvasDPR;
+            canvas.height = canvasHeight * canvasDPR;
 
             // Reset transform and scale context to match DPR
             ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.scale(dpr, dpr);
+            ctx.scale(canvasDPR, canvasDPR);
+
+            // Log for debugging on mobile devices
+            console.log(`Canvas resize - DPR: ${canvasDPR}, CSS: ${canvasWidth}x${canvasHeight}, Internal: ${canvas.width}x${canvas.height}`);
 
             drawRoom();
         }
 
         function drawRoom() {
-            // Use logical CSS dimensions for drawing (context is scaled by DPR)
-            const width = canvas.offsetWidth;
-            const height = canvas.offsetHeight;
+            // Use stored logical CSS dimensions for consistent rendering
+            const width = canvasWidth;
+            const height = canvasHeight;
+
+            // Ensure we have valid dimensions
+            if (width === 0 || height === 0) {
+                console.warn('Canvas dimensions not initialized, skipping draw');
+                return;
+            }
 
             ctx.clearRect(0, 0, width, height);
 
@@ -1324,9 +1340,9 @@
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
-            // Use logical CSS dimensions for hit detection
-            const width = canvas.offsetWidth;
-            const height = canvas.offsetHeight;
+            // Use stored logical CSS dimensions for consistent hit detection
+            const width = canvasWidth;
+            const height = canvasHeight;
 
             DATA.carts.forEach(cart => {
                 const cartX = cart.x * width;
@@ -2241,8 +2257,21 @@
 
         // ===== INIT =====
         function init() {
+            // Initial resize
             resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+
+            // Add resize listener with debounce for performance
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(resizeCanvas, 100);
+            });
+
+            // Force a second resize after a brief delay to ensure proper dimensions on mobile
+            // This handles cases where the initial layout hasn't fully completed
+            setTimeout(() => {
+                requestAnimationFrame(resizeCanvas);
+            }, 100);
 
             loadUserProgress();
             updateStats();
