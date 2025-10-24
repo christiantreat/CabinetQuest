@@ -1265,20 +1265,36 @@
         const ctx = canvas.getContext('2d');
 
         function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+            // Get device pixel ratio for crisp rendering on retina displays
+            const dpr = window.devicePixelRatio || 1;
+
+            // Get CSS dimensions
+            const rect = canvas.getBoundingClientRect();
+
+            // Set internal canvas resolution accounting for DPR
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+
+            // Reset transform and scale context to match DPR
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(dpr, dpr);
+
             drawRoom();
         }
 
         function drawRoom() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Use logical CSS dimensions for drawing (context is scaled by DPR)
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+
+            ctx.clearRect(0, 0, width, height);
 
             // Draw carts - larger touch targets during active scenarios
             DATA.carts.forEach(cart => {
-                const x = cart.x * canvas.width;
-                const y = cart.y * canvas.height;
+                const x = cart.x * width;
+                const y = cart.y * height;
                 // Increased from 0.15 to 0.22 for better mobile touch targets
-                const size = Math.min(canvas.width, canvas.height) * 0.22;
+                const size = Math.min(width, height) * 0.22;
 
                 // Cart body
                 ctx.fillStyle = cart.color;
@@ -1308,11 +1324,15 @@
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
+            // Use logical CSS dimensions for hit detection
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+
             DATA.carts.forEach(cart => {
-                const cartX = cart.x * canvas.width;
-                const cartY = cart.y * canvas.height;
+                const cartX = cart.x * width;
+                const cartY = cart.y * height;
                 // Match the larger touch target size
-                const size = Math.min(canvas.width, canvas.height) * 0.22;
+                const size = Math.min(width, height) * 0.22;
 
                 if (Math.abs(x - cartX) < size/2 && Math.abs(y - cartY) < size/2) {
                     openCart(cart);
