@@ -21,7 +21,7 @@
             width: 100%;
         }
 
-        /* Main Container - Full Screen */
+        /* Main Container */
         .app-container {
             height: 100vh;
             display: flex;
@@ -36,6 +36,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             z-index: 100;
             flex-shrink: 0;
+            position: relative;
         }
 
         .header h1 {
@@ -56,6 +57,192 @@
             font-weight: 500;
         }
 
+        /* Settings button - non-intrusive */
+        .settings-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .settings-btn:hover {
+            color: #007bff;
+            transform: rotate(30deg);
+        }
+
+        /* Scenario Menu button */
+        .scenarios-menu-btn {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            background: #007bff;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 8px 12px;
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: all 0.2s;
+            z-index: 101;
+        }
+
+        .scenarios-menu-btn:hover {
+            background: #0056b3;
+        }
+
+        /* Scenario description box - shows current task */
+        .scenario-description-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 8px 15px;
+            margin: 0;
+            font-size: 12px;
+            color: #856404;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .scenario-description-box.active {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .scenario-task-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .scenario-task-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .scenario-task-text strong {
+            font-weight: 600;
+            display: inline;
+            margin-right: 5px;
+        }
+
+        /* Action buttons in scenario bar */
+        .scenario-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .scenario-action-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: all 0.2s ease;
+            min-height: 44px;
+            white-space: nowrap;
+        }
+
+        .scenario-action-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Restart button - yellow/warning */
+        .restart-btn {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+            color: #333;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        }
+
+        .restart-btn:hover {
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        }
+
+        /* Submit button - green with pulse animation */
+        .submit-btn-yellow {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .submit-btn-yellow:not(:disabled) {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); }
+            50% { box-shadow: 0 4px 16px rgba(40, 167, 69, 0.6); }
+        }
+
+        .submit-btn-yellow:disabled {
+            background: #ccc;
+            box-shadow: none;
+            animation: none;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Advance button - blue */
+        .advance-btn {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .advance-btn:hover {
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Feedback area in scenario box */
+        .scenario-feedback {
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            display: none;
+        }
+
+        .scenario-feedback.active {
+            display: block;
+        }
+
+        .scenario-feedback.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .scenario-feedback.partial {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+
+        .scenario-feedback.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .scenario-feedback strong {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+
         .stats-compact {
             display: flex;
             gap: 15px;
@@ -73,7 +260,7 @@
             margin-left: 2px;
         }
 
-        /* Room View - Takes remaining space */
+        /* Room View */
         .room-container {
             flex: 1;
             position: relative;
@@ -110,151 +297,93 @@
             display: none;
         }
 
-        /* Bottom Drawer */
-        /* ADJUSTMENT: Control drawer heights and animations here */
-        .bottom-drawer {
-            position: absolute;
-            bottom: 0;
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
             left: 0;
             right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
             background: white;
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -2px 20px rgba(0,0,0,0.15);
-            transition: height 0.3s ease;  /* ADJUST: Change animation speed here */
-            z-index: 200;
-            display: flex;
-            flex-direction: column;
-            max-height: 85vh;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
 
-        /* ADJUSTMENT: Set specific heights for each drawer state */
-        .bottom-drawer.peek {
-            height: 80px;      /* ADJUST: Collapsed height */
-        }
-
-        .bottom-drawer.half {
-            height: 50vh;      /* ADJUST: Medium height (50% of viewport) */
-        }
-
-        .bottom-drawer.full {
-            height: 85vh;      /* ADJUST: Expanded height (85% of viewport) */
-        }
-
-        /* Drawer Handle */
-        /* ADJUSTMENT: Make handle bigger/more visible here */
-        .drawer-handle {
-            width: 50px;           /* ADJUST: Increase width for easier grabbing */
-            height: 5px;           /* ADJUST: Increase height for easier grabbing */
-            background: #999;      /* ADJUST: Make darker to be more visible */
-            border-radius: 3px;
-            margin: 12px auto;
-            cursor: grab;
-            flex-shrink: 0;
-        }
-
-        .drawer-handle:active {
-            cursor: grabbing;
-            background: #666;      /* Darker when grabbed */
-        }
-        
-        /* ADJUSTMENT: Make entire handle area tappable, not just the bar */
-        .drawer-handle-area {
-            padding: 15px 0;       /* ADJUST: Increase padding for larger touch area */
-            cursor: grab;
-            position: relative;
-            touch-action: none;    /* Prevents default touch behaviors */
-        }
-        
-        .drawer-handle-area:active {
-            cursor: grabbing;
-            background: rgba(0,0,0,0.03);
-        }
-        
-        /* ADJUSTMENT: Optional hint text below handle - comment out to remove */
-        .drawer-handle-area::after {
-            content: 'Drag or tap';  /* ADJUST: Change hint text here */
-            position: absolute;
-            bottom: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 10px;
-            color: #999;
-            pointer-events: none;
-        }
-        
-        /* Hide hint when drawer is expanded */
-        .bottom-drawer.full .drawer-handle-area::after,
-        .bottom-drawer.half .drawer-handle-area::after {
-            opacity: 0;
-        }
-
-        /* Drawer Tabs */
-        .drawer-tabs {
-            display: flex;
+        .modal-header {
+            padding: 20px;
             border-bottom: 1px solid #eee;
-            flex-shrink: 0;
-            padding: 0 15px;
         }
 
-        .drawer-tab {
+        .modal-header h2 {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .modal-footer button {
             flex: 1;
             padding: 12px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 500;
-            color: #666;
-            border-bottom: 2px solid transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
-            touch-action: manipulation;
-            position: relative;
+            min-width: 100px;
         }
 
-        .drawer-tab.active {
-            color: #007bff;
-            border-bottom-color: #007bff;
-        }
-
-        .drawer-tab .badge {
-            position: absolute;
-            top: 8px;
-            right: 8px;
+        .btn-primary {
             background: #007bff;
             color: white;
-            border-radius: 10px;
-            padding: 2px 6px;
-            font-size: 11px;
-            font-weight: bold;
         }
 
-        /* Drawer Content */
-        .drawer-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
         }
 
-        .drawer-pane {
-            display: none;
-        }
-
-        .drawer-pane.active {
-            display: block;
-        }
-
-        /* Scenario List */
-        .scenario-list {
-            display: flex;
-            flex-direction: column;
+        /* Scenarios List in Modal */
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 10px;
         }
 
         .scenario-item {
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
             cursor: pointer;
-            touch-action: manipulation;
             transition: all 0.2s;
+            position: relative;
         }
 
         .scenario-item:active {
@@ -266,270 +395,116 @@
             background: #e7f3ff;
         }
 
-        .scenario-item h3 {
+        .scenario-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .scenario-item.completed {
+            border-color: #28a745;
+        }
+
+        .scenario-item.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #28a745;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .scenario-item h4 {
             font-size: 14px;
+            margin-bottom: 5px;
             color: #333;
-            margin-bottom: 4px;
         }
 
         .scenario-item p {
             font-size: 12px;
             color: #666;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
-        /* Inventory */
-        .inventory-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .inventory-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: #f8f9fa;
-        }
-
-        .item-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .item-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .item-info strong {
-            display: block;
-            font-size: 13px;
-            color: #333;
-        }
-
-        .item-info small {
-            font-size: 11px;
-            color: #666;
-        }
-
-        .remove-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 3px;
-            font-size: 12px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-            font-size: 13px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-
-        .submit-btn:disabled {
-            background: #ccc;
-        }
-
-        /* Feedback */
-        .feedback {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-
-        .feedback.success {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            color: #155724;
-        }
-
-        .feedback.partial {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            color: #856404;
-        }
-
-        .feedback.error {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-            color: #721c24;
-        }
-
-        .feedback h3 {
-            margin-bottom: 8px;
-            font-size: 15px;
-        }
-
-        .feedback ul {
-            margin-left: 18px;
-            margin-top: 8px;
-            line-height: 1.5;
-        }
-
-        .feedback-actions {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .feedback-actions button {
-            width: 100%;
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        /* Modals */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 70vh;
-            overflow-y: auto;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
-        }
-
-        .modal h2 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .modal-close {
-            float: right;
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 3px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .drawer-grid {
+        /* Cart Grid */
+        .cart-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
+            gap: 15px;
+            padding: 15px;
         }
 
-        .drawer-item {
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            padding: 12px;
-            cursor: pointer;
+        .cart-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
             text-align: center;
-            min-height: 70px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cart-card:active {
+            transform: scale(0.95);
+        }
+
+        .cart-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .cart-card h4 {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Drawer List */
+        .drawer-list {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            touch-action: manipulation;
+            gap: 10px;
         }
 
-        .drawer-item:active {
+        .drawer-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-card:active {
             transform: scale(0.98);
         }
 
-        .drawer-item strong {
-            display: block;
-            margin-bottom: 4px;
+        .drawer-card h4 {
+            font-size: 14px;
             color: #333;
-            font-size: 13px;
         }
 
-        .drawer-badge {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            border-radius: 10px;
-            padding: 2px 6px;
-            font-size: 10px;
-            margin-left: 4px;
-        }
-
-        .drawer-badge.empty {
-            background: #ddd;
-            color: #999;
-        }
-
+        /* Item Grid */
         .item-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 10px;
         }
 
         .item-card {
-            border: 2px solid #ddd;
-            border-radius: 5px;
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
             padding: 12px;
-            cursor: pointer;
             text-align: center;
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            touch-action: manipulation;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .item-card:active {
-            transform: scale(0.98);
+            transform: scale(0.95);
         }
 
         .item-card.selected {
@@ -537,529 +512,810 @@
             background: #d4edda;
         }
 
-        .item-card .item-icon {
-            width: 50px;
-            height: 50px;
-            margin: 0 auto 8px;
-            font-size: 14px;
+        .item-card.in-inventory {
+            border-color: #007bff;
+            background: #e7f3ff;
         }
 
-        .item-card strong {
+        .item-card h5 {
+            font-size: 13px;
+            color: #333;
+            margin-top: 8px;
+        }
+
+        /* Procedure Table in Room - shows inventory */
+        .procedure-table {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 3px solid #007bff;
+            border-radius: 12px;
+            padding: 12px;
+            max-width: 250px;
+            max-height: 50vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 50;
+        }
+
+        .procedure-table h3 {
+            font-size: 14px;
+            color: #007bff;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .procedure-table-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .procedure-table-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        .procedure-table-icon {
+            width: 30px;
+            height: 30px;
+            background: #007bff;
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .procedure-table-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .procedure-table-info strong {
+            display: block;
+            font-size: 11px;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .procedure-table-info small {
+            display: block;
+            font-size: 9px;
+            color: #999;
+        }
+
+        .procedure-table-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
             font-size: 12px;
-            line-height: 1.2;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .procedure-table-empty {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 11px;
+        }
+
+        .item-badge {
+            font-size: 8px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin-left: 3px;
+            font-weight: bold;
+        }
+
+        .badge-essential {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-optional {
+            background: #ffc107;
             color: #333;
         }
 
-        .item-card small {
-            font-size: 10px;
-            color: #666;
-            margin-top: 4px;
+        /* Star Rating */
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin: 15px 0;
+            font-size: 32px;
         }
 
-        .add-items-btn {
+        .star {
+            color: #ddd;
+            transition: color 0.3s;
+        }
+
+        .star.filled {
+            color: #ffc107;
+            animation: starPop 0.5s ease;
+        }
+
+        @keyframes starPop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* Progress Bars */
+        .progress-container {
             width: 100%;
-            background: #007bff;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.5s ease;
+        }
+
+        /* Achievement Toast */
+        .achievement-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 2000;
+            display: none;
+            animation: slideIn 0.5s ease;
+            min-width: 250px;
+        }
+
+        .achievement-toast.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .achievement-toast h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .achievement-toast p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Points Award Animation */
+        .points-award {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #28a745, #20c997);
             color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 14px;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            z-index: 2000;
+            display: none;
+            animation: pointsPop 0.8s ease;
+            font-size: 24px;
             font-weight: bold;
+        }
+
+        .points-award.show {
+            display: block;
+        }
+
+        @keyframes pointsPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Tutorial specific styles */
+        .tutorial-step {
+            margin: 20px 0;
+        }
+
+        .tutorial-step h3 {
+            font-size: 16px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .tutorial-step p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .tutorial-icon {
+            font-size: 48px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Results in settings modal */
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .result-item h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .result-item p {
+            font-size: 12px;
+            color: #666;
+            margin: 3px 0;
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Compact Header -->
+        <!-- Header -->
         <div class="header">
-            <h1>Trauma Room Trainer</h1>
+            <button class="scenarios-menu-btn" onclick="openScenariosModal()">📋 Scenarios</button>
+            <h1>🏥 Trauma Room Trainer</h1>
+            <button class="settings-btn" onclick="openSettingsModal()">⚙️</button>
             <div class="header-info">
-                <div class="scenario-name" id="scenario-name">Select a scenario below ↓</div>
+                <span class="scenario-name" id="scenario-name">Select a scenario to begin</span>
                 <div class="stats-compact">
-                    <span class="stat-compact"><span id="stat-time">0:00</span> <span class="label">time</span></span>
-                    <span class="stat-compact"><span id="stat-items">0</span> <span class="label">items</span></span>
+                    <div class="stat-compact">
+                        <span id="stat-time">0:00</span>
+                        <span class="label">time</span>
+                    </div>
+                    <div class="stat-compact">
+                        <span id="stat-items">0</span>
+                        <span class="label">items</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Room View - Full Screen Background -->
-        <div class="room-container">
-            <div class="room-hint" id="room-hint">
-                Select a scenario from the drawer below to begin
-            </div>
-            <canvas id="room-canvas"></canvas>
-        </div>
-
-        <!-- Bottom Drawer -->
-        <div class="bottom-drawer peek" id="bottom-drawer">
-            <!-- ADJUSTMENT: This entire area is draggable, not just the bar -->
-            <div class="drawer-handle-area" id="drawer-handle-area">
-                <div class="drawer-handle" id="drawer-handle"></div>
+        <!-- Scenario Description Box - shows task and action buttons -->
+        <div class="scenario-description-box" id="scenario-description">
+            <div class="scenario-task-row">
+                <div class="scenario-task-text" id="scenario-task">
+                    <strong>Task:</strong> <span id="task-description"></span>
+                </div>
             </div>
             
-            <div class="drawer-tabs">
-                <div class="drawer-tab active" data-tab="scenarios">Scenarios</div>
-                <div class="drawer-tab" data-tab="inventory">
-                    Inventory
-                    <span class="badge" id="inventory-badge">0</span>
-                </div>
-                <div class="drawer-tab" data-tab="feedback">Results</div>
+            <!-- Feedback area within scenario box -->
+            <div class="scenario-feedback" id="scenario-feedback"></div>
+            
+            <!-- Action buttons -->
+            <div class="scenario-actions">
+                <button class="scenario-action-btn restart-btn" id="restart-btn" onclick="retryScenario()" style="display: none;">
+                    🔄 Try Again
+                </button>
+                <button class="scenario-action-btn submit-btn-yellow" id="submit-btn-yellow" onclick="submitInventory()" disabled>
+                    ✓ Submit
+                </button>
+                <button class="scenario-action-btn advance-btn" id="advance-btn" onclick="continueToNext()" style="display: none;">
+                    → Next Scenario
+                </button>
             </div>
+        </div>
 
-            <div class="drawer-content">
-                <!-- Scenarios Tab -->
-                <div class="drawer-pane active" id="pane-scenarios">
-                    <div class="scenario-list" id="scenario-list"></div>
+        <!-- Room Container -->
+        <div class="room-container">
+            <canvas id="room-canvas"></canvas>
+            <div class="room-hint" id="room-hint">Open Scenarios menu to begin</div>
+            
+            <!-- Procedure Table - Inventory Display -->
+            <div class="procedure-table" id="procedure-table" style="display: none;">
+                <h3>🎒 Procedure Table</h3>
+                <div class="procedure-table-items" id="procedure-table-items">
+                    <div class="procedure-table-empty">No items collected yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial Modal -->
+    <div class="modal" id="tutorial-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎓 Welcome to Trauma Room Trainer!</h2>
+            </div>
+            <div class="modal-body">
+                <div class="tutorial-icon">🏥</div>
+                
+                <div class="tutorial-step">
+                    <h3>📋 Step 1: Choose a Scenario</h3>
+                    <p>Click "Scenarios" to select a medical emergency. You'll work through them one at a time.</p>
                 </div>
 
-                <!-- Inventory Tab -->
-                <div class="drawer-pane" id="pane-inventory">
-                    <div class="inventory-list" id="inventory-list">
-                        <div class="empty-state">Select a scenario and tap carts to collect items</div>
-                    </div>
-                    <button class="submit-btn" id="submit-btn" onclick="submitInventory()" disabled>
-                        Submit for Feedback
+                <div class="tutorial-step">
+                    <h3>🚪 Step 2: Explore the Room</h3>
+                    <p>Tap on carts in the trauma room to open them. Each cart contains multiple drawers with different medical supplies.</p>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>🎒 Step 3: Collect Items</h3>
+                    <p>Open drawers and select the items you need. Items will appear in the Procedure Table on the right side of the room.</p>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>✓ Step 4: Submit & Learn</h3>
+                    <p>When ready, submit your inventory to see how you did. You'll get one attempt per try, then can retry or continue to the next scenario.</p>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>⭐ Earn Rewards</h3>
+                    <p>Complete scenarios to earn stars, points, and unlock achievements. Improve your knowledge of trauma room equipment locations!</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="startTutorial()">🚀 Start Training!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenarios Modal -->
+    <div class="modal" id="scenarios-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Select Scenario</h2>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Progress: <strong id="progress-badge-modal">0/0</strong>
+                </p>
+            </div>
+            <div class="modal-body">
+                <div class="scenarios-grid" id="scenarios-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('scenarios-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Settings</h2>
+            </div>
+            <div class="modal-body">
+                <div style="margin: 15px 0;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="sound-toggle" onchange="toggleSound()" checked>
+                        <span>🔊 Sound Effects</span>
+                    </label>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="haptic-toggle" onchange="toggleHaptic()" checked>
+                        <span>📳 Haptic Feedback</span>
+                    </label>
+                </div>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                
+                <h3 style="font-size: 16px; margin-bottom: 10px;">📊 Your Results</h3>
+                <div class="results-list" id="results-list">
+                    <div class="procedure-table-empty">No results yet. Complete a scenario to see your performance!</div>
+                </div>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                
+                <div style="margin: 15px 0;">
+                    <button onclick="exportAnalytics()" style="width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        📊 Export Analytics Data
                     </button>
                 </div>
-
-                <!-- Feedback Tab -->
-                <div class="drawer-pane" id="pane-feedback">
-                    <div id="feedback-content">
-                        <div class="empty-state">Complete a scenario to see your results</div>
-                    </div>
+                <div style="margin: 15px 0;">
+                    <button onclick="resetProgress()" style="width: 100%; padding: 12px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        🔄 Reset All Progress
+                    </button>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('settings-modal')">Close</button>
             </div>
         </div>
     </div>
 
     <!-- Cart Modal -->
-    <div id="cart-modal" class="modal-overlay">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('cart-modal')">✕</button>
-            <h2 id="cart-modal-title">Select Drawer</h2>
-            <div class="drawer-grid" id="drawer-grid"></div>
+    <div class="modal" id="cart-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="cart-modal-title">Select Drawer</h2>
+            </div>
+            <div class="modal-body">
+                <div class="drawer-list" id="drawer-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('cart-modal')">Close</button>
+            </div>
         </div>
     </div>
 
     <!-- Item Modal -->
-    <div id="item-modal" class="modal-overlay">
-        <div class="modal">
-            <button class="modal-close" onclick="closeModal('item-modal')">✕</button>
-            <h2 id="item-modal-title">Select Items</h2>
-            <div class="item-grid" id="item-grid"></div>
-            <button class="add-items-btn" onclick="addSelectedItems()">Add to Inventory</button>
+    <div class="modal" id="item-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="item-modal-title">Select Items</h2>
+            </div>
+            <div class="modal-body">
+                <div class="item-grid" id="item-grid"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="backToCart()">← Back to Drawers</button>
+                <button class="btn-primary" onclick="collectSelectedItems()">Add to Table</button>
+            </div>
         </div>
     </div>
 
-    <script src="data:text/javascript;base64,<?php echo base64_encode(file_get_contents('script.js')); ?>"></script>
+    <!-- Achievement Toast -->
+    <div class="achievement-toast" id="achievement-toast">
+        <h4 id="achievement-title">🏆 Achievement Unlocked!</h4>
+        <p id="achievement-desc">Description</p>
+    </div>
+
+    <!-- Points Award -->
+    <div class="points-award" id="points-award">
+        +500 Points!
+    </div>
+
     <script>
         // ===== DATA =====
         const DATA = {
             carts: [
-                {
-                    id: 'cart-1', name: 'Airway Cart', color: '#FF6B6B',
-                    drawers: [
-                        { id: 'd1', name: 'Drawer 1', items: ['item-1', 'item-2', 'item-3'] },
-                        { id: 'd2', name: 'Drawer 2', items: ['item-11', 'item-12'] },
-                        { id: 'd3', name: 'Drawer 3', items: [] },
-                        { id: 'd4', name: 'Drawer 4', items: [] },
-                        { id: 'd5', name: 'Drawer 5', items: [] },
-                        { id: 'd6', name: 'Drawer 6', items: [] },
-                        { id: 'd7', name: 'Drawer 7', items: [] },
-                        { id: 'd8', name: 'Drawer 8', items: [] }
-                    ]
-                },
-                {
-                    id: 'cart-2', name: 'IV Line Cart', color: '#4ECDC4',
-                    drawers: [
-                        { id: 'd1', name: 'Drawer 1', items: ['item-6', 'item-7'] },
-                        { id: 'd2', name: 'Drawer 2', items: ['item-8', 'item-9', 'item-10'] },
-                        { id: 'd3', name: 'Drawer 3', items: ['item-4', 'item-5'] },
-                        { id: 'd4', name: 'Drawer 4', items: [] },
-                        { id: 'd5', name: 'Drawer 5', items: [] },
-                        { id: 'd6', name: 'Drawer 6', items: [] },
-                        { id: 'd7', name: 'Drawer 7', items: [] },
-                        { id: 'd8', name: 'Drawer 8', items: [] }
-                    ]
-                },
-                {
-                    id: 'cart-3', name: 'Procedure Cart', color: '#95E1D3',
-                    drawers: [
-                        { id: 'd1', name: 'Drawer 1', items: ['item-13', 'item-14', 'item-15'] },
-                        { id: 'd2', name: 'Drawer 2', items: [] },
-                        { id: 'd3', name: 'Drawer 3', items: [] },
-                        { id: 'd4', name: 'Drawer 4', items: [] },
-                        { id: 'd5', name: 'Drawer 5', items: [] },
-                        { id: 'd6', name: 'Drawer 6', items: [] },
-                        { id: 'd7', name: 'Drawer 7', items: [] },
-                        { id: 'd8', name: 'Drawer 8', items: [] }
-                    ]
-                }
+                { id: 'airway', name: 'Airway Cart', x: 0.2, y: 0.3, color: '#4CAF50' },
+                { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, color: '#2196F3' },
+                { id: 'code', name: 'Code Cart', x: 0.2, y: 0.7, color: '#F44336' },
+                { id: 'trauma', name: 'Trauma Cart', x: 0.8, y: 0.7, color: '#FF9800' }
+            ],
+            drawers: [
+                { id: 'd1', cart: 'airway', name: 'Top Drawer', number: 1 },
+                { id: 'd2', cart: 'airway', name: 'Middle Drawer', number: 2 },
+                { id: 'd3', cart: 'airway', name: 'Bottom Drawer', number: 3 },
+                { id: 'd4', cart: 'med', name: 'Top Drawer', number: 1 },
+                { id: 'd5', cart: 'med', name: 'Middle Drawer', number: 2 },
+                { id: 'd6', cart: 'med', name: 'Bottom Drawer', number: 3 },
+                { id: 'd7', cart: 'code', name: 'Top Drawer', number: 1 },
+                { id: 'd8', cart: 'code', name: 'Middle Drawer', number: 2 },
+                { id: 'd9', cart: 'code', name: 'Bottom Drawer', number: 3 },
+                { id: 'd10', cart: 'trauma', name: 'Top Drawer', number: 1 },
+                { id: 'd11', cart: 'trauma', name: 'Middle Drawer', number: 2 },
+                { id: 'd12', cart: 'trauma', name: 'Bottom Drawer', number: 3 }
             ],
             items: [
-                { id: 'item-1', name: 'Gloves (Small)', category: 'PPE' },
-                { id: 'item-2', name: 'Gloves (Medium)', category: 'PPE' },
-                { id: 'item-3', name: 'Gloves (Large)', category: 'PPE' },
-                { id: 'item-4', name: 'Chlorhexidine', category: 'Antiseptic' },
-                { id: 'item-5', name: 'Sterile Drape', category: 'Sterile' },
-                { id: 'item-6', name: 'Arterial Line Kit', category: 'Line Supplies' },
-                { id: 'item-7', name: 'Pressure Transducer', category: 'Line Supplies' },
-                { id: 'item-8', name: 'Lidocaine 1%', category: 'Medications' },
-                { id: 'item-9', name: 'Syringes (5mL)', category: 'Supplies' },
-                { id: 'item-10', name: 'Needles (25G)', category: 'Supplies' },
-                { id: 'item-11', name: 'Gauze 4x4', category: 'Supplies' },
-                { id: 'item-12', name: 'Tape (Silk)', category: 'Supplies' },
-                { id: 'item-13', name: 'Chest Tube Tray', category: 'Procedure' },
-                { id: 'item-14', name: 'Scalpel #10', category: 'Instruments' },
-                { id: 'item-15', name: 'Hemostats', category: 'Instruments' }
+                { id: 'ett', name: 'Endotracheal Tube', cart: 'airway', drawer: 'd1' },
+                { id: 'laryngoscope', name: 'Laryngoscope', cart: 'airway', drawer: 'd1' },
+                { id: 'bvm', name: 'Bag-Valve-Mask', cart: 'airway', drawer: 'd2' },
+                { id: 'oropharyngeal', name: 'Oropharyngeal Airway', cart: 'airway', drawer: 'd2' },
+                { id: 'suction', name: 'Suction Catheter', cart: 'airway', drawer: 'd3' },
+                { id: 'oxygen', name: 'Oxygen Mask', cart: 'airway', drawer: 'd3' },
+                { id: 'epinephrine', name: 'Epinephrine', cart: 'med', drawer: 'd4' },
+                { id: 'atropine', name: 'Atropine', cart: 'med', drawer: 'd4' },
+                { id: 'amiodarone', name: 'Amiodarone', cart: 'med', drawer: 'd5' },
+                { id: 'lidocaine', name: 'Lidocaine', cart: 'med', drawer: 'd5' },
+                { id: 'morphine', name: 'Morphine', cart: 'med', drawer: 'd6' },
+                { id: 'naloxone', name: 'Naloxone', cart: 'med', drawer: 'd6' },
+                { id: 'defibrillator', name: 'Defibrillator Pads', cart: 'code', drawer: 'd7' },
+                { id: 'ecg', name: 'ECG Leads', cart: 'code', drawer: 'd7' },
+                { id: 'iv-start', name: 'IV Start Kit', cart: 'code', drawer: 'd8' },
+                { id: 'saline', name: 'Saline Flush', cart: 'code', drawer: 'd8' },
+                { id: 'cpr-board', name: 'CPR Board', cart: 'code', drawer: 'd9' },
+                { id: 'aed', name: 'AED', cart: 'code', drawer: 'd9' },
+                { id: 'chest-tube', name: 'Chest Tube Kit', cart: 'trauma', drawer: 'd10' },
+                { id: 'scalpel', name: 'Scalpel', cart: 'trauma', drawer: 'd10' },
+                { id: 'gauze', name: 'Gauze Pads', cart: 'trauma', drawer: 'd11' },
+                { id: 'tourniquet', name: 'Tourniquet', cart: 'trauma', drawer: 'd11' },
+                { id: 'splint', name: 'Splint', cart: 'trauma', drawer: 'd12' },
+                { id: 'cervical-collar', name: 'Cervical Collar', cart: 'trauma', drawer: 'd12' }
             ],
             scenarios: [
                 {
-                    id: 'scenario-1',
-                    name: 'Arterial Line Preparation',
-                    description: 'Collect all supplies needed for arterial line placement',
-                    essential: ['item-6', 'item-7', 'item-4', 'item-2'],
-                    optional: ['item-5', 'item-8', 'item-9', 'item-10']
+                    id: 's1',
+                    name: 'Cardiac Arrest',
+                    description: 'Patient in cardiac arrest. Prepare for immediate resuscitation.',
+                    essential: ['defibrillator', 'ecg', 'epinephrine', 'amiodarone'],
+                    optional: ['cpr-board', 'iv-start', 'saline']
                 },
                 {
-                    id: 'scenario-2',
-                    name: 'Find Specific Items',
-                    description: 'Locate: Gloves (M), Pressure Transducer, and Syringes',
-                    essential: ['item-2', 'item-7', 'item-9'],
-                    optional: []
+                    id: 's2',
+                    name: 'Airway Obstruction',
+                    description: 'Patient with complete airway obstruction requiring immediate intervention.',
+                    essential: ['laryngoscope', 'ett', 'bvm', 'suction'],
+                    optional: ['oropharyngeal', 'oxygen']
                 },
                 {
-                    id: 'scenario-3',
-                    name: 'Chest Tube Setup',
-                    description: 'Gather supplies for chest tube insertion',
-                    essential: ['item-13', 'item-14', 'item-2', 'item-4'],
-                    optional: ['item-11', 'item-8', 'item-15']
+                    id: 's3',
+                    name: 'Severe Trauma',
+                    description: 'Multiple trauma patient with suspected internal bleeding.',
+                    essential: ['gauze', 'tourniquet', 'chest-tube', 'iv-start'],
+                    optional: ['cervical-collar', 'splint', 'scalpel']
+                },
+                {
+                    id: 's4',
+                    name: 'Anaphylaxis',
+                    description: 'Severe allergic reaction with respiratory compromise.',
+                    essential: ['epinephrine', 'oxygen', 'bvm', 'iv-start'],
+                    optional: ['saline', 'ecg']
+                },
+                {
+                    id: 's5',
+                    name: 'Overdose',
+                    description: 'Suspected opioid overdose with decreased respirations.',
+                    essential: ['naloxone', 'bvm', 'oxygen', 'iv-start'],
+                    optional: ['suction', 'ecg', 'saline']
                 }
             ]
         };
 
+        // Achievements definition
+        const achievements = [
+            { id: 'first-scenario', title: 'First Steps', description: 'Complete your first scenario', icon: '🎯' },
+            { id: 'perfect-score', title: 'Perfectionist', description: 'Get a perfect score on any scenario', icon: '💯' },
+            { id: 'speed-demon', title: 'Speed Demon', description: 'Complete a scenario in under 30 seconds', icon: '⚡' },
+            { id: 'efficient', title: 'Efficiency Expert', description: 'Perfect score with no extra items', icon: '🎯' },
+            { id: 'three-scenarios', title: 'Getting the Hang of It', description: 'Complete 3 scenarios', icon: '🔥' },
+            { id: 'all-scenarios', title: 'Master Trainer', description: 'Complete all scenarios', icon: '🏆' }
+        ];
+
         // ===== STATE =====
-        let state = {
+        const state = {
             currentScenario: null,
+            currentScenarioIndex: 0,
+            scenariosUnlocked: 1,
             inventory: [],
-            selectedItems: [],
-            selectedCart: null,
-            selectedDrawer: null,
             startTime: null,
             sessionId: Date.now(),
-            drawerState: 'peek' // peek, half, full
+            selectedCart: null,
+            selectedDrawer: null,
+            selectedItems: [],
+            hasSubmittedOnce: false,
+            tutorialCompleted: false,
+            completedScenarios: [],
+            achievements: [],
+            points: 0,
+            totalPoints: 0,
+            soundEnabled: true,
+            hapticEnabled: true,
+            sessionResults: [] // Store results for current session
         };
 
-        // ===== DRAWER HANDLING =====
-        /* ADJUSTMENT: Modify drawer behavior here */
-        let touchStartY = 0;
-        let currentDrawerHeight = 0;
-        const drawer = document.getElementById('bottom-drawer');
-        const handleArea = document.getElementById('drawer-handle-area');  // Using larger area, not just handle
+        // ===== CANVAS SETUP =====
+        const canvas = document.getElementById('room-canvas');
+        const ctx = canvas.getContext('2d');
 
-        /* ADJUSTMENT: Change these height thresholds for drawer states */
-        const DRAWER_HEIGHTS = {
-            peek: 80,      // ADJUST: Minimum collapsed height (in pixels)
-            half: 0.5,     // ADJUST: Medium height (as fraction of viewport: 0.5 = 50%)
-            full: 0.85     // ADJUST: Maximum expanded height (as fraction of viewport: 0.85 = 85%)
-        };
-
-        // Make the entire handle area draggable
-        handleArea.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-            const rect = drawer.getBoundingClientRect();
-            currentDrawerHeight = window.innerHeight - rect.top;
-            // Prevent any scrolling during drag
-            e.preventDefault();
-        }, { passive: false });
-
-        handleArea.addEventListener('touchmove', (e) => {
-            e.preventDefault(); // Critical: prevents page scrolling
-            
-            const touchY = e.touches[0].clientY;
-            const deltaY = touchStartY - touchY;  // Positive = dragging up
-            const newHeight = currentDrawerHeight + deltaY;
-            const vh = window.innerHeight;
-            
-            /* ADJUSTMENT: Modify these thresholds to change when drawer snaps */
-            if (newHeight < 150) {                    // ADJUST: Below this = peek
-                setDrawerState('peek');
-            } else if (newHeight < vh * 0.65) {       // ADJUST: Below this = half  
-                setDrawerState('half');
-            } else {                                   // ADJUST: Above = full
-                setDrawerState('full');
-            }
-        }, { passive: false });
-
-        handleArea.addEventListener('touchend', () => {
-            // Snap to final position
-            drawer.style.transition = 'height 0.3s ease';
-            setTimeout(() => {
-                drawer.style.transition = '';
-            }, 300);
-        });
-
-        function setDrawerState(newState) {
-            drawer.className = `bottom-drawer ${newState}`;
-            state.drawerState = newState;
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            drawRoom();
         }
 
-        /* ADJUSTMENT: Add tap-to-toggle functionality - tap handle to cycle through states */
-        handleArea.addEventListener('click', () => {
-            if (state.drawerState === 'peek') {
-                setDrawerState('half');
-            } else if (state.drawerState === 'half') {
-                setDrawerState('full');
-            } else {
-                setDrawerState('peek');
-            }
-        });
+        function drawRoom() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw carts
+            DATA.carts.forEach(cart => {
+                const x = cart.x * canvas.width;
+                const y = cart.y * canvas.height;
+                const size = Math.min(canvas.width, canvas.height) * 0.15;
+                
+                // Cart body
+                ctx.fillStyle = cart.color;
+                ctx.fillRect(x - size/2, y - size/2, size, size);
+                
+                // Cart label
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${size * 0.15}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(cart.name.split(' ')[0], x, y);
+            });
+        }
 
-        // Tab switching
-        document.querySelectorAll('.drawer-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
+        // Handle canvas clicks
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            DATA.carts.forEach(cart => {
+                const cartX = cart.x * canvas.width;
+                const cartY = cart.y * canvas.height;
+                const size = Math.min(canvas.width, canvas.height) * 0.15;
                 
-                // Update tabs
-                document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Update panes
-                document.querySelectorAll('.drawer-pane').forEach(p => p.classList.remove('active'));
-                document.getElementById(`pane-${tabName}`).classList.add('active');
-                
-                // Expand drawer when switching tabs
-                if (state.drawerState === 'peek') {
-                    setDrawerState('half');
+                if (Math.abs(x - cartX) < size/2 && Math.abs(y - cartY) < size/2) {
+                    openCart(cart);
+                    playSound('click');
                 }
             });
         });
 
-        // ===== INIT =====
-        function init() {
+        // ===== SCENARIOS =====
+        function openScenariosModal() {
             loadScenarios();
-            drawRoom();
-            setupCanvas();
+            document.getElementById('scenarios-modal').classList.add('active');
+            playSound('click');
         }
 
         function loadScenarios() {
-            const list = document.getElementById('scenario-list');
-            DATA.scenarios.forEach(scenario => {
+            const list = document.getElementById('scenarios-list');
+            list.innerHTML = '';
+            
+            DATA.scenarios.forEach((scenario, index) => {
                 const div = document.createElement('div');
                 div.className = 'scenario-item';
+                
+                const isCompleted = state.completedScenarios.includes(scenario.id);
+                const isUnlocked = index < state.scenariosUnlocked;
+                
+                if (isCompleted) div.classList.add('completed');
+                if (!isUnlocked) div.classList.add('locked');
+                if (state.currentScenario?.id === scenario.id) div.classList.add('active');
+                
                 div.innerHTML = `
-                    <h3>${scenario.name}</h3>
+                    <h4>${scenario.name}</h4>
                     <p>${scenario.description}</p>
                 `;
-                div.onclick = () => selectScenario(scenario, div);
+                
+                if (isUnlocked) {
+                    div.onclick = () => selectScenario(scenario, index);
+                }
+                
                 list.appendChild(div);
             });
+            
+            updateProgressBadge();
         }
 
-        function selectScenario(scenario, element) {
+        function updateProgressBadge() {
+            document.getElementById('progress-badge-modal').textContent = 
+                `${state.completedScenarios.length}/${DATA.scenarios.length}`;
+        }
+
+        function selectScenario(scenario, index) {
             state.currentScenario = scenario;
+            state.currentScenarioIndex = index;
             state.inventory = [];
             state.startTime = Date.now();
+            state.hasSubmittedOnce = false;
             
             // Update UI
-            document.querySelectorAll('.scenario-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
             document.getElementById('scenario-name').textContent = scenario.name;
+            document.getElementById('task-description').textContent = scenario.description;
+            document.getElementById('scenario-description').classList.add('active');
+            document.getElementById('submit-btn-yellow').disabled = true;
+            document.getElementById('restart-btn').style.display = 'inline-block';
+            document.getElementById('advance-btn').style.display = 'none';
+            
+            // Clear any previous feedback
+            document.getElementById('scenario-feedback').classList.remove('active', 'success', 'partial', 'error');
+            document.getElementById('scenario-feedback').innerHTML = '';
+            
+            // Show procedure table
+            document.getElementById('procedure-table').style.display = 'block';
+            
+            // Update hint
             document.getElementById('room-hint').textContent = 'Tap a cart to open';
-            document.getElementById('feedback-content').innerHTML = '<div class="empty-state">Complete scenario to see results</div>';
+            document.getElementById('room-hint').classList.remove('hidden');
             
             updateInventoryDisplay();
             updateStats();
             
-            // Switch to inventory tab and minimize drawer
-            setTimeout(() => {
-                document.querySelector('[data-tab="inventory"]').click();
-                setDrawerState('peek');
-            }, 300);
+            closeModal('scenarios-modal');
+            playSound('click');
         }
 
-        // ===== ROOM DRAWING =====
-        function setupCanvas() {
-            const canvas = document.getElementById('room-canvas');
-            const container = canvas.parentElement;
-            
-            function resizeCanvas() {
-                canvas.width = container.clientWidth;
-                canvas.height = container.clientHeight;
-                drawRoom();
-            }
-            
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-        }
-
-        function drawRoom() {
-            const canvas = document.getElementById('room-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Room outline
-            ctx.strokeStyle = '#ddd';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
-
-            // Calculate cart dimensions
-            const cartWidth = canvas.width * 0.22;
-            const cartHeight = canvas.height * 0.35;
-            const spacing = (canvas.width - (cartWidth * 3)) / 4;
-
-            // Position carts
-            DATA.carts.forEach((cart, index) => {
-                const x = spacing + (index * (cartWidth + spacing));
-                const y = canvas.height * 0.4;
-
-                // Shadow
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-                ctx.shadowBlur = 10;
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 4;
-
-                // Cart body
-                ctx.fillStyle = cart.color;
-                ctx.fillRect(x, y, cartWidth, cartHeight);
-                
-                ctx.shadowColor = 'transparent';
-                
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x, y, cartWidth, cartHeight);
-
-                // Label
-                ctx.fillStyle = '#fff';
-                const fontSize = Math.max(11, cartWidth * 0.11);
-                ctx.font = `bold ${fontSize}px sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                const words = cart.name.split(' ');
-                const lineHeight = fontSize * 1.3;
-                const startY = y + cartHeight / 2 - ((words.length - 1) * lineHeight) / 2;
-                
-                words.forEach((word, i) => {
-                    ctx.fillText(word, x + cartWidth / 2, startY + i * lineHeight);
-                });
-
-                // Drawers
-                const drawerHeight = cartHeight / 8;
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-                ctx.lineWidth = 1.5;
-                for (let i = 1; i < 8; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(x, y + drawerHeight * i);
-                    ctx.lineTo(x + cartWidth, y + drawerHeight * i);
-                    ctx.stroke();
-                }
-
-                cart.hitArea = { x, y, width: cartWidth, height: cartHeight };
-            });
-        }
-
-        // ===== CANVAS INTERACTION =====
-        function handleCanvasClick(e) {
+        // ===== CART & DRAWER NAVIGATION =====
+        function openCart(cart) {
             if (!state.currentScenario) {
-                setDrawerState('half');
-                document.querySelector('[data-tab="scenarios"]').click();
+                alert('Please select a scenario first!');
                 return;
             }
-
-            const canvas = document.getElementById('room-canvas');
-            const rect = canvas.getBoundingClientRect();
             
-            let clientX, clientY;
-            if (e.type.startsWith('touch')) {
-                e.preventDefault();
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
-
-            const x = (clientX - rect.left) * (canvas.width / rect.width);
-            const y = (clientY - rect.top) * (canvas.height / rect.height);
-
-            const clickedCart = DATA.carts.find(cart => {
-                const hit = cart.hitArea;
-                return hit && x >= hit.x && x <= hit.x + hit.width &&
-                       y >= hit.y && y <= hit.y + hit.height;
-            });
-
-            if (clickedCart) {
-                openCart(clickedCart);
-            }
-        }
-
-        document.getElementById('room-canvas').addEventListener('click', handleCanvasClick);
-        document.getElementById('room-canvas').addEventListener('touchstart', handleCanvasClick);
-
-        // ===== CART & DRAWER =====
-        function openCart(cart) {
             state.selectedCart = cart;
-            document.getElementById('cart-modal-title').textContent = cart.name;
-
-            const grid = document.getElementById('drawer-grid');
-            grid.innerHTML = '';
-
-            cart.drawers.forEach(drawer => {
-                const itemCount = drawer.items.length;
+            document.getElementById('cart-modal-title').textContent = `${cart.name} - Select Drawer`;
+            
+            const drawerList = document.getElementById('drawer-list');
+            drawerList.innerHTML = '';
+            
+            const cartDrawers = DATA.drawers.filter(d => d.cart === cart.id);
+            cartDrawers.forEach(drawer => {
                 const div = document.createElement('div');
-                div.className = 'drawer-item';
-                
-                const badge = itemCount > 0 
-                    ? `<span class="drawer-badge">${itemCount}</span>`
-                    : `<span class="drawer-badge empty">Empty</span>`;
-                
-                div.innerHTML = `<strong>${drawer.name}${badge}</strong><small style="margin-top: 4px; display: block; color: #666;">${itemCount > 0 ? 'Tap to view' : 'No items'}</small>`;
-                
-                if (itemCount > 0) {
-                    div.onclick = () => openDrawer(drawer);
-                } else {
-                    div.style.opacity = '0.5';
-                }
-                
-                grid.appendChild(div);
+                div.className = 'drawer-card';
+                div.innerHTML = `
+                    <h4>${drawer.name}</h4>
+                    <span>→</span>
+                `;
+                div.onclick = () => openDrawer(drawer);
+                drawerList.appendChild(div);
             });
-
+            
             document.getElementById('cart-modal').classList.add('active');
+            document.getElementById('room-hint').classList.add('hidden');
         }
 
         function openDrawer(drawer) {
             state.selectedDrawer = drawer;
-            state.selectedItems = [];
+            document.getElementById('item-modal-title').textContent = `${drawer.name} - Select Items`;
             
-            document.getElementById('item-modal-title').textContent = 
-                `${state.selectedCart.name} - ${drawer.name}`;
-
-            const grid = document.getElementById('item-grid');
-            grid.innerHTML = '';
-
-            drawer.items.forEach(itemId => {
-                const item = DATA.items.find(i => i.id === itemId);
-                if (item) {
-                    const div = document.createElement('div');
-                    div.className = 'item-card';
-                    div.innerHTML = `
-                        <div class="item-icon">${item.name.substring(0, 2).toUpperCase()}</div>
-                        <strong>${item.name}</strong>
-                        <small>${item.category}</small>
-                    `;
-                    div.onclick = () => toggleItemSelection(div, item);
-                    grid.appendChild(div);
+            const itemGrid = document.getElementById('item-grid');
+            itemGrid.innerHTML = '';
+            
+            const drawerItems = DATA.items.filter(i => i.drawer === drawer.id);
+            drawerItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                
+                if (state.inventory.find(i => i.id === item.id)) {
+                    div.classList.add('in-inventory');
                 }
+                
+                div.innerHTML = `
+                    <div class="item-icon">${item.name.substring(0, 2).toUpperCase()}</div>
+                    <h5>${item.name}</h5>
+                `;
+                
+                div.onclick = () => toggleItemSelection(item, div);
+                itemGrid.appendChild(div);
             });
-
+            
             closeModal('cart-modal');
             document.getElementById('item-modal').classList.add('active');
         }
 
-        function toggleItemSelection(element, item) {
+        function toggleItemSelection(item, element) {
             const index = state.selectedItems.findIndex(i => i.id === item.id);
+            
             if (index > -1) {
                 state.selectedItems.splice(index, 1);
                 element.classList.remove('selected');
@@ -1067,51 +1323,71 @@
                 state.selectedItems.push(item);
                 element.classList.add('selected');
             }
+            
+            playSound('click');
         }
 
-        function addSelectedItems() {
+        function collectSelectedItems() {
+            if (state.selectedItems.length === 0) {
+                alert('Please select at least one item!');
+                return;
+            }
+            
             state.selectedItems.forEach(item => {
                 if (!state.inventory.find(i => i.id === item.id)) {
-                    state.inventory.push({
-                        ...item,
-                        cart: state.selectedCart.name,
-                        drawer: state.selectedDrawer.name
-                    });
+                    state.inventory.push({...item});
+                    playSound('collect');
+                    triggerHaptic('light');
                 }
             });
-
+            
             state.selectedItems = [];
             updateInventoryDisplay();
             updateStats();
             closeModal('item-modal');
-            document.getElementById('room-hint').classList.add('hidden');
         }
 
-        // ===== INVENTORY =====
+        function backToCart() {
+            closeModal('item-modal');
+            state.selectedItems = [];
+            if (state.selectedCart) {
+                openCart(state.selectedCart);
+            }
+        }
+
+        // ===== INVENTORY - PROCEDURE TABLE =====
         function updateInventoryDisplay() {
-            const list = document.getElementById('inventory-list');
-            const submitBtn = document.getElementById('submit-btn');
-            const badge = document.getElementById('inventory-badge');
-
-            badge.textContent = state.inventory.length;
-
+            const container = document.getElementById('procedure-table-items');
+            const submitBtn = document.getElementById('submit-btn-yellow');
+            
             if (state.inventory.length === 0) {
-                list.innerHTML = '<div class="empty-state">Tap carts to collect items</div>';
+                container.innerHTML = '<div class="procedure-table-empty">No items collected yet</div>';
                 submitBtn.disabled = true;
             } else {
-                list.innerHTML = '';
+                container.innerHTML = '';
                 state.inventory.forEach((item, index) => {
                     const div = document.createElement('div');
-                    div.className = 'inventory-item';
+                    div.className = 'procedure-table-item';
+                    
+                    // Check if item is essential or optional for current scenario
+                    let itemBadge = '';
+                    if (state.currentScenario) {
+                        if (state.currentScenario.essential.includes(item.id)) {
+                            itemBadge = '<span class="item-badge badge-essential">Essential</span>';
+                        } else if (state.currentScenario.optional.includes(item.id)) {
+                            itemBadge = '<span class="item-badge badge-optional">Optional</span>';
+                        }
+                    }
+                    
                     div.innerHTML = `
-                        <div class="item-icon">${item.name.substring(0, 2).toUpperCase()}</div>
-                        <div class="item-info">
-                            <strong>${item.name}</strong>
+                        <div class="procedure-table-icon">${item.name.substring(0, 2).toUpperCase()}</div>
+                        <div class="procedure-table-info">
+                            <strong>${item.name}${itemBadge}</strong>
                             <small>${item.cart} → ${item.drawer}</small>
                         </div>
-                        <button class="remove-btn" onclick="removeItem(${index})">✕</button>
+                        <button class="procedure-table-remove" onclick="removeItem(${index})">✕</button>
                     `;
-                    list.appendChild(div);
+                    container.appendChild(div);
                 });
                 submitBtn.disabled = false;
             }
@@ -1121,72 +1397,180 @@
             state.inventory.splice(index, 1);
             updateInventoryDisplay();
             updateStats();
+            playSound('click');
         }
 
-        // ===== FEEDBACK =====
+        // ===== FEEDBACK & SCORING =====
         function submitInventory() {
             const scenario = state.currentScenario;
-            const collectedIds = state.inventory.map(i => i.id);
+            if (!scenario) return;
             
+            const collectedIds = state.inventory.map(i => i.id);
             const foundEssential = scenario.essential.filter(id => collectedIds.includes(id));
             const missingEssential = scenario.essential.filter(id => !collectedIds.includes(id));
             const foundOptional = scenario.optional.filter(id => collectedIds.includes(id));
             const missingOptional = scenario.optional.filter(id => !collectedIds.includes(id));
-            const extra = collectedIds.filter(id => 
+            const extra = collectedIds.filter(id =>
                 !scenario.essential.includes(id) && !scenario.optional.includes(id));
 
             const timeElapsed = Math.floor((Date.now() - state.startTime) / 1000);
             const allEssential = missingEssential.length === 0;
             const allRequired = allEssential && missingOptional.length === 0;
+            const noExtras = extra.length === 0;
+
+            // Calculate score
+            const essentialScore = (foundEssential.length / scenario.essential.length) * 60;
+            const optionalScore = scenario.optional.length > 0 ? 
+                (foundOptional.length / scenario.optional.length) * 20 : 20;
+            const penaltyScore = extra.length * 5;
+            const totalScore = Math.max(0, Math.round(essentialScore + optionalScore - penaltyScore));
+
+            // Calculate stars
+            let stars = 0;
+            if (allRequired && noExtras && timeElapsed < 60) stars = 5;
+            else if (allRequired && noExtras) stars = 4;
+            else if (allRequired) stars = 3;
+            else if (allEssential) stars = 2;
+            else if (foundEssential.length > 0) stars = 1;
 
             let feedbackClass, feedbackTitle, feedbackMessage;
-            
+            let bonusPoints = 0;
+
             if (allRequired) {
                 feedbackClass = 'success';
                 feedbackTitle = '✓ Perfect!';
                 feedbackMessage = 'You collected all required items correctly!';
+                bonusPoints = 500;
+                playSound('success');
+                triggerHaptic('heavy');
             } else if (allEssential) {
                 feedbackClass = 'partial';
                 feedbackTitle = '⚠ Good, but incomplete';
                 feedbackMessage = 'You got all essential items, but missed some recommended ones.';
+                bonusPoints = 200;
+                playSound('success');
+                triggerHaptic('medium');
             } else {
                 feedbackClass = 'error';
                 feedbackTitle = '✗ Missing Critical Items';
                 feedbackMessage = 'You are missing essential items for this procedure.';
+                playSound('error');
+                triggerHaptic('heavy');
             }
 
-            let detailsHTML = '<ul>';
-            if (missingEssential.length > 0) {
-                detailsHTML += '<li><strong>Missing Essential:</strong> ' +
-                    missingEssential.map(id => DATA.items.find(i => i.id === id)?.name).join(', ') + '</li>';
+            // Speed bonus
+            if (timeElapsed < 60 && allEssential) {
+                bonusPoints += 300;
+                feedbackMessage += ' Amazing speed!';
             }
-            if (missingOptional.length > 0) {
-                detailsHTML += '<li><strong>Missing Recommended:</strong> ' +
-                    missingOptional.map(id => DATA.items.find(i => i.id === id)?.name).join(', ') + '</li>';
-            }
-            if (extra.length > 0) {
-                detailsHTML += '<li><strong>Extra Items:</strong> ' +
-                    extra.map(id => DATA.items.find(i => i.id === id)?.name).join(', ') + '</li>';
-            }
-            detailsHTML += '</ul>';
 
-            const feedbackHTML = `
-                <div class="feedback ${feedbackClass}">
-                    <h3>${feedbackTitle}</h3>
-                    <p>${feedbackMessage}</p>
-                    ${detailsHTML}
-                    <p style="margin-top: 10px;"><strong>Time:</strong> ${formatTime(timeElapsed)}</p>
-                    <div class="feedback-actions">
-                        <button onclick="tryAgain()">Try Another Scenario</button>
-                    </div>
-                </div>
+            // Award points
+            if (bonusPoints > 0) {
+                setTimeout(() => {
+                    awardPoints(bonusPoints, 'Completion Bonus!');
+                }, 500);
+            }
+
+            // Track completed scenario
+            if (allEssential && !state.completedScenarios.includes(scenario.id)) {
+                state.completedScenarios.push(scenario.id);
+                saveUserProgress();
+            }
+
+            // Star rating HTML for feedback
+            let starsHTML = '<div class="star-rating">';
+            for (let i = 0; i < 5; i++) {
+                starsHTML += `<span class="star ${i < stars ? 'filled' : ''}">★</span>`;
+            }
+            starsHTML += '</div>';
+
+            // Progress bars
+            const essentialProgress = (foundEssential.length / scenario.essential.length) * 100;
+            const optionalProgress = scenario.optional.length > 0 ? 
+                (foundOptional.length / scenario.optional.length) * 100 : 0;
+
+            let detailsHTML = '<div style="margin: 15px 0;">';
+            detailsHTML += '<div style="margin-bottom: 10px;">';
+            detailsHTML += '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">';
+            detailsHTML += '<small><strong>Essential Items</strong></small>';
+            detailsHTML += `<small>${foundEssential.length}/${scenario.essential.length}</small>`;
+            detailsHTML += '</div>';
+            detailsHTML += '<div class="progress-container">';
+            detailsHTML += `<div class="progress-bar" style="width: ${essentialProgress}%"></div>`;
+            detailsHTML += '</div>';
+            detailsHTML += '</div>';
+
+            if (scenario.optional.length > 0) {
+                detailsHTML += '<div style="margin-bottom: 10px;">';
+                detailsHTML += '<div style="display: flex; justify-content: space-between; margin-bottom: 5px;">';
+                detailsHTML += '<small><strong>Optional Items</strong></small>';
+                detailsHTML += `<small>${foundOptional.length}/${scenario.optional.length}</small>`;
+                detailsHTML += '</div>';
+                detailsHTML += '<div class="progress-container">';
+                detailsHTML += `<div class="progress-bar" style="width: ${optionalProgress}%"></div>`;
+                detailsHTML += '</div>';
+                detailsHTML += '</div>';
+            }
+            detailsHTML += '</div>';
+
+            // Show inline feedback in scenario description box
+            const scenarioFeedback = document.getElementById('scenario-feedback');
+            scenarioFeedback.className = `scenario-feedback active ${feedbackClass}`;
+            scenarioFeedback.innerHTML = `
+                ${starsHTML}
+                <strong>${feedbackTitle}</strong>
+                ${feedbackMessage}
+                <p style="font-size: 14px; font-weight: bold; color: #007bff; margin: 8px 0;">
+                    Score: ${totalScore}/100
+                </p>
+                ${detailsHTML}
+                <p style="margin-top: 8px; font-size: 11px;"><strong>⏱️ Time:</strong> ${formatTime(timeElapsed)}</p>
             `;
 
-            document.getElementById('feedback-content').innerHTML = feedbackHTML;
+            // Show advance button after submission if there's a next scenario
+            if (!state.hasSubmittedOnce) {
+                state.hasSubmittedOnce = true;
+                const hasNextScenario = state.currentScenarioIndex < DATA.scenarios.length - 1;
+                if (hasNextScenario) {
+                    document.getElementById('advance-btn').style.display = 'inline-block';
+                } else {
+                    // Last scenario
+                    document.getElementById('advance-btn').innerHTML = '🎉 Complete Training';
+                    document.getElementById('advance-btn').style.display = 'inline-block';
+                }
+            }
 
-            // Switch to feedback tab
-            document.querySelector('[data-tab="feedback"]').click();
-            setDrawerState('full');
+            // Store result for viewing in settings
+            state.sessionResults.push({
+                scenarioName: scenario.name,
+                score: totalScore,
+                stars: stars,
+                timeElapsed: timeElapsed,
+                timestamp: new Date().toISOString(),
+                feedbackClass: feedbackClass
+            });
+
+            // Check achievements
+            setTimeout(() => {
+                if (state.completedScenarios.length === 1) {
+                    checkAchievement('first-scenario');
+                }
+                if (allRequired) {
+                    checkAchievement('perfect-score');
+                }
+                if (allRequired && timeElapsed < 30) {
+                    checkAchievement('speed-demon');
+                }
+                if (allRequired && noExtras) {
+                    checkAchievement('efficient');
+                }
+                if (state.completedScenarios.length >= 3) {
+                    checkAchievement('three-scenarios');
+                }
+                if (state.completedScenarios.length === DATA.scenarios.length) {
+                    checkAchievement('all-scenarios');
+                }
+            }, 800);
 
             // Save analytics
             saveAnalytics({
@@ -1196,26 +1580,276 @@
                 timestamp: new Date().toISOString(),
                 timeElapsed: timeElapsed,
                 itemsCollected: collectedIds,
+                foundEssential: foundEssential,
+                missingEssential: missingEssential,
+                foundOptional: foundOptional,
+                extra: extra,
                 correct: allRequired,
-                score: (foundEssential.length / scenario.essential.length) * 100
+                score: totalScore,
+                stars: stars,
+                pointsEarned: state.points,
+                totalPoints: state.totalPoints,
+                achievements: state.achievements.length
             });
+            
+            // Update scenarios list
+            loadScenarios();
         }
 
-        function tryAgain() {
+        // Retry current scenario
+        function retryScenario() {
+            state.inventory = [];
+            state.startTime = Date.now();
+            state.hasSubmittedOnce = false;
+
+            // Clear feedback
+            document.getElementById('scenario-feedback').classList.remove('active', 'success', 'partial', 'error');
+            document.getElementById('scenario-feedback').innerHTML = '';
+            document.getElementById('advance-btn').style.display = 'none';
+
+            // Reset room hint
+            document.getElementById('room-hint').textContent = 'Tap a cart to open';
+            document.getElementById('room-hint').classList.remove('hidden');
+
+            updateInventoryDisplay();
+            updateStats();
+            playSound('click');
+        }
+
+        // Continue to next scenario
+        function continueToNext() {
+            // Check if last scenario
+            if (state.currentScenarioIndex === DATA.scenarios.length - 1) {
+                completeTraining();
+                return;
+            }
+
+            // Increment current scenario index
+            state.currentScenarioIndex++;
+
+            // Unlock next scenario if needed
+            if (state.currentScenarioIndex >= state.scenariosUnlocked) {
+                state.scenariosUnlocked = state.currentScenarioIndex + 1;
+            }
+
+            // Reset for new scenario
             state.inventory = [];
             state.currentScenario = null;
             state.startTime = null;
-            
-            document.querySelectorAll('.scenario-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('scenario-name').textContent = 'Select a scenario below ↓';
-            document.getElementById('room-hint').textContent = 'Select a scenario from the drawer below to begin';
+            state.hasSubmittedOnce = false;
+
+            // Clear feedback
+            document.getElementById('scenario-description').classList.remove('active');
+            document.getElementById('scenario-feedback').classList.remove('active', 'success', 'partial', 'error');
+            document.getElementById('scenario-feedback').innerHTML = '';
+            document.getElementById('restart-btn').style.display = 'none';
+            document.getElementById('advance-btn').style.display = 'none';
+            document.getElementById('procedure-table').style.display = 'none';
+
+            // Reset UI
+            document.getElementById('scenario-name').textContent = 'Select the next scenario';
+            document.getElementById('room-hint').textContent = 'Open Scenarios menu to begin next scenario';
             document.getElementById('room-hint').classList.remove('hidden');
-            
+
             updateInventoryDisplay();
             updateStats();
+            updateProgressBadge();
+
+            // Open scenarios modal for user to select next
+            openScenariosModal();
+            playSound('click');
+        }
+
+        // Complete training
+        function completeTraining() {
+            alert(`🎉 Training Complete!\n\nCongratulations! You've completed all training scenarios.\n\nTotal Points Earned: ${state.totalPoints} pts\nAchievements Unlocked: ${state.achievements.length}/${achievements.length}`);
             
-            document.querySelector('[data-tab="scenarios"]').click();
-            setDrawerState('half');
+            // Reset for another round
+            state.currentScenarioIndex = 0;
+            state.scenariosUnlocked = 1;
+            state.inventory = [];
+            state.currentScenario = null;
+            state.startTime = null;
+            state.hasSubmittedOnce = false;
+            state.completedScenarios = [];
+
+            document.getElementById('scenario-description').classList.remove('active');
+            document.getElementById('scenario-feedback').classList.remove('active');
+            document.getElementById('scenario-feedback').innerHTML = '';
+            document.getElementById('restart-btn').style.display = 'none';
+            document.getElementById('advance-btn').style.display = 'none';
+            document.getElementById('procedure-table').style.display = 'none';
+
+            document.getElementById('scenario-name').textContent = 'Select a scenario to begin';
+            document.getElementById('room-hint').textContent = 'Open Scenarios menu to begin training';
+            document.getElementById('room-hint').classList.remove('hidden');
+
+            updateInventoryDisplay();
+            updateStats();
+            updateProgressBadge();
+            
+            saveUserProgress();
+            playSound('success');
+        }
+
+        // ===== GAMIFICATION =====
+        function awardPoints(points, message) {
+            state.points += points;
+            state.totalPoints += points;
+            
+            const pointsAward = document.getElementById('points-award');
+            pointsAward.textContent = `+${points} ${message}`;
+            pointsAward.classList.add('show');
+            
+            setTimeout(() => {
+                pointsAward.classList.remove('show');
+            }, 2000);
+            
+            saveUserProgress();
+        }
+
+        function checkAchievement(achievementId) {
+            if (state.achievements.includes(achievementId)) return;
+            
+            const achievement = achievements.find(a => a.id === achievementId);
+            if (!achievement) return;
+            
+            unlockAchievement(achievement);
+        }
+
+        function unlockAchievement(achievement) {
+            state.achievements.push(achievement.id);
+            
+            const toast = document.getElementById('achievement-toast');
+            document.getElementById('achievement-title').textContent = `${achievement.icon} ${achievement.title}`;
+            document.getElementById('achievement-desc').textContent = achievement.description;
+            toast.classList.add('show');
+            
+            playSound('success');
+            triggerHaptic('heavy');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+            
+            // Award points for achievement
+            awardPoints(100, 'Achievement!');
+            
+            saveUserProgress();
+        }
+
+        // ===== AUDIO & HAPTICS =====
+        const sounds = {
+            click: () => playTone(800, 0.1, 0.05),
+            collect: () => playTone(1200, 0.15, 0.1),
+            success: () => {
+                playTone(800, 0.1, 0.1);
+                setTimeout(() => playTone(1000, 0.1, 0.1), 100);
+                setTimeout(() => playTone(1200, 0.2, 0.15), 200);
+            },
+            error: () => {
+                playTone(400, 0.15, 0.1);
+                setTimeout(() => playTone(300, 0.2, 0.1), 150);
+            }
+        };
+
+        function playSound(soundName) {
+            if (!state.soundEnabled) return;
+            if (sounds[soundName]) {
+                sounds[soundName]();
+            }
+        }
+
+        function playTone(frequency, duration, volume = 0.1) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                // Audio not supported, fail silently
+            }
+        }
+
+        function triggerHaptic(intensity) {
+            if (!state.hapticEnabled) return;
+            if (navigator.vibrate) {
+                const patterns = {
+                    light: [10],
+                    medium: [20],
+                    heavy: [30, 10, 30]
+                };
+                navigator.vibrate(patterns[intensity] || [10]);
+            }
+        }
+
+        // ===== SETTINGS =====
+        function openSettingsModal() {
+            document.getElementById('settings-modal').classList.add('active');
+            document.getElementById('sound-toggle').checked = state.soundEnabled;
+            document.getElementById('haptic-toggle').checked = state.hapticEnabled;
+            
+            // Load results
+            updateResultsList();
+        }
+
+        function updateResultsList() {
+            const resultsList = document.getElementById('results-list');
+            
+            if (state.sessionResults.length === 0) {
+                resultsList.innerHTML = '<div class="procedure-table-empty">No results yet. Complete a scenario to see your performance!</div>';
+            } else {
+                resultsList.innerHTML = '';
+                state.sessionResults.forEach(result => {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    
+                    let starsDisplay = '';
+                    for (let i = 0; i < 5; i++) {
+                        starsDisplay += i < result.stars ? '⭐' : '☆';
+                    }
+                    
+                    div.innerHTML = `
+                        <h4>${result.scenarioName}</h4>
+                        <p>Score: <strong>${result.score}/100</strong> | ${starsDisplay}</p>
+                        <p>Time: ${formatTime(result.timeElapsed)}</p>
+                        <p style="font-size: 10px; color: #999;">${new Date(result.timestamp).toLocaleString()}</p>
+                    `;
+                    resultsList.appendChild(div);
+                });
+            }
+        }
+
+        function toggleSound() {
+            state.soundEnabled = document.getElementById('sound-toggle').checked;
+            saveUserProgress();
+            playSound('click');
+        }
+
+        function toggleHaptic() {
+            state.hapticEnabled = document.getElementById('haptic-toggle').checked;
+            saveUserProgress();
+        }
+
+        function resetProgress() {
+            if (!confirm('Are you sure you want to reset ALL progress? This cannot be undone!')) {
+                return;
+            }
+            
+            localStorage.removeItem('traumaRoomProgress');
+            localStorage.removeItem('analytics');
+            location.reload();
         }
 
         // ===== STATS =====
@@ -1237,6 +1871,33 @@
             if (state.startTime) updateStats();
         }, 1000);
 
+        // ===== PERSISTENCE =====
+        function saveUserProgress() {
+            localStorage.setItem('traumaRoomProgress', JSON.stringify({
+                completedScenarios: state.completedScenarios,
+                achievements: state.achievements,
+                totalPoints: state.totalPoints,
+                scenariosUnlocked: state.scenariosUnlocked,
+                soundEnabled: state.soundEnabled,
+                hapticEnabled: state.hapticEnabled,
+                tutorialCompleted: state.tutorialCompleted
+            }));
+        }
+
+        function loadUserProgress() {
+            const saved = localStorage.getItem('traumaRoomProgress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                state.completedScenarios = data.completedScenarios || [];
+                state.achievements = data.achievements || [];
+                state.totalPoints = data.totalPoints || 0;
+                state.scenariosUnlocked = data.scenariosUnlocked || 1;
+                state.soundEnabled = data.soundEnabled !== undefined ? data.soundEnabled : true;
+                state.hapticEnabled = data.hapticEnabled !== undefined ? data.hapticEnabled : true;
+                state.tutorialCompleted = data.tutorialCompleted || false;
+            }
+        }
+
         // ===== ANALYTICS =====
         function saveAnalytics(data) {
             const analytics = JSON.parse(localStorage.getItem('analytics') || '[]');
@@ -1244,7 +1905,7 @@
             localStorage.setItem('analytics', JSON.stringify(analytics));
         }
 
-        window.exportAnalytics = function() {
+        function exportAnalytics() {
             const analytics = JSON.parse(localStorage.getItem('analytics') || '[]');
             const dataStr = JSON.stringify(analytics, null, 2);
             const dataBlob = new Blob([dataStr], {type: 'application/json'});
@@ -1253,14 +1914,37 @@
             link.href = url;
             link.download = `trauma-room-analytics-${Date.now()}.json`;
             link.click();
-        };
+            playSound('click');
+        }
 
         // ===== MODALS =====
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
         }
 
+        // ===== TUTORIAL =====
+        function startTutorial() {
+            state.tutorialCompleted = true;
+            saveUserProgress();
+            closeModal('tutorial-modal');
+            openScenariosModal();
+            playSound('click');
+        }
+
         // ===== INIT =====
+        function init() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            loadUserProgress();
+            updateStats();
+            
+            // Show tutorial if first time
+            if (!state.tutorialCompleted) {
+                document.getElementById('tutorial-modal').classList.add('active');
+            }
+        }
+
         window.onload = init;
     </script>
 </body>
