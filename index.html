@@ -523,20 +523,9 @@
             margin-top: 8px;
         }
 
-        /* Procedure Table in Room - shows inventory */
+        /* Procedure Table in Room - shows inventory (HIDDEN - now shown as cart in center) */
         .procedure-table {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            border: 3px solid #007bff;
-            border-radius: 12px;
-            padding: 12px;
-            max-width: 250px;
-            max-height: 50vh;
-            overflow-y: auto;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            z-index: 50;
+            display: none !important;
         }
 
         .procedure-table h3 {
@@ -632,6 +621,68 @@
         .badge-optional {
             background: #ffc107;
             color: #333;
+        }
+
+        /* Missed items list in feedback */
+        .missed-items-section {
+            margin: 15px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .missed-items-section h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .missed-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .missed-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            font-size: 12px;
+        }
+
+        .missed-item-icon {
+            width: 30px;
+            height: 30px;
+            background: #6c757d;
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10px;
+            flex-shrink: 0;
+        }
+
+        .missed-item-icon.essential {
+            background: #dc3545;
+        }
+
+        .missed-item-info {
+            flex: 1;
+        }
+
+        .missed-item-info strong {
+            display: block;
+            color: #333;
+        }
+
+        .missed-item-info small {
+            color: #666;
         }
 
         /* Star Rating */
@@ -752,25 +803,57 @@
 
         /* Tutorial specific styles */
         .tutorial-step {
-            margin: 20px 0;
+            display: none;
+        }
+
+        .tutorial-step.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .tutorial-step h3 {
-            font-size: 16px;
+            font-size: 18px;
             color: #007bff;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
         .tutorial-step p {
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.6;
             color: #666;
+            text-align: center;
         }
 
         .tutorial-icon {
-            font-size: 48px;
+            font-size: 64px;
             text-align: center;
             margin: 20px 0;
+        }
+
+        .tutorial-progress {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .tutorial-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s;
+        }
+
+        .tutorial-dot.active {
+            background: #007bff;
+            transform: scale(1.3);
         }
 
         /* Results in settings modal */
@@ -868,38 +951,49 @@
     <div class="modal" id="tutorial-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>🎓 Welcome to Trauma Room Trainer!</h2>
+                <h2 id="tutorial-header">🎓 Welcome to Trauma Room Trainer!</h2>
+                <div class="tutorial-progress" id="tutorial-progress"></div>
             </div>
             <div class="modal-body">
-                <div class="tutorial-icon">🏥</div>
-                
-                <div class="tutorial-step">
-                    <h3>📋 Step 1: Choose a Scenario</h3>
-                    <p>Click "Scenarios" to select a medical emergency. You'll work through them one at a time.</p>
+                <div class="tutorial-step active" data-step="0">
+                    <div class="tutorial-icon">🏥</div>
+                    <h3>Welcome!</h3>
+                    <p>Learn how to use the Trauma Room Trainer to master emergency medical equipment locations and procedures.</p>
                 </div>
 
-                <div class="tutorial-step">
-                    <h3>🚪 Step 2: Explore the Room</h3>
-                    <p>Tap on carts in the trauma room to open them. Each cart contains multiple drawers with different medical supplies.</p>
+                <div class="tutorial-step" data-step="1">
+                    <div class="tutorial-icon">📋</div>
+                    <h3>Choose a Scenario</h3>
+                    <p>Click "Scenarios" to select a medical emergency. You'll work through them one at a time, learning what equipment you need for each situation.</p>
                 </div>
 
-                <div class="tutorial-step">
-                    <h3>🎒 Step 3: Collect Items</h3>
-                    <p>Open drawers and select the items you need. Items will appear in the Procedure Table on the right side of the room.</p>
+                <div class="tutorial-step" data-step="2">
+                    <div class="tutorial-icon">🚪</div>
+                    <h3>Explore the Room</h3>
+                    <p>Tap on carts in the trauma room to open them. Each cart contains multiple drawers with different medical supplies organized by type.</p>
                 </div>
 
-                <div class="tutorial-step">
-                    <h3>✓ Step 4: Submit & Learn</h3>
-                    <p>When ready, submit your inventory to see how you did. You'll get one attempt per try, then can retry or continue to the next scenario.</p>
+                <div class="tutorial-step" data-step="3">
+                    <div class="tutorial-icon">🎒</div>
+                    <h3>Collect Items</h3>
+                    <p>Open drawers and tap items to select them. Selected items will be highlighted. Tap "Add to Table" to collect them. View your collected items by tapping the purple Procedure Table cart in the center.</p>
                 </div>
 
-                <div class="tutorial-step">
-                    <h3>⭐ Earn Rewards</h3>
+                <div class="tutorial-step" data-step="4">
+                    <div class="tutorial-icon">✓</div>
+                    <h3>Submit & Learn</h3>
+                    <p>When ready, submit your inventory to see how you did. You'll see what you got right and what you missed. You can retry or continue to the next scenario.</p>
+                </div>
+
+                <div class="tutorial-step" data-step="5">
+                    <div class="tutorial-icon">⭐</div>
+                    <h3>Earn Rewards</h3>
                     <p>Complete scenarios to earn stars, points, and unlock achievements. Improve your knowledge of trauma room equipment locations!</p>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-primary" onclick="startTutorial()">🚀 Start Training!</button>
+                <button class="btn-secondary" id="tutorial-prev" onclick="prevTutorialStep()" style="display: none;">← Back</button>
+                <button class="btn-primary" id="tutorial-next" onclick="nextTutorialStep()">Next →</button>
             </div>
         </div>
     </div>
@@ -999,6 +1093,41 @@
         </div>
     </div>
 
+    <!-- Inventory Modal -->
+    <div class="modal" id="inventory-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎒 Procedure Table</h2>
+                <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                    Items collected: <strong id="inventory-count">0</strong>
+                </p>
+            </div>
+            <div class="modal-body">
+                <div class="procedure-table-items" id="inventory-modal-items">
+                    <div class="procedure-table-empty">No items collected yet</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('inventory-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal" id="feedback-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="feedback-modal-title">Results</h2>
+            </div>
+            <div class="modal-body" id="feedback-modal-body">
+                <!-- Dynamic feedback content goes here -->
+            </div>
+            <div class="modal-footer" id="feedback-modal-footer">
+                <button class="btn-secondary" onclick="closeModal('feedback-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Achievement Toast -->
     <div class="achievement-toast" id="achievement-toast">
         <h4 id="achievement-title">🏆 Achievement Unlocked!</h4>
@@ -1017,7 +1146,8 @@
                 { id: 'airway', name: 'Airway Cart', x: 0.2, y: 0.3, color: '#4CAF50' },
                 { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, color: '#2196F3' },
                 { id: 'code', name: 'Code Cart', x: 0.2, y: 0.7, color: '#F44336' },
-                { id: 'trauma', name: 'Trauma Cart', x: 0.8, y: 0.7, color: '#FF9800' }
+                { id: 'trauma', name: 'Trauma Cart', x: 0.8, y: 0.7, color: '#FF9800' },
+                { id: 'inventory', name: 'Procedure Table', x: 0.5, y: 0.5, color: '#9C27B0', isInventory: true }
             ],
             drawers: [
                 { id: 'd1', cart: 'airway', name: 'Top Drawer', number: 1 },
@@ -1142,23 +1272,33 @@
 
         function drawRoom() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw carts
+
+            // Draw carts - larger touch targets during active scenarios
             DATA.carts.forEach(cart => {
                 const x = cart.x * canvas.width;
                 const y = cart.y * canvas.height;
-                const size = Math.min(canvas.width, canvas.height) * 0.15;
-                
+                // Increased from 0.15 to 0.22 for better mobile touch targets
+                const size = Math.min(canvas.width, canvas.height) * 0.22;
+
                 // Cart body
                 ctx.fillStyle = cart.color;
                 ctx.fillRect(x - size/2, y - size/2, size, size);
-                
+
                 // Cart label
                 ctx.fillStyle = 'white';
                 ctx.font = `bold ${size * 0.15}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(cart.name.split(' ')[0], x, y);
+
+                if (cart.isInventory) {
+                    // Special rendering for inventory cart
+                    ctx.font = `bold ${size * 0.35}px Arial`;
+                    ctx.fillText('🎒', x, y - size * 0.1);
+                    ctx.font = `bold ${size * 0.12}px Arial`;
+                    ctx.fillText(`(${state.inventory.length})`, x, y + size * 0.25);
+                } else {
+                    ctx.fillText(cart.name.split(' ')[0], x, y);
+                }
             });
         }
 
@@ -1167,12 +1307,13 @@
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            
+
             DATA.carts.forEach(cart => {
                 const cartX = cart.x * canvas.width;
                 const cartY = cart.y * canvas.height;
-                const size = Math.min(canvas.width, canvas.height) * 0.15;
-                
+                // Match the larger touch target size
+                const size = Math.min(canvas.width, canvas.height) * 0.22;
+
                 if (Math.abs(x - cartX) < size/2 && Math.abs(y - cartY) < size/2) {
                     openCart(cart);
                     playSound('click');
@@ -1261,13 +1402,19 @@
                 alert('Please select a scenario first!');
                 return;
             }
-            
+
+            // Special handling for inventory cart
+            if (cart.isInventory) {
+                openInventoryModal();
+                return;
+            }
+
             state.selectedCart = cart;
             document.getElementById('cart-modal-title').textContent = `${cart.name} - Select Drawer`;
-            
+
             const drawerList = document.getElementById('drawer-list');
             drawerList.innerHTML = '';
-            
+
             const cartDrawers = DATA.drawers.filter(d => d.cart === cart.id);
             cartDrawers.forEach(drawer => {
                 const div = document.createElement('div');
@@ -1279,7 +1426,7 @@
                 div.onclick = () => openDrawer(drawer);
                 drawerList.appendChild(div);
             });
-            
+
             document.getElementById('cart-modal').classList.add('active');
             document.getElementById('room-hint').classList.add('hidden');
         }
@@ -1287,28 +1434,34 @@
         function openDrawer(drawer) {
             state.selectedDrawer = drawer;
             document.getElementById('item-modal-title').textContent = `${drawer.name} - Select Items`;
-            
+
             const itemGrid = document.getElementById('item-grid');
             itemGrid.innerHTML = '';
-            
+
             const drawerItems = DATA.items.filter(i => i.drawer === drawer.id);
             drawerItems.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'item-card';
-                
+
+                // Check if already in inventory
                 if (state.inventory.find(i => i.id === item.id)) {
                     div.classList.add('in-inventory');
                 }
-                
+
+                // Restore selection state if item was previously selected
+                if (state.selectedItems.find(i => i.id === item.id)) {
+                    div.classList.add('selected');
+                }
+
                 div.innerHTML = `
                     <div class="item-icon">${item.name.substring(0, 2).toUpperCase()}</div>
                     <h5>${item.name}</h5>
                 `;
-                
+
                 div.onclick = () => toggleItemSelection(item, div);
                 itemGrid.appendChild(div);
             });
-            
+
             closeModal('cart-modal');
             document.getElementById('item-modal').classList.add('active');
         }
@@ -1332,7 +1485,7 @@
                 alert('Please select at least one item!');
                 return;
             }
-            
+
             state.selectedItems.forEach(item => {
                 if (!state.inventory.find(i => i.id === item.id)) {
                     state.inventory.push({...item});
@@ -1340,35 +1493,45 @@
                     triggerHaptic('light');
                 }
             });
-            
+
+            // Clear selections and refresh the drawer display
             state.selectedItems = [];
             updateInventoryDisplay();
             updateStats();
-            closeModal('item-modal');
+
+            // Refresh the drawer to show updated states (don't close modal)
+            if (state.selectedDrawer) {
+                openDrawer(state.selectedDrawer);
+            }
         }
 
         function backToCart() {
             closeModal('item-modal');
-            state.selectedItems = [];
+            // Keep selectedItems to preserve user selections across drawers
             if (state.selectedCart) {
                 openCart(state.selectedCart);
             }
         }
 
         // ===== INVENTORY - PROCEDURE TABLE =====
-        function updateInventoryDisplay() {
-            const container = document.getElementById('procedure-table-items');
-            const submitBtn = document.getElementById('submit-btn-yellow');
-            
+        function openInventoryModal() {
+            updateInventoryModalDisplay();
+            document.getElementById('inventory-modal').classList.add('active');
+            playSound('click');
+        }
+
+        function updateInventoryModalDisplay() {
+            const container = document.getElementById('inventory-modal-items');
+            document.getElementById('inventory-count').textContent = state.inventory.length;
+
             if (state.inventory.length === 0) {
                 container.innerHTML = '<div class="procedure-table-empty">No items collected yet</div>';
-                submitBtn.disabled = true;
             } else {
                 container.innerHTML = '';
                 state.inventory.forEach((item, index) => {
                     const div = document.createElement('div');
                     div.className = 'procedure-table-item';
-                    
+
                     // Check if item is essential or optional for current scenario
                     let itemBadge = '';
                     if (state.currentScenario) {
@@ -1378,19 +1541,34 @@
                             itemBadge = '<span class="item-badge badge-optional">Optional</span>';
                         }
                     }
-                    
+
                     div.innerHTML = `
                         <div class="procedure-table-icon">${item.name.substring(0, 2).toUpperCase()}</div>
                         <div class="procedure-table-info">
                             <strong>${item.name}${itemBadge}</strong>
                             <small>${item.cart} → ${item.drawer}</small>
                         </div>
-                        <button class="procedure-table-remove" onclick="removeItem(${index})">✕</button>
+                        <button class="procedure-table-remove" onclick="removeItemFromModal(${index})">✕</button>
                     `;
                     container.appendChild(div);
                 });
-                submitBtn.disabled = false;
             }
+        }
+
+        function updateInventoryDisplay() {
+            const submitBtn = document.getElementById('submit-btn-yellow');
+            submitBtn.disabled = state.inventory.length === 0;
+
+            // Redraw room to update inventory count on cart
+            drawRoom();
+        }
+
+        function removeItemFromModal(index) {
+            state.inventory.splice(index, 1);
+            updateInventoryModalDisplay();
+            updateInventoryDisplay();
+            updateStats();
+            playSound('click');
         }
 
         function removeItem(index) {
@@ -1513,32 +1691,89 @@
             }
             detailsHTML += '</div>';
 
-            // Show inline feedback in scenario description box
-            const scenarioFeedback = document.getElementById('scenario-feedback');
-            scenarioFeedback.className = `scenario-feedback active ${feedbackClass}`;
-            scenarioFeedback.innerHTML = `
+            // Build missed items HTML
+            let missedItemsHTML = '';
+
+            if (missingEssential.length > 0) {
+                missedItemsHTML += '<div class="missed-items-section">';
+                missedItemsHTML += '<h4>❌ Missing Essential Items</h4>';
+                missedItemsHTML += '<div class="missed-items-list">';
+                missingEssential.forEach(itemId => {
+                    const item = DATA.items.find(i => i.id === itemId);
+                    if (item) {
+                        missedItemsHTML += `
+                            <div class="missed-item">
+                                <div class="missed-item-icon essential">${item.name.substring(0, 2).toUpperCase()}</div>
+                                <div class="missed-item-info">
+                                    <strong>${item.name}</strong>
+                                    <small>Location: ${item.cart} → ${item.drawer}</small>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                missedItemsHTML += '</div></div>';
+            }
+
+            if (missingOptional.length > 0) {
+                missedItemsHTML += '<div class="missed-items-section">';
+                missedItemsHTML += '<h4>⚠️ Missing Optional Items</h4>';
+                missedItemsHTML += '<div class="missed-items-list">';
+                missingOptional.forEach(itemId => {
+                    const item = DATA.items.find(i => i.id === itemId);
+                    if (item) {
+                        missedItemsHTML += `
+                            <div class="missed-item">
+                                <div class="missed-item-icon">${item.name.substring(0, 2).toUpperCase()}</div>
+                                <div class="missed-item-info">
+                                    <strong>${item.name}</strong>
+                                    <small>Location: ${item.cart} → ${item.drawer}</small>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                missedItemsHTML += '</div></div>';
+            }
+
+            // Show feedback in modal (doesn't displace layout)
+            const feedbackModalTitle = document.getElementById('feedback-modal-title');
+            const feedbackModalBody = document.getElementById('feedback-modal-body');
+
+            feedbackModalTitle.textContent = feedbackTitle;
+            feedbackModalBody.innerHTML = `
                 ${starsHTML}
-                <strong>${feedbackTitle}</strong>
-                ${feedbackMessage}
-                <p style="font-size: 14px; font-weight: bold; color: #007bff; margin: 8px 0;">
-                    Score: ${totalScore}/100
-                </p>
+                <div style="text-align: center; margin: 15px 0;">
+                    <p style="font-size: 15px; color: #666; margin-bottom: 10px;">${feedbackMessage}</p>
+                    <p style="font-size: 18px; font-weight: bold; color: #007bff;">
+                        Score: ${totalScore}/100
+                    </p>
+                    <p style="font-size: 14px; color: #666; margin-top: 5px;">
+                        ⏱️ Time: ${formatTime(timeElapsed)}
+                    </p>
+                </div>
                 ${detailsHTML}
-                <p style="margin-top: 8px; font-size: 11px;"><strong>⏱️ Time:</strong> ${formatTime(timeElapsed)}</p>
+                ${missedItemsHTML}
             `;
 
-            // Show advance button after submission if there's a next scenario
-            if (!state.hasSubmittedOnce) {
-                state.hasSubmittedOnce = true;
-                const hasNextScenario = state.currentScenarioIndex < DATA.scenarios.length - 1;
-                if (hasNextScenario) {
-                    document.getElementById('advance-btn').style.display = 'inline-block';
-                } else {
-                    // Last scenario
-                    document.getElementById('advance-btn').innerHTML = '🎉 Complete Training';
-                    document.getElementById('advance-btn').style.display = 'inline-block';
-                }
+            // Update modal footer with action buttons
+            const feedbackModalFooter = document.getElementById('feedback-modal-footer');
+            let footerButtons = '<button class="btn-secondary" onclick="closeModal(\'feedback-modal\')">Close</button>';
+            footerButtons += '<button class="btn-primary restart-btn" onclick="closeModal(\'feedback-modal\'); retryScenario()">🔄 Try Again</button>';
+
+            if (state.currentScenarioIndex < DATA.scenarios.length - 1) {
+                footerButtons += '<button class="btn-primary advance-btn" onclick="closeModal(\'feedback-modal\'); continueToNext()">→ Next Scenario</button>';
+            } else {
+                footerButtons += '<button class="btn-primary advance-btn" onclick="closeModal(\'feedback-modal\'); continueToNext()">🎉 Complete Training</button>';
             }
+
+            feedbackModalFooter.innerHTML = footerButtons;
+
+            // Show the modal
+            document.getElementById('feedback-modal').classList.add('active');
+
+            // Mark as submitted
+            state.hasSubmittedOnce = true;
 
             // Store result for viewing in settings
             state.sessionResults.push({
@@ -1923,9 +2158,62 @@
         }
 
         // ===== TUTORIAL =====
+        let currentTutorialStep = 0;
+        const totalTutorialSteps = 6;
+
+        function initTutorial() {
+            currentTutorialStep = 0;
+            updateTutorialDisplay();
+        }
+
+        function updateTutorialDisplay() {
+            // Update progress dots
+            const progressContainer = document.getElementById('tutorial-progress');
+            progressContainer.innerHTML = '';
+            for (let i = 0; i < totalTutorialSteps; i++) {
+                const dot = document.createElement('div');
+                dot.className = `tutorial-dot ${i === currentTutorialStep ? 'active' : ''}`;
+                progressContainer.appendChild(dot);
+            }
+
+            // Show current step
+            const steps = document.querySelectorAll('.tutorial-step');
+            steps.forEach((step, index) => {
+                step.classList.toggle('active', index === currentTutorialStep);
+            });
+
+            // Update buttons
+            const prevBtn = document.getElementById('tutorial-prev');
+            const nextBtn = document.getElementById('tutorial-next');
+
+            prevBtn.style.display = currentTutorialStep > 0 ? 'inline-block' : 'none';
+
+            if (currentTutorialStep === totalTutorialSteps - 1) {
+                nextBtn.textContent = '🚀 Start Training!';
+                nextBtn.onclick = startTutorial;
+            } else {
+                nextBtn.textContent = 'Next →';
+                nextBtn.onclick = nextTutorialStep;
+            }
+        }
+
+        function nextTutorialStep() {
+            if (currentTutorialStep < totalTutorialSteps - 1) {
+                currentTutorialStep++;
+                updateTutorialDisplay();
+                playSound('click');
+            }
+        }
+
+        function prevTutorialStep() {
+            if (currentTutorialStep > 0) {
+                currentTutorialStep--;
+                updateTutorialDisplay();
+                playSound('click');
+            }
+        }
+
         function startTutorial() {
-            state.tutorialCompleted = true;
-            saveUserProgress();
             closeModal('tutorial-modal');
             openScenariosModal();
             playSound('click');
@@ -1935,14 +2223,13 @@
         function init() {
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
-            
+
             loadUserProgress();
             updateStats();
-            
-            // Show tutorial if first time
-            if (!state.tutorialCompleted) {
-                document.getElementById('tutorial-modal').classList.add('active');
-            }
+
+            // Always show tutorial on page load/refresh
+            initTutorial();
+            document.getElementById('tutorial-modal').classList.add('active');
         }
 
         window.onload = init;
