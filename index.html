@@ -802,6 +802,64 @@
             }
         }
 
+        /* Item Collected Toast */
+        .item-collected-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.4);
+            z-index: 2000;
+            display: none;
+            animation: itemToastSlide 0.6s ease;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .item-collected-toast.show {
+            display: block;
+        }
+
+        @keyframes itemToastSlide {
+            0% {
+                transform: translateX(-50%) translateY(100px);
+                opacity: 0;
+            }
+            20% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            80% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+        }
+
+        /* Pulse animation for inventory count */
+        @keyframes inventoryPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.3);
+                color: #28a745;
+            }
+        }
+
+        .stat-pulse {
+            animation: inventoryPulse 0.4s ease;
+        }
+
         /* Tutorial specific styles */
         .tutorial-step {
             display: none;
@@ -1162,6 +1220,11 @@
         +500 Points!
     </div>
 
+    <!-- Item Collected Toast -->
+    <div class="item-collected-toast" id="item-collected-toast">
+        ✓ Items Added to Table!
+    </div>
+
     <script>
         // ===== DATA =====
         const DATA = {
@@ -1292,6 +1355,10 @@
         let canvasWidth = 0;
         let canvasHeight = 0;
 
+        // Track last tapped cart for visual feedback
+        let lastTappedCart = null;
+        let tapFeedbackTimeout = null;
+
         function resizeCanvas() {
             // Get device pixel ratio for crisp rendering on retina displays
             canvasDPR = window.devicePixelRatio || 1;
@@ -1316,15 +1383,20 @@
         }
 
         function drawRoom() {
-            // Use stored logical CSS dimensions for consistent rendering
-            const width = canvasWidth;
-            const height = canvasHeight;
+            // ALWAYS use fresh dimensions for perfect alignment with touch handlers
+            const rect = canvas.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
 
             // Ensure we have valid dimensions
             if (width === 0 || height === 0) {
                 console.warn('Canvas dimensions not initialized, skipping draw');
                 return;
             }
+
+            // Update stored dimensions to match current state
+            canvasWidth = width;
+            canvasHeight = height;
 
             ctx.clearRect(0, 0, width, height);
 
@@ -1335,9 +1407,25 @@
                 // Increased from 0.15 to 0.22 for better mobile touch targets
                 const size = Math.min(width, height) * 0.22;
 
-                // Cart body
+                // Visual feedback: highlight tapped cart
+                const isTapped = lastTappedCart === cart.id;
+
+                // Cart body with optional highlight
                 ctx.fillStyle = cart.color;
-                ctx.fillRect(x - size/2, y - size/2, size, size);
+                if (isTapped) {
+                    // Draw white glow behind tapped cart
+                    ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+                    ctx.shadowBlur = 20;
+                    ctx.fillRect(x - size/2, y - size/2, size, size);
+                    ctx.shadowBlur = 0;
+                } else {
+                    ctx.fillRect(x - size/2, y - size/2, size, size);
+                }
+
+                // Draw subtle border for better definition
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x - size/2, y - size/2, size, size);
 
                 // Cart label
                 ctx.fillStyle = 'white';
@@ -1357,28 +1445,66 @@
             });
         }
 
-        // Handle canvas clicks
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        // Handle canvas clicks and touches with perfect alignment
+        function handleCanvasInteraction(e) {
+            e.preventDefault(); // Prevent default touch behavior
 
-            // Use stored logical CSS dimensions for consistent hit detection
-            const width = canvasWidth;
-            const height = canvasHeight;
+            // Get the actual touch/click position
+            let clientX, clientY;
+            if (e.type === 'touchstart' || e.type === 'touchend') {
+                const touch = e.touches[0] || e.changedTouches[0];
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            // Get fresh rect for perfect alignment
+            const rect = canvas.getBoundingClientRect();
+
+            // Calculate precise position accounting for any scroll or zoom
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+
+            // Use fresh dimensions to ensure perfect alignment
+            const width = rect.width;
+            const height = rect.height;
+
+            // Debug logging for alignment verification
+            console.log(`Touch at: ${x.toFixed(1)}, ${y.toFixed(1)} | Canvas: ${width.toFixed(1)}x${height.toFixed(1)}`);
 
             DATA.carts.forEach(cart => {
                 const cartX = cart.x * width;
                 const cartY = cart.y * height;
-                // Match the larger touch target size
+                // Match the larger touch target size exactly
                 const size = Math.min(width, height) * 0.22;
 
+                // Check if click/touch is within cart bounds
                 if (Math.abs(x - cartX) < size/2 && Math.abs(y - cartY) < size/2) {
+                    console.log(`Hit cart: ${cart.name}`);
+
+                    // Visual feedback: highlight the tapped cart
+                    lastTappedCart = cart.id;
+                    drawRoom();
+
+                    // Clear highlight after animation
+                    clearTimeout(tapFeedbackTimeout);
+                    tapFeedbackTimeout = setTimeout(() => {
+                        lastTappedCart = null;
+                        drawRoom();
+                    }, 200);
+
                     openCart(cart);
                     playSound('click');
+                    triggerHaptic('light');
                 }
             });
-        });
+        }
+
+        // Add both click and touch event listeners for universal support
+        canvas.addEventListener('click', handleCanvasInteraction);
+        canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
 
         // ===== SCENARIOS =====
         function openScenariosModal() {
@@ -1545,13 +1671,20 @@
                 return;
             }
 
+            let itemsAdded = 0;
             state.selectedItems.forEach(item => {
                 if (!state.inventory.find(i => i.id === item.id)) {
                     state.inventory.push({...item});
+                    itemsAdded++;
                     playSound('collect');
                     triggerHaptic('light');
                 }
             });
+
+            // Show visual feedback
+            if (itemsAdded > 0) {
+                showItemCollectedFeedback(itemsAdded);
+            }
 
             // Clear selections and refresh the drawer display
             state.selectedItems = [];
@@ -1562,6 +1695,30 @@
             if (state.selectedDrawer) {
                 openDrawer(state.selectedDrawer);
             }
+        }
+
+        // Show visual feedback when items are collected
+        function showItemCollectedFeedback(count) {
+            const toast = document.getElementById('item-collected-toast');
+            const itemText = count === 1 ? '1 Item' : `${count} Items`;
+            toast.textContent = `✓ ${itemText} Added to Table!`;
+            toast.classList.add('show');
+
+            // Pulse the inventory count in header
+            const statItems = document.getElementById('stat-items').parentElement;
+            statItems.classList.add('stat-pulse');
+
+            // Remove animations after they complete
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 600);
+
+            setTimeout(() => {
+                statItems.classList.remove('stat-pulse');
+            }, 400);
+
+            // Trigger canvas redraw to update inventory count on cart
+            drawRoom();
         }
 
         function backToCart() {
