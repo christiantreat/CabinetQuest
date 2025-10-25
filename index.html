@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>Trauma Room Trainer</title>
     <style>
         * {
@@ -12,18 +12,29 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        :root {
+            /* Use dvh for better mobile support, fallback to vh */
+            --app-height: 100vh;
+        }
+
+        @supports (height: 100dvh) {
+            :root {
+                --app-height: 100dvh;
+            }
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #f5f5f5;
             overflow: hidden;
-            height: 100vh;
+            height: var(--app-height);
             position: fixed;
             width: 100%;
         }
 
         /* Main Container */
         .app-container {
-            height: 100vh;
+            height: var(--app-height);
             display: flex;
             flex-direction: column;
             position: relative;
@@ -33,6 +44,9 @@
         .header {
             background: white;
             padding: 10px 15px;
+            padding-top: max(10px, env(safe-area-inset-top));
+            padding-left: max(15px, env(safe-area-inset-left));
+            padding-right: max(15px, env(safe-area-inset-right));
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             z-index: 100;
             flex-shrink: 0;
@@ -66,9 +80,14 @@
             border: none;
             font-size: 20px;
             cursor: pointer;
-            padding: 5px;
+            padding: 12px;
+            min-width: 44px;
+            min-height: 44px;
             color: #666;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .settings-btn:hover {
@@ -86,6 +105,7 @@
             font-size: 12px;
             cursor: pointer;
             padding: 8px 12px;
+            min-height: 44px;
             color: white;
             border-radius: 6px;
             font-weight: bold;
@@ -310,6 +330,10 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            padding-left: max(20px, env(safe-area-inset-left));
+            padding-right: max(20px, env(safe-area-inset-right));
         }
 
         .modal.active {
@@ -342,6 +366,9 @@
 
         .modal-footer {
             padding: 20px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            padding-left: max(20px, env(safe-area-inset-left));
+            padding-right: max(20px, env(safe-area-inset-right));
             border-top: 1px solid #eee;
             display: flex;
             gap: 10px;
@@ -357,6 +384,7 @@
             font-weight: bold;
             cursor: pointer;
             min-width: 100px;
+            min-height: 44px;
         }
 
         .btn-primary {
@@ -588,9 +616,11 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -727,8 +757,8 @@
         /* Achievement Toast */
         .achievement-toast {
             position: fixed;
-            top: 80px;
-            right: 20px;
+            top: max(80px, calc(80px + env(safe-area-inset-top)));
+            right: max(20px, env(safe-area-inset-right));
             background: linear-gradient(135deg, #ffc107, #ff9800);
             color: #333;
             padding: 15px 20px;
@@ -883,15 +913,252 @@
             color: #666;
             margin: 3px 0;
         }
+
+        /* Larger touch targets for checkboxes */
+        .settings-checkbox-label {
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 0;
+        }
+
+        .settings-checkbox-label input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        /* ===== LOADING SPINNER ===== */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .button-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .button-loading .loading-spinner {
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Global loading overlay */
+        .global-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+
+        .global-loading.active {
+            display: flex;
+        }
+
+        .global-loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ===== RESPONSIVE BREAKPOINTS ===== */
+
+        /* Small phones (320px - 374px) */
+        @media (max-width: 374px) {
+            .header h1 {
+                font-size: 14px;
+            }
+
+            .scenarios-menu-btn,
+            .settings-btn {
+                font-size: 11px;
+                padding: 6px 10px;
+            }
+
+            .item-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .scenario-action-btn {
+                min-width: 80px;
+                font-size: 12px;
+            }
+        }
+
+        /* Tablets and larger phones (768px+) */
+        @media (min-width: 768px) {
+            .modal-content {
+                max-width: 600px;
+            }
+
+            .item-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .cart-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .scenarios-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* Large tablets and desktop (1024px+) */
+        @media (min-width: 1024px) {
+            .modal-content {
+                max-width: 800px;
+            }
+
+            .item-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .cart-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .scenarios-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Landscape orientation */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .header {
+                padding: 5px 15px;
+            }
+
+            .header h1 {
+                font-size: 14px;
+            }
+
+            .scenario-description-box {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .modal-content {
+                max-height: 85vh;
+            }
+
+            .achievement-toast {
+                top: max(10px, calc(10px + env(safe-area-inset-top)));
+                min-width: 200px;
+                padding: 10px 15px;
+            }
+
+            .achievement-toast h4 {
+                font-size: 14px;
+            }
+
+            .achievement-toast p {
+                font-size: 11px;
+            }
+
+            .tutorial-icon {
+                font-size: 48px;
+                margin: 10px 0;
+            }
+
+            .star-rating {
+                font-size: 24px;
+                margin: 10px 0;
+            }
+        }
+
+        /* Touch device detection - remove hover effects on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .settings-btn:hover,
+            .scenarios-menu-btn:hover {
+                transform: none;
+                color: inherit;
+                background: inherit;
+            }
+
+            .scenario-action-btn:hover {
+                box-shadow: inherit;
+            }
+        }
+
+        /* ===== REDUCED MOTION SUPPORT ===== */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+
+            /* Disable specific animations */
+            .star.filled {
+                animation: none !important;
+            }
+
+            @keyframes starPop {
+                0%, 100% { transform: scale(1); }
+            }
+
+            @keyframes pulse-glow {
+                0%, 100% { box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); }
+            }
+
+            @keyframes slideIn {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+
+            @keyframes pointsPop {
+                0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            /* Disable pulse animation on submit button */
+            .submit-btn-yellow:not(:disabled) {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Header -->
-        <div class="header">
-            <button class="scenarios-menu-btn" onclick="openScenariosModal()">📋 Scenarios</button>
+        <div class="header" role="banner">
+            <button class="scenarios-menu-btn" onclick="openScenariosModal()" aria-label="Open scenarios menu">📋 Scenarios</button>
             <h1>🏥 Trauma Room Trainer</h1>
-            <button class="settings-btn" onclick="openSettingsModal()">⚙️</button>
+            <button class="settings-btn" onclick="openSettingsModal()" aria-label="Open settings">⚙️</button>
             <div class="header-info">
                 <span class="scenario-name" id="scenario-name">Select a scenario to begin</span>
                 <div class="stats-compact">
@@ -916,7 +1183,7 @@
             </div>
             
             <!-- Feedback area within scenario box -->
-            <div class="scenario-feedback" id="scenario-feedback"></div>
+            <div class="scenario-feedback" id="scenario-feedback" role="status" aria-live="polite"></div>
             
             <!-- Action buttons -->
             <div class="scenario-actions">
@@ -933,9 +1200,9 @@
         </div>
 
         <!-- Room Container -->
-        <div class="room-container">
-            <canvas id="room-canvas"></canvas>
-            <div class="room-hint" id="room-hint">Open Scenarios menu to begin</div>
+        <div class="room-container" role="main">
+            <canvas id="room-canvas" role="img" aria-label="Trauma room with medical supply carts. Use the Scenarios menu to begin."></canvas>
+            <div class="room-hint" id="room-hint" aria-live="polite">Open Scenarios menu to begin</div>
             
             <!-- Procedure Table - Inventory Display -->
             <div class="procedure-table" id="procedure-table" style="display: none;">
@@ -948,7 +1215,7 @@
     </div>
 
     <!-- Tutorial Modal -->
-    <div class="modal" id="tutorial-modal">
+    <div class="modal" id="tutorial-modal" role="dialog" aria-modal="true" aria-labelledby="tutorial-header">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="tutorial-header">🎓 Welcome to Trauma Room Trainer!</h2>
@@ -999,10 +1266,10 @@
     </div>
 
     <!-- Scenarios Modal -->
-    <div class="modal" id="scenarios-modal">
+    <div class="modal" id="scenarios-modal" role="dialog" aria-modal="true" aria-labelledby="scenarios-modal-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>📋 Select Scenario</h2>
+                <h2 id="scenarios-modal-title">📋 Select Scenario</h2>
                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
                     Progress: <strong id="progress-badge-modal">0/0</strong>
                 </p>
@@ -1017,20 +1284,20 @@
     </div>
 
     <!-- Settings Modal -->
-    <div class="modal" id="settings-modal">
+    <div class="modal" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>⚙️ Settings</h2>
+                <h2 id="settings-modal-title">⚙️ Settings</h2>
             </div>
             <div class="modal-body">
                 <div style="margin: 15px 0;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <label class="settings-checkbox-label">
                         <input type="checkbox" id="sound-toggle" onchange="toggleSound()" checked>
                         <span>🔊 Sound Effects</span>
                     </label>
                 </div>
                 <div style="margin: 15px 0;">
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <label class="settings-checkbox-label">
                         <input type="checkbox" id="haptic-toggle" onchange="toggleHaptic()" checked>
                         <span>📳 Haptic Feedback</span>
                     </label>
@@ -1063,7 +1330,7 @@
     </div>
 
     <!-- Cart Modal -->
-    <div class="modal" id="cart-modal">
+    <div class="modal" id="cart-modal" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="cart-modal-title">Select Drawer</h2>
@@ -1078,7 +1345,7 @@
     </div>
 
     <!-- Item Modal -->
-    <div class="modal" id="item-modal">
+    <div class="modal" id="item-modal" role="dialog" aria-modal="true" aria-labelledby="item-modal-title">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="item-modal-title">Select Items</h2>
@@ -1094,10 +1361,10 @@
     </div>
 
     <!-- Inventory Modal -->
-    <div class="modal" id="inventory-modal">
+    <div class="modal" id="inventory-modal" role="dialog" aria-modal="true" aria-labelledby="inventory-modal-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>🎒 Procedure Table</h2>
+                <h2 id="inventory-modal-title">🎒 Procedure Table</h2>
                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
                     Items collected: <strong id="inventory-count">0</strong>
                 </p>
@@ -1114,7 +1381,7 @@
     </div>
 
     <!-- Feedback Modal -->
-    <div class="modal" id="feedback-modal">
+    <div class="modal" id="feedback-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-modal-title">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="feedback-modal-title">Results</h2>
@@ -1129,14 +1396,19 @@
     </div>
 
     <!-- Achievement Toast -->
-    <div class="achievement-toast" id="achievement-toast">
+    <div class="achievement-toast" id="achievement-toast" role="alert" aria-live="assertive">
         <h4 id="achievement-title">🏆 Achievement Unlocked!</h4>
         <p id="achievement-desc">Description</p>
     </div>
 
     <!-- Points Award -->
-    <div class="points-award" id="points-award">
+    <div class="points-award" id="points-award" role="alert" aria-live="polite">
         +500 Points!
+    </div>
+
+    <!-- Global Loading Overlay -->
+    <div class="global-loading" id="global-loading">
+        <div class="global-loading-spinner"></div>
     </div>
 
     <script>
@@ -1324,7 +1596,7 @@
         // ===== SCENARIOS =====
         function openScenariosModal() {
             loadScenarios();
-            document.getElementById('scenarios-modal').classList.add('active');
+            openModal('scenarios-modal');
             playSound('click');
         }
 
@@ -1427,7 +1699,7 @@
                 drawerList.appendChild(div);
             });
 
-            document.getElementById('cart-modal').classList.add('active');
+            openModal('cart-modal');
             document.getElementById('room-hint').classList.add('hidden');
         }
 
@@ -1463,7 +1735,7 @@
             });
 
             closeModal('cart-modal');
-            document.getElementById('item-modal').classList.add('active');
+            openModal('item-modal');
         }
 
         function toggleItemSelection(item, element) {
@@ -1516,7 +1788,7 @@
         // ===== INVENTORY - PROCEDURE TABLE =====
         function openInventoryModal() {
             updateInventoryModalDisplay();
-            document.getElementById('inventory-modal').classList.add('active');
+            openModal('inventory-modal');
             playSound('click');
         }
 
@@ -1578,10 +1850,39 @@
             playSound('click');
         }
 
+        // ===== LOADING STATES =====
+        function showLoading() {
+            document.getElementById('global-loading').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('global-loading').classList.remove('active');
+        }
+
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.classList.add('button-loading');
+                button.disabled = true;
+                const spinner = document.createElement('span');
+                spinner.className = 'loading-spinner';
+                spinner.id = `${buttonId}-spinner`;
+                button.appendChild(spinner);
+            } else {
+                button.classList.remove('button-loading');
+                button.disabled = false;
+                const spinner = document.getElementById(`${buttonId}-spinner`);
+                if (spinner) spinner.remove();
+            }
+        }
+
         // ===== FEEDBACK & SCORING =====
         function submitInventory() {
             const scenario = state.currentScenario;
             if (!scenario) return;
+
+            // Show loading state
+            setButtonLoading('submit-btn-yellow', true);
             
             const collectedIds = state.inventory.map(i => i.id);
             const foundEssential = scenario.essential.filter(id => collectedIds.includes(id));
@@ -1769,8 +2070,11 @@
 
             feedbackModalFooter.innerHTML = footerButtons;
 
+            // Hide loading state
+            setButtonLoading('submit-btn-yellow', false);
+
             // Show the modal
-            document.getElementById('feedback-modal').classList.add('active');
+            openModal('feedback-modal');
 
             // Mark as submitted
             state.hasSubmittedOnce = true;
@@ -2019,22 +2323,41 @@
 
         function triggerHaptic(intensity) {
             if (!state.hapticEnabled) return;
+
+            // iOS detection
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            if (isIOS) {
+                // iOS doesn't support navigator.vibrate
+                // Audio feedback can serve as fallback for haptic on iOS
+                // Note: True haptic feedback on iOS requires native app
+                // For now, we'll just log that haptics are not available
+                // You could add subtle audio cues here as an alternative
+                return;
+            }
+
+            // Android and other platforms
             if (navigator.vibrate) {
                 const patterns = {
                     light: [10],
                     medium: [20],
                     heavy: [30, 10, 30]
                 };
-                navigator.vibrate(patterns[intensity] || [10]);
+
+                try {
+                    navigator.vibrate(patterns[intensity] || [10]);
+                } catch (e) {
+                    console.error('Vibration not supported:', e);
+                }
             }
         }
 
         // ===== SETTINGS =====
         function openSettingsModal() {
-            document.getElementById('settings-modal').classList.add('active');
+            openModal('settings-modal');
             document.getElementById('sound-toggle').checked = state.soundEnabled;
             document.getElementById('haptic-toggle').checked = state.hapticEnabled;
-            
+
             // Load results
             updateResultsList();
         }
@@ -2102,59 +2425,269 @@
             return `${mins}:${secs.toString().padStart(2, '0')}`;
         }
 
-        setInterval(() => {
-            if (state.startTime) updateStats();
-        }, 1000);
+        // ===== ANIMATION LOOP FOR STATS AND CANVAS =====
+        let lastStatsUpdate = 0;
+        let animationFrameId = null;
+
+        function animate(timestamp) {
+            // Update stats every second
+            if (timestamp - lastStatsUpdate >= 1000) {
+                if (state.startTime) {
+                    updateStats();
+                }
+                lastStatsUpdate = timestamp;
+            }
+
+            // Continue animation loop
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        function startAnimationLoop() {
+            if (!animationFrameId) {
+                animationFrameId = requestAnimationFrame(animate);
+            }
+        }
+
+        function stopAnimationLoop() {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        }
 
         // ===== PERSISTENCE =====
         function saveUserProgress() {
-            localStorage.setItem('traumaRoomProgress', JSON.stringify({
-                completedScenarios: state.completedScenarios,
-                achievements: state.achievements,
-                totalPoints: state.totalPoints,
-                scenariosUnlocked: state.scenariosUnlocked,
-                soundEnabled: state.soundEnabled,
-                hapticEnabled: state.hapticEnabled,
-                tutorialCompleted: state.tutorialCompleted
-            }));
+            try {
+                const progressData = JSON.stringify({
+                    completedScenarios: state.completedScenarios,
+                    achievements: state.achievements,
+                    totalPoints: state.totalPoints,
+                    scenariosUnlocked: state.scenariosUnlocked,
+                    soundEnabled: state.soundEnabled,
+                    hapticEnabled: state.hapticEnabled,
+                    tutorialCompleted: state.tutorialCompleted
+                });
+                localStorage.setItem('traumaRoomProgress', progressData);
+            } catch (e) {
+                console.error('Failed to save progress:', e);
+                // If quota exceeded, try to clear old analytics
+                if (e.name === 'QuotaExceededError') {
+                    try {
+                        localStorage.removeItem('analytics');
+                        localStorage.setItem('traumaRoomProgress', JSON.stringify({
+                            completedScenarios: state.completedScenarios,
+                            achievements: state.achievements,
+                            totalPoints: state.totalPoints,
+                            scenariosUnlocked: state.scenariosUnlocked,
+                            soundEnabled: state.soundEnabled,
+                            hapticEnabled: state.hapticEnabled,
+                            tutorialCompleted: state.tutorialCompleted
+                        }));
+                    } catch (retryError) {
+                        console.error('Failed to save progress after cleanup:', retryError);
+                    }
+                }
+            }
         }
 
         function loadUserProgress() {
-            const saved = localStorage.getItem('traumaRoomProgress');
-            if (saved) {
-                const data = JSON.parse(saved);
-                state.completedScenarios = data.completedScenarios || [];
-                state.achievements = data.achievements || [];
-                state.totalPoints = data.totalPoints || 0;
-                state.scenariosUnlocked = data.scenariosUnlocked || 1;
-                state.soundEnabled = data.soundEnabled !== undefined ? data.soundEnabled : true;
-                state.hapticEnabled = data.hapticEnabled !== undefined ? data.hapticEnabled : true;
-                state.tutorialCompleted = data.tutorialCompleted || false;
+            try {
+                const saved = localStorage.getItem('traumaRoomProgress');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    state.completedScenarios = data.completedScenarios || [];
+                    state.achievements = data.achievements || [];
+                    state.totalPoints = data.totalPoints || 0;
+                    state.scenariosUnlocked = data.scenariosUnlocked || 1;
+                    state.soundEnabled = data.soundEnabled !== undefined ? data.soundEnabled : true;
+                    state.hapticEnabled = data.hapticEnabled !== undefined ? data.hapticEnabled : true;
+                    state.tutorialCompleted = data.tutorialCompleted || false;
+                }
+            } catch (e) {
+                console.error('Failed to load progress:', e);
+                // Continue with default state if loading fails
             }
         }
 
         // ===== ANALYTICS =====
         function saveAnalytics(data) {
-            const analytics = JSON.parse(localStorage.getItem('analytics') || '[]');
-            analytics.push(data);
-            localStorage.setItem('analytics', JSON.stringify(analytics));
+            try {
+                const analytics = JSON.parse(localStorage.getItem('analytics') || '[]');
+                analytics.push(data);
+
+                // Limit analytics to last 100 entries to prevent quota issues
+                if (analytics.length > 100) {
+                    analytics.splice(0, analytics.length - 100);
+                }
+
+                localStorage.setItem('analytics', JSON.stringify(analytics));
+            } catch (e) {
+                console.error('Failed to save analytics:', e);
+                // If storage fails, clear old analytics and try again
+                if (e.name === 'QuotaExceededError') {
+                    try {
+                        localStorage.setItem('analytics', JSON.stringify([data]));
+                    } catch (retryError) {
+                        console.error('Failed to save analytics after cleanup:', retryError);
+                    }
+                }
+            }
         }
 
         function exportAnalytics() {
-            const analytics = JSON.parse(localStorage.getItem('analytics') || '[]');
-            const dataStr = JSON.stringify(analytics, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `trauma-room-analytics-${Date.now()}.json`;
-            link.click();
-            playSound('click');
+            try {
+                const analytics = JSON.parse(localStorage.getItem('analytics') || '[]');
+                const dataStr = JSON.stringify(analytics, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `trauma-room-analytics-${Date.now()}.json`;
+                link.click();
+                playSound('click');
+            } catch (e) {
+                console.error('Failed to export analytics:', e);
+                alert('Failed to export analytics data. Please try again.');
+            }
         }
 
         // ===== MODALS =====
+        let lastFocusedElement = null;
+
+        function openModal(modalId) {
+            // Store the currently focused element
+            lastFocusedElement = document.activeElement;
+
+            const modal = document.getElementById(modalId);
+            modal.classList.add('active');
+
+            // Focus the modal after a short delay to ensure it's visible
+            setTimeout(() => {
+                const firstFocusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                if (firstFocusable) {
+                    firstFocusable.focus();
+                }
+            }, 100);
+
+            // Set up focus trap
+            setupFocusTrap(modal);
+        }
+
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
+
+            // Restore focus to the element that opened the modal
+            if (lastFocusedElement) {
+                lastFocusedElement.focus();
+                lastFocusedElement = null;
+            }
+        }
+
+        function setupFocusTrap(modal) {
+            const focusableElements = modal.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+
+            if (focusableElements.length === 0) return;
+
+            const firstFocusable = focusableElements[0];
+            const lastFocusable = focusableElements[focusableElements.length - 1];
+
+            function trapFocus(e) {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) {
+                        // Shift + Tab
+                        if (document.activeElement === firstFocusable) {
+                            lastFocusable.focus();
+                            e.preventDefault();
+                        }
+                    } else {
+                        // Tab
+                        if (document.activeElement === lastFocusable) {
+                            firstFocusable.focus();
+                            e.preventDefault();
+                        }
+                    }
+                }
+            }
+
+            // Remove any existing trap focus listener
+            modal.removeEventListener('keydown', trapFocus);
+            // Add new listener
+            modal.addEventListener('keydown', trapFocus);
+        }
+
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Escape key to close any open modal
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    closeModal(activeModal.id);
+                }
+            }
+        });
+
+        // ===== SWIPE TO DISMISS FOR MODALS =====
+        let touchStartY = 0;
+        let touchStartX = 0;
+        let currentTouchY = 0;
+        let isDragging = false;
+
+        function setupSwipeToDismiss() {
+            const modals = document.querySelectorAll('.modal');
+
+            modals.forEach(modal => {
+                const modalContent = modal.querySelector('.modal-content');
+
+                modalContent.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY;
+                    touchStartX = e.touches[0].clientX;
+                    isDragging = false;
+                }, { passive: true });
+
+                modalContent.addEventListener('touchmove', (e) => {
+                    currentTouchY = e.touches[0].clientY;
+                    const currentTouchX = e.touches[0].clientX;
+                    const deltaY = currentTouchY - touchStartY;
+                    const deltaX = currentTouchX - touchStartX;
+
+                    // Only treat as vertical swipe if more vertical than horizontal
+                    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+                        isDragging = true;
+
+                        // Only allow swipe down to dismiss
+                        if (deltaY > 0) {
+                            modalContent.style.transform = `translateY(${deltaY}px)`;
+                            modalContent.style.transition = 'none';
+                        }
+                    }
+                }, { passive: true });
+
+                modalContent.addEventListener('touchend', (e) => {
+                    const deltaY = currentTouchY - touchStartY;
+
+                    if (isDragging && deltaY > 100) {
+                        // Dismiss modal if swiped down more than 100px
+                        modalContent.style.transition = 'transform 0.3s ease';
+                        modalContent.style.transform = 'translateY(100%)';
+
+                        setTimeout(() => {
+                            modal.classList.remove('active');
+                            modalContent.style.transform = '';
+                            modalContent.style.transition = '';
+                        }, 300);
+
+                        triggerHaptic('light');
+                    } else {
+                        // Snap back to original position
+                        modalContent.style.transition = 'transform 0.3s ease';
+                        modalContent.style.transform = '';
+                    }
+
+                    isDragging = false;
+                }, { passive: true });
+            });
         }
 
         // ===== TUTORIAL =====
@@ -2219,17 +2752,57 @@
             playSound('click');
         }
 
+        // ===== VIEWPORT HEIGHT FIX FOR MOBILE =====
+        function updateViewportHeight() {
+            // Update CSS variable for proper vh on mobile
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+            // For browsers that don't support dvh, use calculated vh
+            if (!CSS.supports('height', '100dvh')) {
+                document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+            }
+        }
+
         // ===== INIT =====
         function init() {
             resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            updateViewportHeight();
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                updateViewportHeight();
+            });
+
+            // Update on orientation change
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => {
+                    resizeCanvas();
+                    updateViewportHeight();
+                }, 100);
+            });
+
+            // Pause animation when page is hidden (battery optimization)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    stopAnimationLoop();
+                } else {
+                    startAnimationLoop();
+                }
+            });
 
             loadUserProgress();
             updateStats();
 
+            // Setup swipe to dismiss for all modals
+            setupSwipeToDismiss();
+
+            // Start animation loop
+            startAnimationLoop();
+
             // Always show tutorial on page load/refresh
             initTutorial();
-            document.getElementById('tutorial-modal').classList.add('active');
+            openModal('tutorial-modal');
         }
 
         window.onload = init;
