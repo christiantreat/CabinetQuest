@@ -801,10 +801,19 @@
                 <button class="canvas-mode-btn active" id="mode-room" onclick="setCanvasMode('room')">🏥 Room Layout</button>
                 <button class="canvas-mode-btn" id="mode-overview" onclick="setCanvasMode('overview')">📊 Overview</button>
                 <div class="canvas-controls">
+                    <label class="canvas-control-label">Room:</label>
+                    <input type="number" id="room-width" class="canvas-control-input" value="800" min="400" max="1600" onchange="updateRoomSize()" style="width: 60px;">
+                    <span class="canvas-control-label">×</span>
+                    <input type="number" id="room-height" class="canvas-control-input" value="600" min="300" max="1200" onchange="updateRoomSize()" style="width: 60px;">
+                    <span style="width: 1px; height: 20px; background: #3e3e42; margin: 0 8px;"></span>
                     <label class="canvas-control-label">Background:</label>
                     <input type="color" id="room-bg-color" class="canvas-control-input" value="#fafafa" onchange="updateRoomBackground()">
+                    <span style="width: 1px; height: 20px; background: #3e3e42; margin: 0 8px;"></span>
                     <label class="canvas-control-label">Grid:</label>
                     <input type="checkbox" id="show-grid" onchange="drawCanvas()" checked>
+                    <input type="number" id="grid-size" class="canvas-control-input" value="50" min="10" max="100" step="10" onchange="drawCanvas()" style="width: 50px;">
+                    <label class="canvas-control-label">Snap:</label>
+                    <input type="checkbox" id="snap-to-grid" onchange="updateSnapToGrid()">
                 </div>
             </div>
             <div class="canvas-container">

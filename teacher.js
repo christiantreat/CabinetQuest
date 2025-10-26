@@ -36,7 +36,9 @@ let STATE = {
     canvasMode: 'room', // 'room' or 'overview'
     draggedCart: null,
     mousePos: {x: 0, y: 0},
-    unsavedChanges: false
+    unsavedChanges: false,
+    snapToGrid: false,
+    gridSize: 50
 };
 
 // ===== CANVAS SETUP =====
@@ -49,6 +51,17 @@ function init() {
     setupCanvas();
     buildHierarchy();
     updateStatusBar();
+
+    // Sync UI controls with loaded config
+    document.getElementById('room-bg-color').value = CONFIG.roomSettings.backgroundColor;
+    document.getElementById('room-width').value = CONFIG.roomSettings.width;
+    document.getElementById('room-height').value = CONFIG.roomSettings.height;
+    document.getElementById('grid-size').value = STATE.gridSize;
+
+    // Set canvas size from config
+    canvas.width = CONFIG.roomSettings.width;
+    canvas.height = CONFIG.roomSettings.height;
+
     drawCanvas();
 
     // Setup autosave
@@ -58,6 +71,12 @@ function init() {
             STATE.unsavedChanges = false;
         }
     }, 5000);
+
+    // Setup grid size listener
+    document.getElementById('grid-size').addEventListener('input', (e) => {
+        STATE.gridSize = parseInt(e.target.value);
+        drawCanvas();
+    });
 }
 
 // ===== CANVAS MANAGEMENT =====
@@ -108,7 +127,7 @@ function drawGrid() {
     ctx.strokeStyle = 'rgba(100, 100, 100, 0.2)';
     ctx.lineWidth = 1;
 
-    const gridSize = 50;
+    const gridSize = STATE.gridSize;
     for (let x = 0; x <= canvas.width; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -127,25 +146,26 @@ function drawGrid() {
 function drawCart(cart, isSelected) {
     const x = cart.x * canvas.width;
     const y = cart.y * canvas.height;
-    const size = 80;
+    const width = (cart.width || 80);
+    const height = (cart.height || 80);
 
     // Selection highlight
     if (isSelected) {
         ctx.fillStyle = 'rgba(14, 99, 156, 0.2)';
-        ctx.fillRect(x - size/2 - 5, y - size/2 - 5, size + 10, size + 10);
+        ctx.fillRect(x - width/2 - 5, y - height/2 - 5, width + 10, height + 10);
         ctx.strokeStyle = '#0e639c';
         ctx.lineWidth = 3;
-        ctx.strokeRect(x - size/2 - 5, y - size/2 - 5, size + 10, size + 10);
+        ctx.strokeRect(x - width/2 - 5, y - height/2 - 5, width + 10, height + 10);
     }
 
     // Cart body
     ctx.fillStyle = cart.color;
-    ctx.fillRect(x - size/2, y - size/2, size, size);
+    ctx.fillRect(x - width/2, y - height/2, width, height);
 
     // Cart border
     ctx.strokeStyle = 'rgba(0,0,0,0.3)';
     ctx.lineWidth = 2;
-    ctx.strokeRect(x - size/2, y - size/2, size, size);
+    ctx.strokeRect(x - width/2, y - height/2, width, height);
 
     // Cart label
     ctx.fillStyle = 'white';
@@ -159,11 +179,12 @@ function drawCart(cart, isSelected) {
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fillText(cart.id, x, y + 15);
 
-    // Position indicator
+    // Dimensions indicator
     if (isSelected) {
         ctx.font = '8px monospace';
         ctx.fillStyle = '#0e639c';
-        ctx.fillText(`(${cart.x.toFixed(2)}, ${cart.y.toFixed(2)})`, x, y + 50);
+        ctx.fillText(`${width}×${height}px`, x, y - height/2 - 10);
+        ctx.fillText(`(${cart.x.toFixed(2)}, ${cart.y.toFixed(2)})`, x, y + height/2 + 18);
     }
 }
 
@@ -250,8 +271,16 @@ function handleCanvasMouseMove(e) {
     if (!STATE.draggedCart) return;
 
     const rect = canvas.getBoundingClientRect();
-    const newX = (e.clientX - rect.left) / canvas.width;
-    const newY = (e.clientY - rect.top) / canvas.height;
+    let newX = (e.clientX - rect.left) / canvas.width;
+    let newY = (e.clientY - rect.top) / canvas.height;
+
+    // Snap to grid if enabled
+    if (STATE.snapToGrid) {
+        const gridSizeX = STATE.gridSize / canvas.width;
+        const gridSizeY = STATE.gridSize / canvas.height;
+        newX = Math.round(newX / gridSizeX) * gridSizeX;
+        newY = Math.round(newY / gridSizeY) * gridSizeY;
+    }
 
     // Clamp to canvas bounds
     STATE.draggedCart.x = Math.max(0.1, Math.min(0.9, newX));
@@ -284,6 +313,26 @@ function updateRoomBackground() {
     CONFIG.roomSettings.backgroundColor = document.getElementById('room-bg-color').value;
     STATE.unsavedChanges = true;
     drawCanvas();
+}
+
+function updateRoomSize() {
+    const width = parseInt(document.getElementById('room-width').value);
+    const height = parseInt(document.getElementById('room-height').value);
+
+    CONFIG.roomSettings.width = width;
+    CONFIG.roomSettings.height = height;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    STATE.unsavedChanges = true;
+    drawCanvas();
+    showAlert('Room size updated', 'success');
+}
+
+function updateSnapToGrid() {
+    STATE.snapToGrid = document.getElementById('snap-to-grid').checked;
+    showAlert(`Snap to grid ${STATE.snapToGrid ? 'enabled' : 'disabled'}`, 'success');
 }
 
 // ===== HIERARCHY TREE =====
@@ -501,6 +550,10 @@ function buildCartInspector(cart, container) {
                     <input type="text" value="${cart.color}" readonly>
                 </div>
             </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Position</div>
 
             <div class="form-field-row">
                 <div class="form-field">
@@ -512,6 +565,25 @@ function buildCartInspector(cart, container) {
                     <input type="number" step="0.01" min="0" max="1" value="${cart.y}" onchange="updateCartProperty('y', parseFloat(this.value))">
                 </div>
             </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Dimensions</div>
+
+            <div class="form-field-row">
+                <div class="form-field">
+                    <label>Width (px)</label>
+                    <input type="number" min="40" max="200" value="${cart.width || 80}" onchange="updateCartProperty('width', parseInt(this.value))">
+                </div>
+                <div class="form-field">
+                    <label>Height (px)</label>
+                    <input type="number" min="40" max="200" value="${cart.height || 80}" onchange="updateCartProperty('height', parseInt(this.value))">
+                </div>
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Options</div>
 
             <div class="checkbox-field">
                 <input type="checkbox" id="cart-is-inventory" ${cart.isInventory ? 'checked' : ''} onchange="updateCartProperty('isInventory', this.checked)">
@@ -865,6 +937,8 @@ function createNewCart() {
         color: '#4CAF50',
         x: 0.5,
         y: 0.5,
+        width: 80,
+        height: 80,
         isInventory: false
     };
 
@@ -1016,11 +1090,11 @@ function loadConfiguration() {
 
 function loadDefaultConfiguration() {
     CONFIG.carts = [
-        { id: 'airway', name: 'Airway Cart', x: 0.2, y: 0.3, color: '#4CAF50' },
-        { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, color: '#2196F3' },
-        { id: 'code', name: 'Code Cart', x: 0.2, y: 0.7, color: '#F44336' },
-        { id: 'trauma', name: 'Trauma Cart', x: 0.8, y: 0.7, color: '#FF9800' },
-        { id: 'inventory', name: 'Procedure Table', x: 0.5, y: 0.5, color: '#9C27B0', isInventory: true }
+        { id: 'airway', name: 'Airway Cart', x: 0.2, y: 0.3, width: 80, height: 80, color: '#4CAF50' },
+        { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, width: 80, height: 80, color: '#2196F3' },
+        { id: 'code', name: 'Code Cart', x: 0.2, y: 0.7, width: 80, height: 80, color: '#F44336' },
+        { id: 'trauma', name: 'Trauma Cart', x: 0.8, y: 0.7, width: 80, height: 80, color: '#FF9800' },
+        { id: 'inventory', name: 'Procedure Table', x: 0.5, y: 0.5, width: 80, height: 80, color: '#9C27B0', isInventory: true }
     ];
 
     CONFIG.drawers = [
@@ -1155,7 +1229,18 @@ function resetToDefaults() {
 }
 
 function previewGame() {
-    window.open('index.html', '_blank');
+    // Save current config to a preview-specific storage key
+    localStorage.setItem('traumaRoomPreviewConfig', JSON.stringify(CONFIG));
+
+    // Open the game with a query parameter to indicate preview mode
+    const previewUrl = 'index.html?preview=true';
+    const previewWindow = window.open(previewUrl, '_blank');
+
+    if (previewWindow) {
+        showAlert('Preview opened in new tab', 'success');
+    } else {
+        showAlert('Please allow popups to preview the game', 'error');
+    }
 }
 
 // ===== UTILITIES =====

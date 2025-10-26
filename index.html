@@ -1140,8 +1140,25 @@
     </div>
 
     <script>
+        // ===== CHECK FOR PREVIEW MODE =====
+        const urlParams = new URLSearchParams(window.location.search);
+        const isPreviewMode = urlParams.get('preview') === 'true';
+
+        let TEACHER_CONFIG = null;
+        if (isPreviewMode) {
+            const previewConfig = localStorage.getItem('traumaRoomPreviewConfig');
+            if (previewConfig) {
+                try {
+                    TEACHER_CONFIG = JSON.parse(previewConfig);
+                    console.log('Preview mode: Using teacher configuration');
+                } catch (e) {
+                    console.error('Failed to load preview config:', e);
+                }
+            }
+        }
+
         // ===== DATA =====
-        const DATA = {
+        const DATA = TEACHER_CONFIG || {
             carts: [
                 { id: 'airway', name: 'Airway Cart', x: 0.2, y: 0.3, color: '#4CAF50' },
                 { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, color: '#2196F3' },
