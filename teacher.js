@@ -1,7 +1,7 @@
-// Teacher Admin Panel - JavaScript
-// Data Management and UI Logic
+// Trauma Room Trainer - Game Designer Tool
+// Desktop-first professional game design interface
 
-// ===== DATA STRUCTURE =====
+// ===== CONFIGURATION DATA =====
 let CONFIG = {
     carts: [],
     drawers: [],
@@ -10,8 +10,8 @@ let CONFIG = {
     achievements: [],
     roomSettings: {
         backgroundColor: '#fafafa',
-        width: 100,
-        height: 100
+        width: 800,
+        height: 600
     },
     scoringRules: {
         essentialPoints: 60,
@@ -23,910 +23,998 @@ let CONFIG = {
     },
     generalSettings: {
         appTitle: 'Trauma Room Trainer',
-        welcomeMessage: 'Welcome to Trauma Room Trainer!',
         enableTutorial: true,
         enableSound: true,
         enableHaptics: true
     }
 };
 
+// ===== STATE MANAGEMENT =====
+let STATE = {
+    selectedType: null, // 'cart', 'scenario', 'drawer', 'item', 'achievement'
+    selectedId: null,
+    canvasMode: 'room', // 'room' or 'overview'
+    draggedCart: null,
+    mousePos: {x: 0, y: 0},
+    unsavedChanges: false
+};
+
+// ===== CANVAS SETUP =====
+const canvas = document.getElementById('room-canvas');
+const ctx = canvas.getContext('2d');
+
 // ===== INITIALIZATION =====
 function init() {
     loadConfiguration();
-    setupEventListeners();
-    updateAllLists();
-    updateStats();
-    drawRoomPreview();
-}
+    setupCanvas();
+    buildHierarchy();
+    updateStatusBar();
+    drawCanvas();
 
-function setupEventListeners() {
-    // Color picker sync
-    document.getElementById('room-bg-color').addEventListener('input', (e) => {
-        document.getElementById('room-bg-color-text').value = e.target.value;
-        CONFIG.roomSettings.backgroundColor = e.target.value;
-        drawRoomPreview();
-    });
-
-    document.getElementById('cart-color').addEventListener('input', (e) => {
-        document.getElementById('cart-color-text').value = e.target.value;
-    });
-
-    // Room dimension changes
-    document.getElementById('room-width').addEventListener('input', drawRoomPreview);
-    document.getElementById('room-height').addEventListener('input', drawRoomPreview);
-}
-
-// ===== TAB NAVIGATION =====
-function switchTab(tabName) {
-    // Update tab buttons
-    document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-    event.target.classList.add('active');
-
-    // Update tab content
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-    document.getElementById(`tab-${tabName}`).classList.add('active');
-
-    // Refresh data when switching tabs
-    updateAllLists();
-}
-
-// ===== ALERTS =====
-function showAlert(type, message) {
-    const alert = document.getElementById(`${type}-alert`);
-    alert.textContent = message;
-    alert.classList.add('show');
-    setTimeout(() => {
-        alert.classList.remove('show');
-    }, 3000);
-}
-
-// ===== MODAL MANAGEMENT =====
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.remove('active');
-}
-
-function openModal(modalId) {
-    document.getElementById(modalId).classList.add('active');
-}
-
-// ===== CART MANAGEMENT =====
-function openAddCartModal() {
-    document.getElementById('cart-modal-title').textContent = 'Add New Cart';
-    document.getElementById('cart-edit-id').value = '';
-    document.getElementById('cart-id').value = '';
-    document.getElementById('cart-name').value = '';
-    document.getElementById('cart-color').value = '#4CAF50';
-    document.getElementById('cart-color-text').value = '#4CAF50';
-    document.getElementById('cart-x').value = '0.5';
-    document.getElementById('cart-y').value = '0.5';
-    document.getElementById('cart-is-inventory').checked = false;
-    openModal('cart-modal');
-}
-
-function editCart(cartId) {
-    const cart = CONFIG.carts.find(c => c.id === cartId);
-    if (!cart) return;
-
-    document.getElementById('cart-modal-title').textContent = 'Edit Cart';
-    document.getElementById('cart-edit-id').value = cart.id;
-    document.getElementById('cart-id').value = cart.id;
-    document.getElementById('cart-name').value = cart.name;
-    document.getElementById('cart-color').value = cart.color;
-    document.getElementById('cart-color-text').value = cart.color;
-    document.getElementById('cart-x').value = cart.x;
-    document.getElementById('cart-y').value = cart.y;
-    document.getElementById('cart-is-inventory').checked = cart.isInventory || false;
-    openModal('cart-modal');
-}
-
-function saveCart() {
-    const editId = document.getElementById('cart-edit-id').value;
-    const cartData = {
-        id: document.getElementById('cart-id').value.trim(),
-        name: document.getElementById('cart-name').value.trim(),
-        color: document.getElementById('cart-color').value,
-        x: parseFloat(document.getElementById('cart-x').value),
-        y: parseFloat(document.getElementById('cart-y').value),
-        isInventory: document.getElementById('cart-is-inventory').checked
-    };
-
-    // Validation
-    if (!cartData.id || !cartData.name) {
-        showAlert('error', 'Please fill in all required fields!');
-        return;
-    }
-
-    // Check for duplicate ID (only if not editing)
-    if (!editId && CONFIG.carts.find(c => c.id === cartData.id)) {
-        showAlert('error', 'A cart with this ID already exists!');
-        return;
-    }
-
-    if (editId) {
-        // Edit existing
-        const index = CONFIG.carts.findIndex(c => c.id === editId);
-        if (index !== -1) {
-            CONFIG.carts[index] = cartData;
-            showAlert('success', 'Cart updated successfully!');
+    // Setup autosave
+    setInterval(() => {
+        if (STATE.unsavedChanges) {
+            saveConfiguration();
+            STATE.unsavedChanges = false;
         }
+    }, 5000);
+}
+
+// ===== CANVAS MANAGEMENT =====
+function setupCanvas() {
+    // Mouse events for drag and drop
+    canvas.addEventListener('mousedown', handleCanvasMouseDown);
+    canvas.addEventListener('mousemove', handleCanvasMouseMove);
+    canvas.addEventListener('mouseup', handleCanvasMouseUp);
+    canvas.addEventListener('mouseleave', handleCanvasMouseUp);
+
+    // Track mouse position
+    canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        STATE.mousePos.x = ((e.clientX - rect.left) / canvas.width).toFixed(2);
+        STATE.mousePos.y = ((e.clientY - rect.top) / canvas.height).toFixed(2);
+        document.getElementById('canvas-info-mouse').textContent =
+            `X: ${STATE.mousePos.x}, Y: ${STATE.mousePos.y}`;
+    });
+}
+
+function drawCanvas() {
+    if (STATE.canvasMode === 'room') {
+        drawRoomCanvas();
     } else {
-        // Add new
-        CONFIG.carts.push(cartData);
-        showAlert('success', 'Cart added successfully!');
-    }
-
-    saveConfiguration();
-    updateAllLists();
-    drawRoomPreview();
-    closeModal('cart-modal');
-}
-
-function deleteCart(cartId) {
-    if (!confirm('Are you sure you want to delete this cart? This will also delete all associated drawers and items.')) {
-        return;
-    }
-
-    // Remove cart
-    CONFIG.carts = CONFIG.carts.filter(c => c.id !== cartId);
-
-    // Remove associated drawers
-    const drawerIds = CONFIG.drawers.filter(d => d.cart === cartId).map(d => d.id);
-    CONFIG.drawers = CONFIG.drawers.filter(d => d.cart !== cartId);
-
-    // Remove associated items
-    CONFIG.items = CONFIG.items.filter(i => i.cart !== cartId);
-
-    showAlert('success', 'Cart and associated items deleted successfully!');
-    saveConfiguration();
-    updateAllLists();
-    drawRoomPreview();
-}
-
-function renderCartsList() {
-    const container = document.getElementById('carts-list');
-    container.innerHTML = '';
-
-    if (CONFIG.carts.length === 0) {
-        container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No carts yet. Add your first cart!</p>';
-        return;
-    }
-
-    CONFIG.carts.forEach(cart => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `
-            <div class="list-item-content">
-                <h4>${cart.name}</h4>
-                <p>ID: ${cart.id} | Color: <span style="display: inline-block; width: 20px; height: 20px; background: ${cart.color}; border-radius: 4px; vertical-align: middle;"></span> ${cart.color}</p>
-                <p>Position: X=${cart.x}, Y=${cart.y} ${cart.isInventory ? '| <span class="tag tag-info">Inventory</span>' : ''}</p>
-            </div>
-            <div class="list-item-actions">
-                <button class="btn btn-secondary btn-small" onclick="editCart('${cart.id}')">✏️ Edit</button>
-                <button class="btn btn-danger btn-small" onclick="deleteCart('${cart.id}')">🗑️ Delete</button>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-
-// ===== SCENARIO MANAGEMENT =====
-function openAddScenarioModal() {
-    document.getElementById('scenario-modal-title').textContent = 'Add New Scenario';
-    document.getElementById('scenario-edit-id').value = '';
-    document.getElementById('scenario-id').value = '';
-    document.getElementById('scenario-name').value = '';
-    document.getElementById('scenario-description').value = '';
-    document.getElementById('scenario-success-feedback').value = 'Perfect! You collected all required items correctly!';
-    document.getElementById('scenario-partial-feedback').value = 'Good, but you missed some recommended items.';
-    document.getElementById('scenario-failure-feedback').value = 'You are missing essential items for this procedure.';
-
-    renderItemSelector('scenario-essential-items', []);
-    renderItemSelector('scenario-optional-items', []);
-
-    openModal('scenario-modal');
-}
-
-function editScenario(scenarioId) {
-    const scenario = CONFIG.scenarios.find(s => s.id === scenarioId);
-    if (!scenario) return;
-
-    document.getElementById('scenario-modal-title').textContent = 'Edit Scenario';
-    document.getElementById('scenario-edit-id').value = scenario.id;
-    document.getElementById('scenario-id').value = scenario.id;
-    document.getElementById('scenario-name').value = scenario.name;
-    document.getElementById('scenario-description').value = scenario.description;
-    document.getElementById('scenario-success-feedback').value = scenario.successFeedback || 'Perfect!';
-    document.getElementById('scenario-partial-feedback').value = scenario.partialFeedback || 'Good, but incomplete.';
-    document.getElementById('scenario-failure-feedback').value = scenario.failureFeedback || 'Missing critical items.';
-
-    renderItemSelector('scenario-essential-items', scenario.essential || []);
-    renderItemSelector('scenario-optional-items', scenario.optional || []);
-
-    openModal('scenario-modal');
-}
-
-function renderItemSelector(containerId, selectedItems) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = '';
-
-    if (CONFIG.items.length === 0) {
-        container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No items available. Add items first!</p>';
-        return;
-    }
-
-    CONFIG.items.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'item-selector-item';
-        if (selectedItems.includes(item.id)) {
-            div.classList.add('selected');
-        }
-        div.textContent = item.name;
-        div.onclick = () => {
-            div.classList.toggle('selected');
-        };
-        container.appendChild(div);
-    });
-}
-
-function getSelectedItems(containerId) {
-    const container = document.getElementById(containerId);
-    const selectedDivs = container.querySelectorAll('.item-selector-item.selected');
-    const selectedIds = [];
-
-    selectedDivs.forEach(div => {
-        const item = CONFIG.items.find(i => i.name === div.textContent);
-        if (item) selectedIds.push(item.id);
-    });
-
-    return selectedIds;
-}
-
-function saveScenario() {
-    const editId = document.getElementById('scenario-edit-id').value;
-    const scenarioData = {
-        id: document.getElementById('scenario-id').value.trim(),
-        name: document.getElementById('scenario-name').value.trim(),
-        description: document.getElementById('scenario-description').value.trim(),
-        essential: getSelectedItems('scenario-essential-items'),
-        optional: getSelectedItems('scenario-optional-items'),
-        successFeedback: document.getElementById('scenario-success-feedback').value.trim(),
-        partialFeedback: document.getElementById('scenario-partial-feedback').value.trim(),
-        failureFeedback: document.getElementById('scenario-failure-feedback').value.trim()
-    };
-
-    // Validation
-    if (!scenarioData.id || !scenarioData.name || !scenarioData.description) {
-        showAlert('error', 'Please fill in all required fields!');
-        return;
-    }
-
-    if (scenarioData.essential.length === 0) {
-        showAlert('error', 'Please select at least one essential item!');
-        return;
-    }
-
-    // Check for duplicate ID (only if not editing)
-    if (!editId && CONFIG.scenarios.find(s => s.id === scenarioData.id)) {
-        showAlert('error', 'A scenario with this ID already exists!');
-        return;
-    }
-
-    if (editId) {
-        const index = CONFIG.scenarios.findIndex(s => s.id === editId);
-        if (index !== -1) {
-            CONFIG.scenarios[index] = scenarioData;
-            showAlert('success', 'Scenario updated successfully!');
-        }
-    } else {
-        CONFIG.scenarios.push(scenarioData);
-        showAlert('success', 'Scenario added successfully!');
-    }
-
-    saveConfiguration();
-    updateAllLists();
-    closeModal('scenario-modal');
-}
-
-function deleteScenario(scenarioId) {
-    if (!confirm('Are you sure you want to delete this scenario?')) {
-        return;
-    }
-
-    CONFIG.scenarios = CONFIG.scenarios.filter(s => s.id !== scenarioId);
-    showAlert('success', 'Scenario deleted successfully!');
-    saveConfiguration();
-    updateAllLists();
-}
-
-function renderScenariosList() {
-    const container = document.getElementById('scenarios-list');
-    container.innerHTML = '';
-
-    if (CONFIG.scenarios.length === 0) {
-        container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No scenarios yet. Add your first scenario!</p>';
-        return;
-    }
-
-    CONFIG.scenarios.forEach(scenario => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-
-        const essentialTags = scenario.essential.map(id => {
-            const item = CONFIG.items.find(i => i.id === id);
-            return item ? `<span class="tag tag-essential">${item.name}</span>` : '';
-        }).join('');
-
-        const optionalTags = scenario.optional.map(id => {
-            const item = CONFIG.items.find(i => i.id === id);
-            return item ? `<span class="tag tag-optional">${item.name}</span>` : '';
-        }).join('');
-
-        div.innerHTML = `
-            <div class="list-item-content">
-                <h4>${scenario.name}</h4>
-                <p>${scenario.description}</p>
-                <p style="margin-top: 8px;">
-                    <strong>Essential:</strong> ${essentialTags || '<span style="color: #999;">None</span>'}
-                </p>
-                <p style="margin-top: 5px;">
-                    <strong>Optional:</strong> ${optionalTags || '<span style="color: #999;">None</span>'}
-                </p>
-            </div>
-            <div class="list-item-actions">
-                <button class="btn btn-secondary btn-small" onclick="editScenario('${scenario.id}')">✏️ Edit</button>
-                <button class="btn btn-danger btn-small" onclick="deleteScenario('${scenario.id}')">🗑️ Delete</button>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-
-// ===== DRAWER MANAGEMENT =====
-function openAddDrawerModal() {
-    document.getElementById('drawer-modal-title').textContent = 'Add New Drawer';
-    document.getElementById('drawer-edit-id').value = '';
-    document.getElementById('drawer-id').value = '';
-    document.getElementById('drawer-name').value = '';
-    document.getElementById('drawer-number').value = '1';
-
-    populateCartDropdown('drawer-cart');
-    openModal('drawer-modal');
-}
-
-function editDrawer(drawerId) {
-    const drawer = CONFIG.drawers.find(d => d.id === drawerId);
-    if (!drawer) return;
-
-    document.getElementById('drawer-modal-title').textContent = 'Edit Drawer';
-    document.getElementById('drawer-edit-id').value = drawer.id;
-    document.getElementById('drawer-id').value = drawer.id;
-    document.getElementById('drawer-name').value = drawer.name;
-    document.getElementById('drawer-number').value = drawer.number || 1;
-
-    populateCartDropdown('drawer-cart');
-    document.getElementById('drawer-cart').value = drawer.cart;
-
-    openModal('drawer-modal');
-}
-
-function saveDrawer() {
-    const editId = document.getElementById('drawer-edit-id').value;
-    const drawerData = {
-        id: document.getElementById('drawer-id').value.trim(),
-        name: document.getElementById('drawer-name').value.trim(),
-        cart: document.getElementById('drawer-cart').value,
-        number: parseInt(document.getElementById('drawer-number').value)
-    };
-
-    // Validation
-    if (!drawerData.id || !drawerData.name || !drawerData.cart) {
-        showAlert('error', 'Please fill in all required fields!');
-        return;
-    }
-
-    // Check for duplicate ID (only if not editing)
-    if (!editId && CONFIG.drawers.find(d => d.id === drawerData.id)) {
-        showAlert('error', 'A drawer with this ID already exists!');
-        return;
-    }
-
-    if (editId) {
-        const index = CONFIG.drawers.findIndex(d => d.id === editId);
-        if (index !== -1) {
-            CONFIG.drawers[index] = drawerData;
-            showAlert('success', 'Drawer updated successfully!');
-        }
-    } else {
-        CONFIG.drawers.push(drawerData);
-        showAlert('success', 'Drawer added successfully!');
-    }
-
-    saveConfiguration();
-    updateAllLists();
-    closeModal('drawer-modal');
-}
-
-function deleteDrawer(drawerId) {
-    if (!confirm('Are you sure you want to delete this drawer? This will also delete all items in it.')) {
-        return;
-    }
-
-    CONFIG.drawers = CONFIG.drawers.filter(d => d.id !== drawerId);
-    CONFIG.items = CONFIG.items.filter(i => i.drawer !== drawerId);
-
-    showAlert('success', 'Drawer and associated items deleted successfully!');
-    saveConfiguration();
-    updateAllLists();
-}
-
-function renderDrawersList() {
-    const container = document.getElementById('drawers-list');
-    container.innerHTML = '';
-
-    if (CONFIG.drawers.length === 0) {
-        container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No drawers yet. Add your first drawer!</p>';
-        return;
-    }
-
-    CONFIG.drawers.forEach(drawer => {
-        const cart = CONFIG.carts.find(c => c.id === drawer.cart);
-        const cartName = cart ? cart.name : 'Unknown Cart';
-        const itemCount = CONFIG.items.filter(i => i.drawer === drawer.id).length;
-
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `
-            <div class="list-item-content">
-                <h4>${drawer.name}</h4>
-                <p>Cart: ${cartName} | Number: ${drawer.number} | Items: ${itemCount}</p>
-            </div>
-            <div class="list-item-actions">
-                <button class="btn btn-secondary btn-small" onclick="editDrawer('${drawer.id}')">✏️ Edit</button>
-                <button class="btn btn-danger btn-small" onclick="deleteDrawer('${drawer.id}')">🗑️ Delete</button>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-
-// ===== ITEM MANAGEMENT =====
-function openAddItemModal() {
-    document.getElementById('item-modal-title').textContent = 'Add New Item';
-    document.getElementById('item-edit-id').value = '';
-    document.getElementById('item-id').value = '';
-    document.getElementById('item-name').value = '';
-    document.getElementById('item-description').value = '';
-    document.getElementById('item-image').value = '';
-    document.getElementById('item-image-preview').innerHTML = 'No image selected';
-    document.getElementById('item-image-preview').className = 'image-preview empty';
-
-    populateCartDropdown('item-cart');
-    updateDrawerOptions();
-
-    openModal('item-modal');
-}
-
-function editItem(itemId) {
-    const item = CONFIG.items.find(i => i.id === itemId);
-    if (!item) return;
-
-    document.getElementById('item-modal-title').textContent = 'Edit Item';
-    document.getElementById('item-edit-id').value = item.id;
-    document.getElementById('item-id').value = item.id;
-    document.getElementById('item-name').value = item.name;
-    document.getElementById('item-description').value = item.description || '';
-
-    populateCartDropdown('item-cart');
-    document.getElementById('item-cart').value = item.cart;
-    updateDrawerOptions();
-    document.getElementById('item-drawer').value = item.drawer;
-
-    // Show existing image if any
-    if (item.image) {
-        const preview = document.getElementById('item-image-preview');
-        preview.className = 'image-preview';
-        preview.innerHTML = `<img src="${item.image}" alt="${item.name}">`;
-    }
-
-    openModal('item-modal');
-}
-
-function previewItemImage() {
-    const file = document.getElementById('item-image').files[0];
-    const preview = document.getElementById('item-image-preview');
-
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            preview.className = 'image-preview';
-            preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-        };
-        reader.readAsDataURL(file);
+        drawOverviewCanvas();
     }
 }
 
-function saveItem() {
-    const editId = document.getElementById('item-edit-id').value;
-    const itemData = {
-        id: document.getElementById('item-id').value.trim(),
-        name: document.getElementById('item-name').value.trim(),
-        cart: document.getElementById('item-cart').value,
-        drawer: document.getElementById('item-drawer').value,
-        description: document.getElementById('item-description').value.trim()
-    };
-
-    // Get image if uploaded
-    const imageFile = document.getElementById('item-image').files[0];
-    if (imageFile) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            itemData.image = e.target.result;
-            completeItemSave(editId, itemData);
-        };
-        reader.readAsDataURL(imageFile);
-    } else {
-        // Keep existing image if editing
-        if (editId) {
-            const existingItem = CONFIG.items.find(i => i.id === editId);
-            if (existingItem && existingItem.image) {
-                itemData.image = existingItem.image;
-            }
-        }
-        completeItemSave(editId, itemData);
-    }
-}
-
-function completeItemSave(editId, itemData) {
-    // Validation
-    if (!itemData.id || !itemData.name || !itemData.cart || !itemData.drawer) {
-        showAlert('error', 'Please fill in all required fields!');
-        return;
-    }
-
-    // Check for duplicate ID (only if not editing)
-    if (!editId && CONFIG.items.find(i => i.id === itemData.id)) {
-        showAlert('error', 'An item with this ID already exists!');
-        return;
-    }
-
-    if (editId) {
-        const index = CONFIG.items.findIndex(i => i.id === editId);
-        if (index !== -1) {
-            CONFIG.items[index] = itemData;
-            showAlert('success', 'Item updated successfully!');
-        }
-    } else {
-        CONFIG.items.push(itemData);
-        showAlert('success', 'Item added successfully!');
-    }
-
-    saveConfiguration();
-    updateAllLists();
-    closeModal('item-modal');
-}
-
-function deleteItem(itemId) {
-    if (!confirm('Are you sure you want to delete this item?')) {
-        return;
-    }
-
-    CONFIG.items = CONFIG.items.filter(i => i.id !== itemId);
-    showAlert('success', 'Item deleted successfully!');
-    saveConfiguration();
-    updateAllLists();
-}
-
-function renderItemsList() {
-    const container = document.getElementById('items-list');
-    container.innerHTML = '';
-
-    if (CONFIG.items.length === 0) {
-        container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No items yet. Add your first item!</p>';
-        return;
-    }
-
-    CONFIG.items.forEach(item => {
-        const cart = CONFIG.carts.find(c => c.id === item.cart);
-        const drawer = CONFIG.drawers.find(d => d.id === item.drawer);
-        const cartName = cart ? cart.name : 'Unknown';
-        const drawerName = drawer ? drawer.name : 'Unknown';
-
-        const div = document.createElement('div');
-        div.className = 'list-item';
-
-        const imageHTML = item.image
-            ? `<img src="${item.image}" style="width: 50px; height: 50px; object-fit: contain; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px;">`
-            : '';
-
-        div.innerHTML = `
-            <div class="list-item-content" style="display: flex; align-items: center;">
-                ${imageHTML}
-                <div>
-                    <h4>${item.name}</h4>
-                    <p>Cart: ${cartName} | Drawer: ${drawerName}</p>
-                    ${item.description ? `<p style="font-size: 12px; color: #888;">${item.description}</p>` : ''}
-                </div>
-            </div>
-            <div class="list-item-actions">
-                <button class="btn btn-secondary btn-small" onclick="editItem('${item.id}')">✏️ Edit</button>
-                <button class="btn btn-danger btn-small" onclick="deleteItem('${item.id}')">🗑️ Delete</button>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-
-// ===== ACHIEVEMENT MANAGEMENT =====
-function openAddAchievementModal() {
-    document.getElementById('achievement-modal-title').textContent = 'Add New Achievement';
-    document.getElementById('achievement-edit-id').value = '';
-    document.getElementById('achievement-id').value = '';
-    document.getElementById('achievement-title').value = '';
-    document.getElementById('achievement-description').value = '';
-    document.getElementById('achievement-icon').value = '🏆';
-    document.getElementById('achievement-trigger').value = 'first-scenario';
-    document.getElementById('achievement-value').value = '0';
-
-    openModal('achievement-modal');
-}
-
-function editAchievement(achievementId) {
-    const achievement = CONFIG.achievements.find(a => a.id === achievementId);
-    if (!achievement) return;
-
-    document.getElementById('achievement-modal-title').textContent = 'Edit Achievement';
-    document.getElementById('achievement-edit-id').value = achievement.id;
-    document.getElementById('achievement-id').value = achievement.id;
-    document.getElementById('achievement-title').value = achievement.title;
-    document.getElementById('achievement-description').value = achievement.description;
-    document.getElementById('achievement-icon').value = achievement.icon || '🏆';
-    document.getElementById('achievement-trigger').value = achievement.trigger || 'first-scenario';
-    document.getElementById('achievement-value').value = achievement.value || 0;
-
-    openModal('achievement-modal');
-}
-
-function saveAchievement() {
-    const editId = document.getElementById('achievement-edit-id').value;
-    const achievementData = {
-        id: document.getElementById('achievement-id').value.trim(),
-        title: document.getElementById('achievement-title').value.trim(),
-        description: document.getElementById('achievement-description').value.trim(),
-        icon: document.getElementById('achievement-icon').value.trim() || '🏆',
-        trigger: document.getElementById('achievement-trigger').value,
-        value: parseInt(document.getElementById('achievement-value').value) || 0
-    };
-
-    // Validation
-    if (!achievementData.id || !achievementData.title || !achievementData.description) {
-        showAlert('error', 'Please fill in all required fields!');
-        return;
-    }
-
-    // Check for duplicate ID (only if not editing)
-    if (!editId && CONFIG.achievements.find(a => a.id === achievementData.id)) {
-        showAlert('error', 'An achievement with this ID already exists!');
-        return;
-    }
-
-    if (editId) {
-        const index = CONFIG.achievements.findIndex(a => a.id === editId);
-        if (index !== -1) {
-            CONFIG.achievements[index] = achievementData;
-            showAlert('success', 'Achievement updated successfully!');
-        }
-    } else {
-        CONFIG.achievements.push(achievementData);
-        showAlert('success', 'Achievement added successfully!');
-    }
-
-    saveConfiguration();
-    updateAllLists();
-    closeModal('achievement-modal');
-}
-
-function deleteAchievement(achievementId) {
-    if (!confirm('Are you sure you want to delete this achievement?')) {
-        return;
-    }
-
-    CONFIG.achievements = CONFIG.achievements.filter(a => a.id !== achievementId);
-    showAlert('success', 'Achievement deleted successfully!');
-    saveConfiguration();
-    updateAllLists();
-}
-
-function renderAchievementsList() {
-    const container = document.getElementById('achievements-list');
-    container.innerHTML = '';
-
-    if (CONFIG.achievements.length === 0) {
-        container.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No achievements yet. Add your first achievement!</p>';
-        return;
-    }
-
-    CONFIG.achievements.forEach(achievement => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = `
-            <div class="list-item-content">
-                <h4>${achievement.icon} ${achievement.title}</h4>
-                <p>${achievement.description}</p>
-                <p><span class="tag tag-info">Trigger: ${achievement.trigger}${achievement.value ? ` (${achievement.value})` : ''}</span></p>
-            </div>
-            <div class="list-item-actions">
-                <button class="btn btn-secondary btn-small" onclick="editAchievement('${achievement.id}')">✏️ Edit</button>
-                <button class="btn btn-danger btn-small" onclick="deleteAchievement('${achievement.id}')">🗑️ Delete</button>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-
-// ===== UTILITY FUNCTIONS =====
-function populateCartDropdown(selectId) {
-    const select = document.getElementById(selectId);
-    select.innerHTML = '<option value="">Select a cart...</option>';
-
-    CONFIG.carts.filter(c => !c.isInventory).forEach(cart => {
-        const option = document.createElement('option');
-        option.value = cart.id;
-        option.textContent = cart.name;
-        select.appendChild(option);
-    });
-}
-
-function updateDrawerOptions() {
-    const cartId = document.getElementById('item-cart').value;
-    const drawerSelect = document.getElementById('item-drawer');
-    drawerSelect.innerHTML = '<option value="">Select a drawer...</option>';
-
-    if (!cartId) return;
-
-    const cartDrawers = CONFIG.drawers.filter(d => d.cart === cartId);
-    cartDrawers.forEach(drawer => {
-        const option = document.createElement('option');
-        option.value = drawer.id;
-        option.textContent = drawer.name;
-        drawerSelect.appendChild(option);
-    });
-}
-
-function updateAllLists() {
-    renderCartsList();
-    renderScenariosList();
-    renderDrawersList();
-    renderItemsList();
-    renderAchievementsList();
-    updateStats();
-}
-
-function updateStats() {
-    document.getElementById('stat-carts').textContent = CONFIG.carts.filter(c => !c.isInventory).length;
-    document.getElementById('stat-scenarios').textContent = CONFIG.scenarios.length;
-    document.getElementById('stat-items').textContent = CONFIG.items.length;
-    document.getElementById('stat-drawers').textContent = CONFIG.drawers.length;
-}
-
-// ===== ROOM PREVIEW =====
-function drawRoomPreview() {
-    const canvas = document.getElementById('room-preview');
-    const ctx = canvas.getContext('2d');
-
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+function drawRoomCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Background
     ctx.fillStyle = CONFIG.roomSettings.backgroundColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw carts
+    // Grid
+    if (document.getElementById('show-grid').checked) {
+        drawGrid();
+    }
+
+    // Draw all carts
     CONFIG.carts.forEach(cart => {
-        const x = cart.x * canvas.width;
-        const y = cart.y * canvas.height;
-        const size = Math.min(canvas.width, canvas.height) * 0.15;
-
-        // Cart body
-        ctx.fillStyle = cart.color;
-        ctx.fillRect(x - size/2, y - size/2, size, size);
-
-        // Cart label
-        ctx.fillStyle = 'white';
-        ctx.font = `bold ${size * 0.15}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        if (cart.isInventory) {
-            ctx.font = `bold ${size * 0.4}px Arial`;
-            ctx.fillText('🎒', x, y);
-        } else {
-            ctx.fillText(cart.name.split(' ')[0], x, y);
-        }
+        drawCart(cart, STATE.selectedType === 'cart' && STATE.selectedId === cart.id);
     });
 }
 
-// ===== ROOM SETTINGS =====
-function saveRoomSettings() {
+function drawGrid() {
+    ctx.strokeStyle = 'rgba(100, 100, 100, 0.2)';
+    ctx.lineWidth = 1;
+
+    const gridSize = 50;
+    for (let x = 0; x <= canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y <= canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
+
+function drawCart(cart, isSelected) {
+    const x = cart.x * canvas.width;
+    const y = cart.y * canvas.height;
+    const size = 80;
+
+    // Selection highlight
+    if (isSelected) {
+        ctx.fillStyle = 'rgba(14, 99, 156, 0.2)';
+        ctx.fillRect(x - size/2 - 5, y - size/2 - 5, size + 10, size + 10);
+        ctx.strokeStyle = '#0e639c';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x - size/2 - 5, y - size/2 - 5, size + 10, size + 10);
+    }
+
+    // Cart body
+    ctx.fillStyle = cart.color;
+    ctx.fillRect(x - size/2, y - size/2, size, size);
+
+    // Cart border
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x - size/2, y - size/2, size, size);
+
+    // Cart label
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(cart.name, x, y);
+
+    // Cart ID (small text)
+    ctx.font = '9px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText(cart.id, x, y + 15);
+
+    // Position indicator
+    if (isSelected) {
+        ctx.font = '8px monospace';
+        ctx.fillStyle = '#0e639c';
+        ctx.fillText(`(${cart.x.toFixed(2)}, ${cart.y.toFixed(2)})`, x, y + 50);
+    }
+}
+
+function drawOverviewCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#1e1e1e';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw statistics overview
+    const stats = [
+        {label: 'Carts', value: CONFIG.carts.length, icon: '🛒', color: '#0e639c'},
+        {label: 'Scenarios', value: CONFIG.scenarios.length, icon: '📋', color: '#0e7a0d'},
+        {label: 'Drawers', value: CONFIG.drawers.length, icon: '🗄️', color: '#a1260d'},
+        {label: 'Items', value: CONFIG.items.length, icon: '📦', color: '#b7950b'},
+        {label: 'Achievements', value: CONFIG.achievements.length, icon: '🏆', color: '#7d3c98'}
+    ];
+
+    const startX = 50;
+    const startY = 100;
+    const boxWidth = 140;
+    const boxHeight = 100;
+    const gap = 20;
+
+    stats.forEach((stat, index) => {
+        const x = startX + (index % 3) * (boxWidth + gap);
+        const y = startY + Math.floor(index / 3) * (boxHeight + gap);
+
+        // Box background
+        ctx.fillStyle = '#252526';
+        ctx.fillRect(x, y, boxWidth, boxHeight);
+
+        // Box border
+        ctx.strokeStyle = stat.color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, boxWidth, boxHeight);
+
+        // Icon
+        ctx.font = '32px Arial';
+        ctx.fillStyle = stat.color;
+        ctx.textAlign = 'center';
+        ctx.fillText(stat.icon, x + boxWidth/2, y + 35);
+
+        // Value
+        ctx.font = 'bold 24px Arial';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(stat.value, x + boxWidth/2, y + 60);
+
+        // Label
+        ctx.font = '11px Arial';
+        ctx.fillStyle = '#999';
+        ctx.fillText(stat.label, x + boxWidth/2, y + 80);
+    });
+
+    // Title
+    ctx.font = 'bold 20px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'left';
+    ctx.fillText('Project Overview', 50, 50);
+}
+
+// ===== CANVAS INTERACTION =====
+function handleCanvasMouseDown(e) {
+    if (STATE.canvasMode !== 'room') return;
+
+    const rect = canvas.getBoundingClientRect();
+    const clickX = (e.clientX - rect.left) / canvas.width;
+    const clickY = (e.clientY - rect.top) / canvas.height;
+
+    // Check if clicking on a cart
+    for (let cart of CONFIG.carts) {
+        const size = 80 / canvas.width;
+        if (Math.abs(clickX - cart.x) < size/2 && Math.abs(clickY - cart.y) < size/2) {
+            STATE.draggedCart = cart;
+            selectEntity('cart', cart.id);
+            return;
+        }
+    }
+
+    // Clicking on empty space - deselect
+    deselectEntity();
+}
+
+function handleCanvasMouseMove(e) {
+    if (!STATE.draggedCart) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const newX = (e.clientX - rect.left) / canvas.width;
+    const newY = (e.clientY - rect.top) / canvas.height;
+
+    // Clamp to canvas bounds
+    STATE.draggedCart.x = Math.max(0.1, Math.min(0.9, newX));
+    STATE.draggedCart.y = Math.max(0.1, Math.min(0.9, newY));
+
+    STATE.unsavedChanges = true;
+    drawCanvas();
+    updateInspector();
+}
+
+function handleCanvasMouseUp() {
+    STATE.draggedCart = null;
+}
+
+function setCanvasMode(mode) {
+    STATE.canvasMode = mode;
+
+    // Update button states
+    document.getElementById('mode-room').classList.toggle('active', mode === 'room');
+    document.getElementById('mode-overview').classList.toggle('active', mode === 'overview');
+
+    // Update info
+    document.getElementById('canvas-info-mode').textContent =
+        `Mode: ${mode === 'room' ? 'Room Layout' : 'Overview'}`;
+
+    drawCanvas();
+}
+
+function updateRoomBackground() {
     CONFIG.roomSettings.backgroundColor = document.getElementById('room-bg-color').value;
-    CONFIG.roomSettings.width = parseInt(document.getElementById('room-width').value);
-    CONFIG.roomSettings.height = parseInt(document.getElementById('room-height').value);
-
-    saveConfiguration();
-    drawRoomPreview();
-    showAlert('success', 'Room settings saved successfully!');
+    STATE.unsavedChanges = true;
+    drawCanvas();
 }
 
-// ===== SCORING RULES =====
-function saveScoringRules() {
-    CONFIG.scoringRules = {
-        essentialPoints: parseInt(document.getElementById('essential-points').value),
-        optionalPoints: parseInt(document.getElementById('optional-points').value),
-        penaltyPoints: parseInt(document.getElementById('penalty-points').value),
-        perfectBonus: parseInt(document.getElementById('perfect-bonus').value),
-        speedThreshold: parseInt(document.getElementById('speed-threshold').value),
-        speedBonus: parseInt(document.getElementById('speed-bonus').value)
-    };
+// ===== HIERARCHY TREE =====
+function buildHierarchy() {
+    const tree = document.getElementById('hierarchy-tree');
+    tree.innerHTML = '';
 
-    saveConfiguration();
-    showAlert('success', 'Scoring rules saved successfully!');
+    // Build categories
+    const categories = [
+        {
+            id: 'carts',
+            name: 'Carts',
+            icon: '🛒',
+            items: CONFIG.carts,
+            createNew: createNewCart
+        },
+        {
+            id: 'scenarios',
+            name: 'Scenarios',
+            icon: '📋',
+            items: CONFIG.scenarios,
+            createNew: createNewScenario
+        },
+        {
+            id: 'drawers',
+            name: 'Drawers',
+            icon: '🗄️',
+            items: CONFIG.drawers,
+            createNew: createNewDrawer
+        },
+        {
+            id: 'items',
+            name: 'Items',
+            icon: '📦',
+            items: CONFIG.items,
+            createNew: createNewItem
+        },
+        {
+            id: 'achievements',
+            name: 'Achievements',
+            icon: '🏆',
+            items: CONFIG.achievements,
+            createNew: createNewAchievement
+        }
+    ];
+
+    categories.forEach(category => {
+        const categoryDiv = createCategoryNode(category);
+        tree.appendChild(categoryDiv);
+    });
 }
 
-// ===== GENERAL SETTINGS =====
-function saveGeneralSettings() {
-    CONFIG.generalSettings = {
-        appTitle: document.getElementById('app-title').value,
-        welcomeMessage: document.getElementById('welcome-message').value,
-        enableTutorial: document.getElementById('enable-tutorial').checked,
-        enableSound: document.getElementById('enable-sound').checked,
-        enableHaptics: document.getElementById('enable-haptics').checked
+function createCategoryNode(category) {
+    const div = document.createElement('div');
+    div.className = 'tree-category';
+
+    const header = document.createElement('div');
+    header.className = 'tree-category-header';
+    header.innerHTML = `
+        <span class="tree-category-icon">▼</span>
+        <span class="tree-item-icon">${category.icon}</span>
+        <span class="tree-item-name">${category.name}</span>
+        <span class="tree-item-count">${category.items.length}</span>
+    `;
+    header.onclick = () => {
+        div.classList.toggle('collapsed');
     };
 
-    saveConfiguration();
-    showAlert('success', 'General settings saved successfully!');
+    const itemsDiv = document.createElement('div');
+    itemsDiv.className = 'tree-category-items';
+
+    // Add "Create New" button
+    const createBtn = document.createElement('div');
+    createBtn.className = 'tree-item';
+    createBtn.style.fontStyle = 'italic';
+    createBtn.style.color = '#0e639c';
+    createBtn.innerHTML = `<span class="tree-item-icon">+</span><span class="tree-item-name">Create New</span>`;
+    createBtn.onclick = category.createNew;
+    itemsDiv.appendChild(createBtn);
+
+    // Add items
+    category.items.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'tree-item';
+        if (STATE.selectedType === category.id.slice(0, -1) && STATE.selectedId === item.id) {
+            itemDiv.classList.add('selected');
+        }
+        itemDiv.innerHTML = `
+            <span class="tree-item-icon">${category.icon}</span>
+            <span class="tree-item-name">${item.name || item.id}</span>
+        `;
+        itemDiv.onclick = () => selectEntity(category.id.slice(0, -1), item.id);
+        itemsDiv.appendChild(itemDiv);
+    });
+
+    div.appendChild(header);
+    div.appendChild(itemsDiv);
+
+    return div;
+}
+
+function refreshHierarchy() {
+    buildHierarchy();
+    showAlert('Hierarchy refreshed', 'success');
+}
+
+function filterHierarchy() {
+    const searchTerm = document.getElementById('hierarchy-search').value.toLowerCase();
+    const items = document.querySelectorAll('.tree-item');
+
+    items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+// ===== ENTITY SELECTION =====
+function selectEntity(type, id) {
+    STATE.selectedType = type;
+    STATE.selectedId = id;
+
+    // Update hierarchy selection
+    document.querySelectorAll('.tree-item').forEach(item => item.classList.remove('selected'));
+
+    // Update canvas info
+    const entity = getEntity(type, id);
+    document.getElementById('canvas-info-selected').textContent =
+        `Selected: ${type} - ${entity?.name || id}`;
+
+    // Update inspector
+    updateInspector();
+
+    // Refresh hierarchy to show selection
+    buildHierarchy();
+
+    // Redraw canvas
+    drawCanvas();
+}
+
+function deselectEntity() {
+    STATE.selectedType = null;
+    STATE.selectedId = null;
+    document.getElementById('canvas-info-selected').textContent = 'Selected: None';
+    updateInspector();
+    buildHierarchy();
+    drawCanvas();
+}
+
+function getEntity(type, id) {
+    const collections = {
+        'cart': CONFIG.carts,
+        'scenario': CONFIG.scenarios,
+        'drawer': CONFIG.drawers,
+        'item': CONFIG.items,
+        'achievement': CONFIG.achievements
+    };
+
+    return collections[type]?.find(e => e.id === id);
+}
+
+// ===== INSPECTOR PANEL =====
+function updateInspector() {
+    const container = document.getElementById('inspector-content');
+
+    if (!STATE.selectedType || !STATE.selectedId) {
+        container.innerHTML = '<div class="inspector-empty">Select an item from the hierarchy<br>to view its properties</div>';
+        return;
+    }
+
+    const entity = getEntity(STATE.selectedType, STATE.selectedId);
+    if (!entity) {
+        container.innerHTML = '<div class="inspector-empty">Entity not found</div>';
+        return;
+    }
+
+    // Build inspector based on entity type
+    switch (STATE.selectedType) {
+        case 'cart':
+            buildCartInspector(entity, container);
+            break;
+        case 'scenario':
+            buildScenarioInspector(entity, container);
+            break;
+        case 'drawer':
+            buildDrawerInspector(entity, container);
+            break;
+        case 'item':
+            buildItemInspector(entity, container);
+            break;
+        case 'achievement':
+            buildAchievementInspector(entity, container);
+            break;
+    }
+}
+
+function buildCartInspector(cart, container) {
+    container.innerHTML = `
+        <div class="inspector-section">
+            <div class="inspector-section-title">Cart Properties</div>
+
+            <div class="form-field">
+                <label>ID</label>
+                <input type="text" value="${cart.id}" onchange="updateCartProperty('id', this.value)" ${cart.id === 'inventory' ? 'disabled' : ''}>
+            </div>
+
+            <div class="form-field">
+                <label>Name</label>
+                <input type="text" value="${cart.name}" onchange="updateCartProperty('name', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Color</label>
+                <div class="color-picker-field">
+                    <input type="color" value="${cart.color}" onchange="updateCartProperty('color', this.value)">
+                    <input type="text" value="${cart.color}" readonly>
+                </div>
+            </div>
+
+            <div class="form-field-row">
+                <div class="form-field">
+                    <label>X Position</label>
+                    <input type="number" step="0.01" min="0" max="1" value="${cart.x}" onchange="updateCartProperty('x', parseFloat(this.value))">
+                </div>
+                <div class="form-field">
+                    <label>Y Position</label>
+                    <input type="number" step="0.01" min="0" max="1" value="${cart.y}" onchange="updateCartProperty('y', parseFloat(this.value))">
+                </div>
+            </div>
+
+            <div class="checkbox-field">
+                <input type="checkbox" id="cart-is-inventory" ${cart.isInventory ? 'checked' : ''} onchange="updateCartProperty('isInventory', this.checked)">
+                <label for="cart-is-inventory">Is Inventory Cart</label>
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Actions</div>
+            <button class="btn btn-danger btn-block" onclick="deleteCurrentEntity()">🗑️ Delete Cart</button>
+        </div>
+    `;
+}
+
+function buildScenarioInspector(scenario, container) {
+    const essentialHTML = buildItemMultiselect(scenario.essential || [], 'essential');
+    const optionalHTML = buildItemMultiselect(scenario.optional || [], 'optional');
+
+    container.innerHTML = `
+        <div class="inspector-section">
+            <div class="inspector-section-title">Scenario Properties</div>
+
+            <div class="form-field">
+                <label>ID</label>
+                <input type="text" value="${scenario.id}" onchange="updateScenarioProperty('id', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Name</label>
+                <input type="text" value="${scenario.name}" onchange="updateScenarioProperty('name', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Description</label>
+                <textarea onchange="updateScenarioProperty('description', this.value)">${scenario.description}</textarea>
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Essential Items</div>
+            <div class="item-multiselect" id="essential-items">
+                ${essentialHTML}
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Optional Items</div>
+            <div class="item-multiselect" id="optional-items">
+                ${optionalHTML}
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Feedback Messages</div>
+
+            <div class="form-field">
+                <label>Success Message</label>
+                <textarea onchange="updateScenarioProperty('successFeedback', this.value)">${scenario.successFeedback || 'Perfect!'}</textarea>
+            </div>
+
+            <div class="form-field">
+                <label>Partial Success Message</label>
+                <textarea onchange="updateScenarioProperty('partialFeedback', this.value)">${scenario.partialFeedback || 'Good, but incomplete.'}</textarea>
+            </div>
+
+            <div class="form-field">
+                <label>Failure Message</label>
+                <textarea onchange="updateScenarioProperty('failureFeedback', this.value)">${scenario.failureFeedback || 'Missing critical items.'}</textarea>
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Actions</div>
+            <button class="btn btn-danger btn-block" onclick="deleteCurrentEntity()">🗑️ Delete Scenario</button>
+        </div>
+    `;
+}
+
+function buildDrawerInspector(drawer, container) {
+    const cartOptions = CONFIG.carts.filter(c => !c.isInventory).map(c =>
+        `<option value="${c.id}" ${drawer.cart === c.id ? 'selected' : ''}>${c.name}</option>`
+    ).join('');
+
+    container.innerHTML = `
+        <div class="inspector-section">
+            <div class="inspector-section-title">Drawer Properties</div>
+
+            <div class="form-field">
+                <label>ID</label>
+                <input type="text" value="${drawer.id}" onchange="updateDrawerProperty('id', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Name</label>
+                <input type="text" value="${drawer.name}" onchange="updateDrawerProperty('name', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Cart</label>
+                <select onchange="updateDrawerProperty('cart', this.value)">
+                    <option value="">Select cart...</option>
+                    ${cartOptions}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Number</label>
+                <input type="number" min="1" value="${drawer.number || 1}" onchange="updateDrawerProperty('number', parseInt(this.value))">
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Actions</div>
+            <button class="btn btn-danger btn-block" onclick="deleteCurrentEntity()">🗑️ Delete Drawer</button>
+        </div>
+    `;
+}
+
+function buildItemInspector(item, container) {
+    const cartOptions = CONFIG.carts.filter(c => !c.isInventory).map(c =>
+        `<option value="${c.id}" ${item.cart === c.id ? 'selected' : ''}>${c.name}</option>`
+    ).join('');
+
+    const drawerOptions = CONFIG.drawers.filter(d => d.cart === item.cart).map(d =>
+        `<option value="${d.id}" ${item.drawer === d.id ? 'selected' : ''}>${d.name}</option>`
+    ).join('');
+
+    const imageHTML = item.image ? `<img src="${item.image}" alt="${item.name}">` :
+        '<div class="image-upload-placeholder">Click to upload image<br>or drag & drop</div>';
+
+    container.innerHTML = `
+        <div class="inspector-section">
+            <div class="inspector-section-title">Item Properties</div>
+
+            <div class="form-field">
+                <label>ID</label>
+                <input type="text" value="${item.id}" onchange="updateItemProperty('id', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Name</label>
+                <input type="text" value="${item.name}" onchange="updateItemProperty('name', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Cart</label>
+                <select id="item-cart-select" onchange="updateItemCart(this.value)">
+                    <option value="">Select cart...</option>
+                    ${cartOptions}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Drawer</label>
+                <select id="item-drawer-select" onchange="updateItemProperty('drawer', this.value)">
+                    <option value="">Select drawer...</option>
+                    ${drawerOptions}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Description</label>
+                <textarea onchange="updateItemProperty('description', this.value)">${item.description || ''}</textarea>
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Item Image</div>
+            <div class="image-upload-field">
+                <input type="file" id="item-image-upload" accept="image/*" style="display:none" onchange="handleItemImageUpload(event)">
+                <div class="image-upload-preview ${item.image ? 'has-image' : ''}" onclick="document.getElementById('item-image-upload').click()">
+                    ${imageHTML}
+                </div>
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Actions</div>
+            <button class="btn btn-danger btn-block" onclick="deleteCurrentEntity()">🗑️ Delete Item</button>
+        </div>
+    `;
+}
+
+function buildAchievementInspector(achievement, container) {
+    container.innerHTML = `
+        <div class="inspector-section">
+            <div class="inspector-section-title">Achievement Properties</div>
+
+            <div class="form-field">
+                <label>ID</label>
+                <input type="text" value="${achievement.id}" onchange="updateAchievementProperty('id', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Title</label>
+                <input type="text" value="${achievement.title}" onchange="updateAchievementProperty('title', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Description</label>
+                <textarea onchange="updateAchievementProperty('description', this.value)">${achievement.description}</textarea>
+            </div>
+
+            <div class="form-field">
+                <label>Icon</label>
+                <input type="text" value="${achievement.icon || '🏆'}" maxlength="2" onchange="updateAchievementProperty('icon', this.value)">
+            </div>
+
+            <div class="form-field">
+                <label>Trigger Type</label>
+                <select onchange="updateAchievementProperty('trigger', this.value)">
+                    <option value="first-scenario" ${achievement.trigger === 'first-scenario' ? 'selected' : ''}>First Scenario</option>
+                    <option value="perfect-score" ${achievement.trigger === 'perfect-score' ? 'selected' : ''}>Perfect Score</option>
+                    <option value="speed" ${achievement.trigger === 'speed' ? 'selected' : ''}>Speed Challenge</option>
+                    <option value="efficient" ${achievement.trigger === 'efficient' ? 'selected' : ''}>Efficient (No Extras)</option>
+                    <option value="count" ${achievement.trigger === 'count' ? 'selected' : ''}>Complete N Scenarios</option>
+                    <option value="all" ${achievement.trigger === 'all' ? 'selected' : ''}>All Scenarios</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label>Trigger Value</label>
+                <input type="number" min="0" value="${achievement.value || 0}" onchange="updateAchievementProperty('value', parseInt(this.value))">
+            </div>
+        </div>
+
+        <div class="inspector-section">
+            <div class="inspector-section-title">Actions</div>
+            <button class="btn btn-danger btn-block" onclick="deleteCurrentEntity()">🗑️ Delete Achievement</button>
+        </div>
+    `;
+}
+
+function buildItemMultiselect(selectedIds, type) {
+    if (CONFIG.items.length === 0) {
+        return '<div class="item-multiselect-empty">No items available. Create items first!</div>';
+    }
+
+    return CONFIG.items.map(item => {
+        const isSelected = selectedIds.includes(item.id);
+        return `<div class="item-multiselect-item ${isSelected ? 'selected' : ''}"
+                     onclick="toggleScenarioItem('${type}', '${item.id}')">
+                    ${item.name}
+                </div>`;
+    }).join('');
+}
+
+// ===== UPDATE FUNCTIONS =====
+function updateCartProperty(prop, value) {
+    const cart = getEntity('cart', STATE.selectedId);
+    if (cart) {
+        cart[prop] = value;
+        STATE.unsavedChanges = true;
+        buildHierarchy();
+        drawCanvas();
+    }
+}
+
+function updateScenarioProperty(prop, value) {
+    const scenario = getEntity('scenario', STATE.selectedId);
+    if (scenario) {
+        scenario[prop] = value;
+        STATE.unsavedChanges = true;
+        buildHierarchy();
+    }
+}
+
+function updateDrawerProperty(prop, value) {
+    const drawer = getEntity('drawer', STATE.selectedId);
+    if (drawer) {
+        drawer[prop] = value;
+        STATE.unsavedChanges = true;
+        buildHierarchy();
+    }
+}
+
+function updateItemProperty(prop, value) {
+    const item = getEntity('item', STATE.selectedId);
+    if (item) {
+        item[prop] = value;
+        STATE.unsavedChanges = true;
+        buildHierarchy();
+    }
+}
+
+function updateAchievementProperty(prop, value) {
+    const achievement = getEntity('achievement', STATE.selectedId);
+    if (achievement) {
+        achievement[prop] = value;
+        STATE.unsavedChanges = true;
+        buildHierarchy();
+    }
+}
+
+function updateItemCart(cartId) {
+    const item = getEntity('item', STATE.selectedId);
+    if (item) {
+        item.cart = cartId;
+        item.drawer = ''; // Reset drawer when cart changes
+        STATE.unsavedChanges = true;
+
+        // Update drawer dropdown
+        const drawerSelect = document.getElementById('item-drawer-select');
+        const drawerOptions = CONFIG.drawers.filter(d => d.cart === cartId).map(d =>
+            `<option value="${d.id}">${d.name}</option>`
+        ).join('');
+        drawerSelect.innerHTML = '<option value="">Select drawer...</option>' + drawerOptions;
+    }
+}
+
+function toggleScenarioItem(type, itemId) {
+    const scenario = getEntity('scenario', STATE.selectedId);
+    if (!scenario) return;
+
+    const listName = type === 'essential' ? 'essential' : 'optional';
+    if (!scenario[listName]) scenario[listName] = [];
+
+    const index = scenario[listName].indexOf(itemId);
+    if (index > -1) {
+        scenario[listName].splice(index, 1);
+    } else {
+        scenario[listName].push(itemId);
+    }
+
+    STATE.unsavedChanges = true;
+    updateInspector();
+}
+
+function handleItemImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const item = getEntity('item', STATE.selectedId);
+        if (item) {
+            item.image = e.target.result;
+            STATE.unsavedChanges = true;
+            updateInspector();
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+// ===== CREATE NEW ENTITIES =====
+function createNewCart() {
+    const id = `cart_${Date.now()}`;
+    const newCart = {
+        id: id,
+        name: 'New Cart',
+        color: '#4CAF50',
+        x: 0.5,
+        y: 0.5,
+        isInventory: false
+    };
+
+    CONFIG.carts.push(newCart);
+    STATE.unsavedChanges = true;
+    buildHierarchy();
+    updateStatusBar();
+    selectEntity('cart', id);
+    drawCanvas();
+    showAlert('New cart created', 'success');
+}
+
+function createNewScenario() {
+    const id = `scenario_${Date.now()}`;
+    const newScenario = {
+        id: id,
+        name: 'New Scenario',
+        description: 'Describe the medical emergency here...',
+        essential: [],
+        optional: [],
+        successFeedback: 'Perfect!',
+        partialFeedback: 'Good, but incomplete.',
+        failureFeedback: 'Missing critical items.'
+    };
+
+    CONFIG.scenarios.push(newScenario);
+    STATE.unsavedChanges = true;
+    buildHierarchy();
+    updateStatusBar();
+    selectEntity('scenario', id);
+    showAlert('New scenario created', 'success');
+}
+
+function createNewDrawer() {
+    const id = `drawer_${Date.now()}`;
+    const newDrawer = {
+        id: id,
+        name: 'New Drawer',
+        cart: '',
+        number: 1
+    };
+
+    CONFIG.drawers.push(newDrawer);
+    STATE.unsavedChanges = true;
+    buildHierarchy();
+    updateStatusBar();
+    selectEntity('drawer', id);
+    showAlert('New drawer created', 'success');
+}
+
+function createNewItem() {
+    const id = `item_${Date.now()}`;
+    const newItem = {
+        id: id,
+        name: 'New Item',
+        cart: '',
+        drawer: '',
+        description: ''
+    };
+
+    CONFIG.items.push(newItem);
+    STATE.unsavedChanges = true;
+    buildHierarchy();
+    updateStatusBar();
+    selectEntity('item', id);
+    showAlert('New item created', 'success');
+}
+
+function createNewAchievement() {
+    const id = `achievement_${Date.now()}`;
+    const newAchievement = {
+        id: id,
+        title: 'New Achievement',
+        description: 'Describe how to earn this achievement...',
+        icon: '🏆',
+        trigger: 'first-scenario',
+        value: 0
+    };
+
+    CONFIG.achievements.push(newAchievement);
+    STATE.unsavedChanges = true;
+    buildHierarchy();
+    updateStatusBar();
+    selectEntity('achievement', id);
+    showAlert('New achievement created', 'success');
+}
+
+// ===== DELETE ENTITY =====
+function deleteCurrentEntity() {
+    if (!STATE.selectedType || !STATE.selectedId) return;
+
+    const entity = getEntity(STATE.selectedType, STATE.selectedId);
+    if (!confirm(`Are you sure you want to delete ${entity?.name || STATE.selectedId}?`)) {
+        return;
+    }
+
+    const collections = {
+        'cart': CONFIG.carts,
+        'scenario': CONFIG.scenarios,
+        'drawer': CONFIG.drawers,
+        'item': CONFIG.items,
+        'achievement': CONFIG.achievements
+    };
+
+    const collection = collections[STATE.selectedType];
+    const index = collection.findIndex(e => e.id === STATE.selectedId);
+    if (index > -1) {
+        collection.splice(index, 1);
+        STATE.unsavedChanges = true;
+        deselectEntity();
+        buildHierarchy();
+        updateStatusBar();
+        drawCanvas();
+        showAlert(`${STATE.selectedType} deleted`, 'success');
+    }
+}
+
+// ===== STATUS BAR =====
+function updateStatusBar() {
+    document.getElementById('status-carts').textContent = CONFIG.carts.filter(c => !c.isInventory).length;
+    document.getElementById('status-scenarios').textContent = CONFIG.scenarios.length;
+    document.getElementById('status-drawers').textContent = CONFIG.drawers.length;
+    document.getElementById('status-items').textContent = CONFIG.items.length;
+    document.getElementById('status-achievements').textContent = CONFIG.achievements.length;
 }
 
 // ===== PERSISTENCE =====
 function saveConfiguration() {
-    localStorage.setItem('teacherConfig', JSON.stringify(CONFIG));
+    localStorage.setItem('traumaRoomConfig', JSON.stringify(CONFIG));
+}
+
+function saveAll() {
+    saveConfiguration();
+    STATE.unsavedChanges = false;
+    document.getElementById('status-message').textContent = 'Saved at ' + new Date().toLocaleTimeString();
+    showAlert('All changes saved', 'success');
 }
 
 function loadConfiguration() {
-    const saved = localStorage.getItem('teacherConfig');
+    const saved = localStorage.getItem('traumaRoomConfig');
     if (saved) {
         CONFIG = JSON.parse(saved);
     } else {
-        // Load defaults from student game if available
         loadDefaultConfiguration();
     }
 
-    // Update UI elements
-    if (CONFIG.roomSettings) {
-        document.getElementById('room-bg-color').value = CONFIG.roomSettings.backgroundColor || '#fafafa';
-        document.getElementById('room-bg-color-text').value = CONFIG.roomSettings.backgroundColor || '#fafafa';
-        document.getElementById('room-width').value = CONFIG.roomSettings.width || 100;
-        document.getElementById('room-height').value = CONFIG.roomSettings.height || 100;
-    }
-
-    if (CONFIG.scoringRules) {
-        document.getElementById('essential-points').value = CONFIG.scoringRules.essentialPoints || 60;
-        document.getElementById('optional-points').value = CONFIG.scoringRules.optionalPoints || 20;
-        document.getElementById('penalty-points').value = CONFIG.scoringRules.penaltyPoints || 5;
-        document.getElementById('perfect-bonus').value = CONFIG.scoringRules.perfectBonus || 500;
-        document.getElementById('speed-threshold').value = CONFIG.scoringRules.speedThreshold || 60;
-        document.getElementById('speed-bonus').value = CONFIG.scoringRules.speedBonus || 300;
-    }
-
-    if (CONFIG.generalSettings) {
-        document.getElementById('app-title').value = CONFIG.generalSettings.appTitle || 'Trauma Room Trainer';
-        document.getElementById('welcome-message').value = CONFIG.generalSettings.welcomeMessage || 'Welcome!';
-        document.getElementById('enable-tutorial').checked = CONFIG.generalSettings.enableTutorial !== false;
-        document.getElementById('enable-sound').checked = CONFIG.generalSettings.enableSound !== false;
-        document.getElementById('enable-haptics').checked = CONFIG.generalSettings.enableHaptics !== false;
-    }
+    document.getElementById('room-bg-color').value = CONFIG.roomSettings.backgroundColor;
 }
 
 function loadDefaultConfiguration() {
-    // Default configuration matching the student game
     CONFIG.carts = [
         { id: 'airway', name: 'Airway Cart', x: 0.2, y: 0.3, color: '#4CAF50' },
         { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, color: '#2196F3' },
@@ -1003,14 +1091,14 @@ function loadDefaultConfiguration() {
 
     CONFIG.achievements = [
         { id: 'first-scenario', title: 'First Steps', description: 'Complete your first scenario', icon: '🎯', trigger: 'first-scenario' },
-        { id: 'perfect-score', title: 'Perfectionist', description: 'Get a perfect score on any scenario', icon: '💯', trigger: 'perfect-score' },
-        { id: 'speed-demon', title: 'Speed Demon', description: 'Complete a scenario in under 30 seconds', icon: '⚡', trigger: 'speed', value: 30 }
+        { id: 'perfect-score', title: 'Perfectionist', description: 'Get a perfect score', icon: '💯', trigger: 'perfect-score' },
+        { id: 'speed-demon', title: 'Speed Demon', description: 'Complete in under 30 seconds', icon: '⚡', trigger: 'speed', value: 30 }
     ];
 
     saveConfiguration();
 }
 
-// ===== EXPORT / IMPORT =====
+// ===== EXPORT/IMPORT =====
 function exportConfiguration() {
     const dataStr = JSON.stringify(CONFIG, null, 2);
     const dataBlob = new Blob([dataStr], {type: 'application/json'});
@@ -1019,61 +1107,71 @@ function exportConfiguration() {
     link.href = url;
     link.download = `trauma-room-config-${Date.now()}.json`;
     link.click();
-    showAlert('success', 'Configuration exported successfully!');
+    showAlert('Configuration exported', 'success');
 }
 
 function importConfiguration() {
+    document.getElementById('import-modal').classList.add('active');
+}
+
+function processImport() {
     const fileInput = document.getElementById('import-file');
     const file = fileInput.files[0];
 
     if (!file) {
-        showAlert('error', 'Please select a file to import!');
+        showAlert('Please select a file', 'error');
         return;
     }
 
     const reader = new FileReader();
     reader.onload = (e) => {
         try {
-            const imported = JSON.parse(e.target.result);
-            CONFIG = imported;
+            CONFIG = JSON.parse(e.target.result);
             saveConfiguration();
-            loadConfiguration();
-            updateAllLists();
-            drawRoomPreview();
-            showAlert('success', 'Configuration imported successfully!');
+            buildHierarchy();
+            updateStatusBar();
+            drawCanvas();
+            closeModal('import-modal');
+            showAlert('Configuration imported successfully', 'success');
         } catch (error) {
-            showAlert('error', 'Invalid configuration file!');
+            showAlert('Invalid configuration file', 'error');
         }
     };
     reader.readAsText(file);
 }
 
 function resetToDefaults() {
-    if (!confirm('This will reset ALL configurations to default values. Are you sure?')) {
+    if (!confirm('This will reset all configurations to defaults. Continue?')) {
         return;
     }
 
-    localStorage.removeItem('teacherConfig');
+    localStorage.removeItem('traumaRoomConfig');
     loadDefaultConfiguration();
-    loadConfiguration();
-    updateAllLists();
-    drawRoomPreview();
-    showAlert('success', 'Configuration reset to defaults!');
+    deselectEntity();
+    buildHierarchy();
+    updateStatusBar();
+    drawCanvas();
+    showAlert('Reset to defaults complete', 'success');
 }
 
-function previewStudentView() {
+function previewGame() {
     window.open('index.html', '_blank');
 }
 
-function generateStudentGame() {
-    showAlert('info', 'Generating student game file with current configuration...');
+// ===== UTILITIES =====
+function showAlert(message, type = 'success') {
+    const alert = document.getElementById('alert-toast');
+    alert.textContent = message;
+    alert.className = `alert-toast show ${type}`;
 
-    // This would generate a new index.html with the custom configuration
-    // For now, we'll just save the config and inform the teacher
-    saveConfiguration();
-
-    alert('Configuration saved! The student game (index.html) will automatically use your custom settings when you integrate the configuration. See documentation for integration instructions.');
+    setTimeout(() => {
+        alert.classList.remove('show');
+    }, 3000);
 }
 
-// ===== INITIALIZE ON LOAD =====
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// ===== INITIALIZE =====
 window.onload = init;
