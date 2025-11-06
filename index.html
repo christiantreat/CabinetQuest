@@ -29,46 +29,53 @@
             position: relative;
         }
 
-        /* Compact Header */
+        /* Ultra-Compact Header - Single Row */
         .header {
             background: white;
-            padding: 10px 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 6px 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             z-index: 100;
             flex-shrink: 0;
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
         }
 
         .header h1 {
-            font-size: 16px;
+            font-size: 13px;
             color: #333;
+            margin: 0;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .header-info {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-top: 5px;
+            gap: 10px;
+            flex-shrink: 0;
         }
 
         .scenario-name {
-            font-size: 12px;
-            color: #666;
-            font-weight: 500;
+            font-size: inherit;
+            color: inherit;
+            font-weight: 600;
         }
 
-        /* Settings button - non-intrusive */
+        /* Compact icon-only buttons */
         .settings-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
             background: transparent;
             border: none;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
-            padding: 5px;
+            padding: 4px;
             color: #666;
             transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .settings-btn:hover {
@@ -76,50 +83,45 @@
             transform: rotate(30deg);
         }
 
-        /* Scenario Menu button */
         .scenarios-menu-btn {
-            position: absolute;
-            top: 10px;
-            left: 15px;
             background: #007bff;
             border: none;
-            font-size: 12px;
+            font-size: 18px;
             cursor: pointer;
-            padding: 8px 12px;
+            padding: 4px 6px;
             color: white;
-            border-radius: 6px;
-            font-weight: bold;
+            border-radius: 4px;
             transition: all 0.2s;
-            z-index: 101;
+            flex-shrink: 0;
+            line-height: 1;
         }
 
         .scenarios-menu-btn:hover {
             background: #0056b3;
         }
 
-        /* Scenario description box - shows current task */
+        /* Ultra-Compact Task Bar */
         .scenario-description-box {
             background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 8px 15px;
+            border-left: 3px solid #ffc107;
+            padding: 6px 10px;
             margin: 0;
-            font-size: 12px;
+            font-size: 11px;
             color: #856404;
             display: none;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         .scenario-description-box.active {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .scenario-task-row {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
+            align-items: center;
+            gap: 6px;
         }
 
         .scenario-task-text {
@@ -129,30 +131,28 @@
 
         .scenario-task-text strong {
             font-weight: 600;
-            display: inline;
-            margin-right: 5px;
+            display: none; /* Hide "Task:" label to save space */
         }
 
-        /* Action buttons in scenario bar */
+        /* Compact Action Buttons */
         .scenario-actions {
             display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            flex-wrap: wrap;
+            gap: 6px;
+            flex-wrap: nowrap;
         }
 
         .scenario-action-btn {
             flex: 1;
-            min-width: 100px;
-            padding: 10px 14px;
+            min-width: 70px;
+            padding: 8px 10px;
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
             touch-action: manipulation;
             transition: all 0.2s ease;
-            min-height: 44px;
+            min-height: 36px;
             white-space: nowrap;
         }
 
@@ -245,19 +245,20 @@
 
         .stats-compact {
             display: flex;
-            gap: 15px;
-            font-size: 12px;
+            gap: 8px;
+            font-size: 11px;
+            flex-shrink: 0;
         }
 
         .stat-compact {
             color: #007bff;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .stat-compact .label {
             color: #999;
             font-weight: normal;
-            margin-left: 2px;
         }
 
         /* Room View */
@@ -501,6 +502,10 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
 
         .item-card:active {
@@ -517,10 +522,42 @@
             background: #e7f3ff;
         }
 
+        .item-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #f0f0f0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            overflow: hidden;
+        }
+
+        .item-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .item-icon.loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         .item-card h5 {
             font-size: 13px;
             color: #333;
-            margin-top: 8px;
+            margin: 0;
         }
 
         /* Procedure Table in Room - shows inventory (HIDDEN - now shown as cart in center) */
@@ -801,6 +838,64 @@
             }
         }
 
+        /* Item Collected Toast */
+        .item-collected-toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 20px rgba(0,123,255,0.4);
+            z-index: 2000;
+            display: none;
+            animation: itemToastSlide 0.6s ease;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .item-collected-toast.show {
+            display: block;
+        }
+
+        @keyframes itemToastSlide {
+            0% {
+                transform: translateX(-50%) translateY(100px);
+                opacity: 0;
+            }
+            20% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            80% {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+        }
+
+        /* Pulse animation for inventory count */
+        @keyframes inventoryPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.3);
+                color: #28a745;
+            }
+        }
+
+        .stat-pulse {
+            animation: inventoryPulse 0.4s ease;
+        }
+
         /* Tutorial specific styles */
         .tutorial-step {
             display: none;
@@ -883,51 +978,73 @@
             color: #666;
             margin: 3px 0;
         }
+
+        /* Extra compact on very small screens */
+        @media (max-width: 380px) {
+            .header h1 {
+                font-size: 12px;
+            }
+
+            .stats-compact {
+                font-size: 10px;
+                gap: 6px;
+            }
+
+            .scenario-description-box {
+                font-size: 10px;
+                padding: 5px 8px;
+            }
+
+            .scenario-action-btn {
+                font-size: 11px;
+                padding: 6px 8px;
+                min-height: 32px;
+                min-width: 60px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
+        <!-- Ultra-Compact Header - Single Row -->
         <div class="header">
-            <button class="scenarios-menu-btn" onclick="openScenariosModal()">📋 Scenarios</button>
-            <h1>🏥 Trauma Room Trainer</h1>
-            <button class="settings-btn" onclick="openSettingsModal()">⚙️</button>
+            <button class="scenarios-menu-btn" onclick="openScenariosModal()" title="Scenarios">📋</button>
+            <h1>🏥 Trauma Trainer</h1>
             <div class="header-info">
-                <span class="scenario-name" id="scenario-name">Select a scenario to begin</span>
                 <div class="stats-compact">
                     <div class="stat-compact">
-                        <span id="stat-time">0:00</span>
-                        <span class="label">time</span>
+                        ⏱<span id="stat-time">0:00</span>
                     </div>
                     <div class="stat-compact">
-                        <span id="stat-items">0</span>
-                        <span class="label">items</span>
+                        📦<span id="stat-items">0</span>
                     </div>
                 </div>
             </div>
+            <button class="settings-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
         </div>
 
-        <!-- Scenario Description Box - shows task and action buttons -->
+        <!-- Compact Task Bar -->
         <div class="scenario-description-box" id="scenario-description">
             <div class="scenario-task-row">
                 <div class="scenario-task-text" id="scenario-task">
-                    <strong>Task:</strong> <span id="task-description"></span>
+                    <strong id="scenario-name" style="font-weight: 600; margin-right: 4px;">Select a scenario</strong>
+                    <span id="task-description"></span>
                 </div>
             </div>
             
             <!-- Feedback area within scenario box -->
             <div class="scenario-feedback" id="scenario-feedback"></div>
             
-            <!-- Action buttons -->
+            <!-- Compact Action Buttons -->
             <div class="scenario-actions">
                 <button class="scenario-action-btn restart-btn" id="restart-btn" onclick="retryScenario()" style="display: none;">
-                    🔄 Try Again
+                    🔄 Retry
                 </button>
                 <button class="scenario-action-btn submit-btn-yellow" id="submit-btn-yellow" onclick="submitInventory()" disabled>
                     ✓ Submit
                 </button>
                 <button class="scenario-action-btn advance-btn" id="advance-btn" onclick="continueToNext()" style="display: none;">
-                    → Next Scenario
+                    → Next
                 </button>
             </div>
         </div>
@@ -1139,6 +1256,11 @@
         +500 Points!
     </div>
 
+    <!-- Item Collected Toast -->
+    <div class="item-collected-toast" id="item-collected-toast">
+        ✓ Items Added to Table!
+    </div>
+
     <script>
         // ===== DATA =====
         const DATA = {
@@ -1164,30 +1286,30 @@
                 { id: 'd12', cart: 'trauma', name: 'Bottom Drawer', number: 3 }
             ],
             items: [
-                { id: 'ett', name: 'Endotracheal Tube', cart: 'airway', drawer: 'd1' },
-                { id: 'laryngoscope', name: 'Laryngoscope', cart: 'airway', drawer: 'd1' },
-                { id: 'bvm', name: 'Bag-Valve-Mask', cart: 'airway', drawer: 'd2' },
-                { id: 'oropharyngeal', name: 'Oropharyngeal Airway', cart: 'airway', drawer: 'd2' },
-                { id: 'suction', name: 'Suction Catheter', cart: 'airway', drawer: 'd3' },
-                { id: 'oxygen', name: 'Oxygen Mask', cart: 'airway', drawer: 'd3' },
-                { id: 'epinephrine', name: 'Epinephrine', cart: 'med', drawer: 'd4' },
-                { id: 'atropine', name: 'Atropine', cart: 'med', drawer: 'd4' },
-                { id: 'amiodarone', name: 'Amiodarone', cart: 'med', drawer: 'd5' },
-                { id: 'lidocaine', name: 'Lidocaine', cart: 'med', drawer: 'd5' },
-                { id: 'morphine', name: 'Morphine', cart: 'med', drawer: 'd6' },
-                { id: 'naloxone', name: 'Naloxone', cart: 'med', drawer: 'd6' },
-                { id: 'defibrillator', name: 'Defibrillator Pads', cart: 'code', drawer: 'd7' },
-                { id: 'ecg', name: 'ECG Leads', cart: 'code', drawer: 'd7' },
-                { id: 'iv-start', name: 'IV Start Kit', cart: 'code', drawer: 'd8' },
-                { id: 'saline', name: 'Saline Flush', cart: 'code', drawer: 'd8' },
-                { id: 'cpr-board', name: 'CPR Board', cart: 'code', drawer: 'd9' },
-                { id: 'aed', name: 'AED', cart: 'code', drawer: 'd9' },
-                { id: 'chest-tube', name: 'Chest Tube Kit', cart: 'trauma', drawer: 'd10' },
-                { id: 'scalpel', name: 'Scalpel', cart: 'trauma', drawer: 'd10' },
-                { id: 'gauze', name: 'Gauze Pads', cart: 'trauma', drawer: 'd11' },
-                { id: 'tourniquet', name: 'Tourniquet', cart: 'trauma', drawer: 'd11' },
-                { id: 'splint', name: 'Splint', cart: 'trauma', drawer: 'd12' },
-                { id: 'cervical-collar', name: 'Cervical Collar', cart: 'trauma', drawer: 'd12' }
+                { id: 'ett', name: 'Endotracheal Tube', cart: 'airway', drawer: 'd1', image: 'images/ett.jpg' },
+                { id: 'laryngoscope', name: 'Laryngoscope', cart: 'airway', drawer: 'd1', image: 'images/laryngoscope.jpg' },
+                { id: 'bvm', name: 'Bag-Valve-Mask', cart: 'airway', drawer: 'd2', image: 'images/bvm.jpg' },
+                { id: 'oropharyngeal', name: 'Oropharyngeal Airway', cart: 'airway', drawer: 'd2', image: 'images/oropharyngeal.jpg' },
+                { id: 'suction', name: 'Suction Catheter', cart: 'airway', drawer: 'd3', image: 'images/suction.jpg' },
+                { id: 'oxygen', name: 'Oxygen Mask', cart: 'airway', drawer: 'd3', image: 'images/oxygen.jpg' },
+                { id: 'epinephrine', name: 'Epinephrine', cart: 'med', drawer: 'd4', image: 'images/epinephrine.jpg' },
+                { id: 'atropine', name: 'Atropine', cart: 'med', drawer: 'd4', image: 'images/atropine.jpg' },
+                { id: 'amiodarone', name: 'Amiodarone', cart: 'med', drawer: 'd5', image: 'images/amiodarone.jpg' },
+                { id: 'lidocaine', name: 'Lidocaine', cart: 'med', drawer: 'd5', image: 'images/lidocaine.jpg' },
+                { id: 'morphine', name: 'Morphine', cart: 'med', drawer: 'd6', image: 'images/morphine.jpg' },
+                { id: 'naloxone', name: 'Naloxone', cart: 'med', drawer: 'd6', image: 'images/naloxone.jpg' },
+                { id: 'defibrillator', name: 'Defibrillator Pads', cart: 'code', drawer: 'd7', image: 'images/defibrillator.jpg' },
+                { id: 'ecg', name: 'ECG Leads', cart: 'code', drawer: 'd7', image: 'images/ecg.jpg' },
+                { id: 'iv-start', name: 'IV Start Kit', cart: 'code', drawer: 'd8', image: 'images/iv-start.jpg' },
+                { id: 'saline', name: 'Saline Flush', cart: 'code', drawer: 'd8', image: 'images/saline.jpg' },
+                { id: 'cpr-board', name: 'CPR Board', cart: 'code', drawer: 'd9', image: 'images/cpr-board.jpg' },
+                { id: 'aed', name: 'AED', cart: 'code', drawer: 'd9', image: 'images/aed.jpg' },
+                { id: 'chest-tube', name: 'Chest Tube Kit', cart: 'trauma', drawer: 'd10', image: 'images/chest-tube.jpg' },
+                { id: 'scalpel', name: 'Scalpel', cart: 'trauma', drawer: 'd10', image: 'images/scalpel.jpg' },
+                { id: 'gauze', name: 'Gauze Pads', cart: 'trauma', drawer: 'd11', image: 'images/gauze.jpg' },
+                { id: 'tourniquet', name: 'Tourniquet', cart: 'trauma', drawer: 'd11', image: 'images/tourniquet.jpg' },
+                { id: 'splint', name: 'Splint', cart: 'trauma', drawer: 'd12', image: 'images/splint.jpg' },
+                { id: 'cervical-collar', name: 'Cervical Collar', cart: 'trauma', drawer: 'd12', image: 'images/cervical-collar.jpg' }
             ],
             scenarios: [
                 {
@@ -1264,25 +1386,82 @@
         const canvas = document.getElementById('room-canvas');
         const ctx = canvas.getContext('2d');
 
+        // Store DPR and dimensions for consistent access
+        let canvasDPR = 1;
+        let canvasWidth = 0;
+        let canvasHeight = 0;
+
+        // Track last tapped cart for visual feedback
+        let lastTappedCart = null;
+        let tapFeedbackTimeout = null;
+
         function resizeCanvas() {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+            // Get device pixel ratio for crisp rendering on retina displays
+            canvasDPR = window.devicePixelRatio || 1;
+
+            // Get CSS dimensions (use getBoundingClientRect for sub-pixel accuracy)
+            const rect = canvas.getBoundingClientRect();
+            canvasWidth = rect.width;
+            canvasHeight = rect.height;
+
+            // Set internal canvas resolution accounting for DPR
+            canvas.width = canvasWidth * canvasDPR;
+            canvas.height = canvasHeight * canvasDPR;
+
+            // Reset transform and scale context to match DPR
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(canvasDPR, canvasDPR);
+
+            // Log for debugging on mobile devices
+            console.log(`Canvas resize - DPR: ${canvasDPR}, CSS: ${canvasWidth}x${canvasHeight}, Internal: ${canvas.width}x${canvas.height}`);
+
             drawRoom();
         }
 
         function drawRoom() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // ALWAYS use fresh dimensions for perfect alignment with touch handlers
+            const rect = canvas.getBoundingClientRect();
+            const width = rect.width;
+            const height = rect.height;
+
+            // Ensure we have valid dimensions
+            if (width === 0 || height === 0) {
+                console.warn('Canvas dimensions not initialized, skipping draw');
+                return;
+            }
+
+            // Update stored dimensions to match current state
+            canvasWidth = width;
+            canvasHeight = height;
+
+            ctx.clearRect(0, 0, width, height);
 
             // Draw carts - larger touch targets during active scenarios
             DATA.carts.forEach(cart => {
-                const x = cart.x * canvas.width;
-                const y = cart.y * canvas.height;
+                const x = cart.x * width;
+                const y = cart.y * height;
                 // Increased from 0.15 to 0.22 for better mobile touch targets
-                const size = Math.min(canvas.width, canvas.height) * 0.22;
+                const size = Math.min(width, height) * 0.22;
 
-                // Cart body
+                // Visual feedback: highlight tapped cart
+                const isTapped = lastTappedCart === cart.id;
+
+                // Cart body with optional highlight
                 ctx.fillStyle = cart.color;
-                ctx.fillRect(x - size/2, y - size/2, size, size);
+                if (isTapped) {
+                    // Draw white glow behind tapped cart
+                    ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+                    ctx.shadowBlur = 20;
+                    ctx.fillRect(x - size/2, y - size/2, size, size);
+                    ctx.shadowBlur = 0;
+                } else {
+                    ctx.fillRect(x - size/2, y - size/2, size, size);
+                }
+
+                // Draw subtle border for better definition
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x - size/2, y - size/2, size, size);
 
                 // Cart label
                 ctx.fillStyle = 'white';
@@ -1302,24 +1481,97 @@
             });
         }
 
-        // Handle canvas clicks
-        canvas.addEventListener('click', (e) => {
+        // Handle canvas clicks and touches with perfect alignment
+        function handleCanvasInteraction(e) {
+            e.preventDefault(); // Prevent default touch behavior
+
+            // Get the actual touch/click position
+            let clientX, clientY;
+            if (e.type === 'touchstart' || e.type === 'touchend') {
+                const touch = e.touches[0] || e.changedTouches[0];
+                if (!touch) {
+                    console.warn('No touch data available');
+                    return;
+                }
+                clientX = touch.clientX;
+                clientY = touch.clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            // CRITICAL: Get fresh rect each time to handle any layout changes
             const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+
+            // Account for page scroll (though should be 0 with fixed positioning)
+            const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Calculate position relative to canvas with all offsets
+            const x = clientX - rect.left - scrollX;
+            const y = clientY - rect.top - scrollY;
+
+            // Use the EXACT same dimensions that drawRoom() uses
+            const width = rect.width;
+            const height = rect.height;
+
+            // Enhanced debug logging
+            console.log(`==== TOUCH DEBUG ====`);
+            console.log(`Client: ${clientX.toFixed(1)}, ${clientY.toFixed(1)}`);
+            console.log(`Rect: left=${rect.left.toFixed(1)}, top=${rect.top.toFixed(1)}`);
+            console.log(`Canvas relative: ${x.toFixed(1)}, ${y.toFixed(1)}`);
+            console.log(`Canvas size: ${width.toFixed(1)}x${height.toFixed(1)}`);
+
+            let hitAnyCart = false;
 
             DATA.carts.forEach(cart => {
-                const cartX = cart.x * canvas.width;
-                const cartY = cart.y * canvas.height;
-                // Match the larger touch target size
-                const size = Math.min(canvas.width, canvas.height) * 0.22;
+                const cartX = cart.x * width;
+                const cartY = cart.y * height;
+                // Match the EXACT same size calculation as drawRoom()
+                const size = Math.min(width, height) * 0.22;
 
-                if (Math.abs(x - cartX) < size/2 && Math.abs(y - cartY) < size/2) {
+                // Calculate distances
+                const dx = Math.abs(x - cartX);
+                const dy = Math.abs(y - cartY);
+                const hitRadius = size / 2;
+
+                // More detailed logging per cart
+                console.log(`${cart.name}: center=(${cartX.toFixed(1)}, ${cartY.toFixed(1)}), distance=(${dx.toFixed(1)}, ${dy.toFixed(1)}), radius=${hitRadius.toFixed(1)}`);
+
+                // Check if click/touch is within cart bounds
+                if (dx < hitRadius && dy < hitRadius) {
+                    console.log(`✓ HIT: ${cart.name}`);
+                    hitAnyCart = true;
+
+                    // Visual feedback: highlight the tapped cart
+                    lastTappedCart = cart.id;
+                    drawRoom();
+
+                    // Clear highlight after animation
+                    clearTimeout(tapFeedbackTimeout);
+                    tapFeedbackTimeout = setTimeout(() => {
+                        lastTappedCart = null;
+                        drawRoom();
+                    }, 200);
+
                     openCart(cart);
                     playSound('click');
+                    triggerHaptic('light');
+
+                    // Stop checking other carts once we found a hit
+                    return;
                 }
             });
-        });
+
+            if (!hitAnyCart) {
+                console.log(`✗ MISS: No cart hit`);
+            }
+            console.log(`====================`);
+        }
+
+        // Add both click and touch event listeners for universal support
+        canvas.addEventListener('click', handleCanvasInteraction);
+        canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
 
         // ===== SCENARIOS =====
         function openScenariosModal() {
@@ -1371,7 +1623,7 @@
             state.hasSubmittedOnce = false;
             
             // Update UI
-            document.getElementById('scenario-name').textContent = scenario.name;
+            document.getElementById('scenario-name').textContent = scenario.name + ':';
             document.getElementById('task-description').textContent = scenario.description;
             document.getElementById('scenario-description').classList.add('active');
             document.getElementById('submit-btn-yellow').disabled = true;
@@ -1453,10 +1705,41 @@
                     div.classList.add('selected');
                 }
 
-                div.innerHTML = `
-                    <div class="item-icon">${item.name.substring(0, 2).toUpperCase()}</div>
-                    <h5>${item.name}</h5>
-                `;
+                // Create icon container
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'item-icon';
+
+                // Try to load image if available
+                if (item.image) {
+                    iconDiv.classList.add('loading');
+                    const img = document.createElement('img');
+                    img.src = item.image;
+                    img.alt = item.name;
+
+                    // On successful load, show image
+                    img.onload = () => {
+                        iconDiv.classList.remove('loading');
+                        iconDiv.textContent = '';
+                        iconDiv.appendChild(img);
+                    };
+
+                    // On error, show text initials
+                    img.onerror = () => {
+                        iconDiv.classList.remove('loading');
+                        iconDiv.textContent = item.name.substring(0, 2).toUpperCase();
+                    };
+                } else {
+                    // No image specified, show text initials
+                    iconDiv.textContent = item.name.substring(0, 2).toUpperCase();
+                }
+
+                // Create name element
+                const nameEl = document.createElement('h5');
+                nameEl.textContent = item.name;
+
+                // Assemble card
+                div.appendChild(iconDiv);
+                div.appendChild(nameEl);
 
                 div.onclick = () => toggleItemSelection(item, div);
                 itemGrid.appendChild(div);
@@ -1486,13 +1769,20 @@
                 return;
             }
 
+            let itemsAdded = 0;
             state.selectedItems.forEach(item => {
                 if (!state.inventory.find(i => i.id === item.id)) {
                     state.inventory.push({...item});
+                    itemsAdded++;
                     playSound('collect');
                     triggerHaptic('light');
                 }
             });
+
+            // Show visual feedback
+            if (itemsAdded > 0) {
+                showItemCollectedFeedback(itemsAdded);
+            }
 
             // Clear selections and refresh the drawer display
             state.selectedItems = [];
@@ -1503,6 +1793,30 @@
             if (state.selectedDrawer) {
                 openDrawer(state.selectedDrawer);
             }
+        }
+
+        // Show visual feedback when items are collected
+        function showItemCollectedFeedback(count) {
+            const toast = document.getElementById('item-collected-toast');
+            const itemText = count === 1 ? '1 Item' : `${count} Items`;
+            toast.textContent = `✓ ${itemText} Added to Table!`;
+            toast.classList.add('show');
+
+            // Pulse the inventory count in header
+            const statItems = document.getElementById('stat-items').parentElement;
+            statItems.classList.add('stat-pulse');
+
+            // Remove animations after they complete
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 600);
+
+            setTimeout(() => {
+                statItems.classList.remove('stat-pulse');
+            }, 400);
+
+            // Trigger canvas redraw to update inventory count on cart
+            drawRoom();
         }
 
         function backToCart() {
@@ -1974,6 +2288,27 @@
         }
 
         // ===== AUDIO & HAPTICS =====
+        // Create a single AudioContext for better performance and mobile compatibility
+        let audioContext = null;
+
+        function getAudioContext() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.warn('AudioContext not supported');
+                    return null;
+                }
+            }
+
+            // Resume context if suspended (required on mobile after user interaction)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            return audioContext;
+        }
+
         const sounds = {
             click: () => playTone(800, 0.1, 0.05),
             collect: () => playTone(1200, 0.15, 0.1),
@@ -1996,24 +2331,26 @@
         }
 
         function playTone(frequency, duration, volume = 0.1) {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
             try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
                 oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
+                gainNode.connect(ctx.destination);
+
                 oscillator.frequency.value = frequency;
                 oscillator.type = 'sine';
-                
-                gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
+
+                gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + duration);
             } catch (e) {
-                // Audio not supported, fail silently
+                console.warn('Error playing tone:', e);
             }
         }
 
@@ -2221,8 +2558,21 @@
 
         // ===== INIT =====
         function init() {
+            // Initial resize
             resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+
+            // Add resize listener with debounce for performance
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(resizeCanvas, 100);
+            });
+
+            // Force a second resize after a brief delay to ensure proper dimensions on mobile
+            // This handles cases where the initial layout hasn't fully completed
+            setTimeout(() => {
+                requestAnimationFrame(resizeCanvas);
+            }, 100);
 
             loadUserProgress();
             updateStats();
