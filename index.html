@@ -131,7 +131,7 @@
 
         .scenario-task-text strong {
             font-weight: 600;
-            display: none; /* Hide "Task:" label to save space */
+            display: none;
         }
 
         /* Compact Action Buttons */
@@ -427,64 +427,146 @@
             line-height: 1.4;
         }
 
-        /* Cart Grid */
-        .cart-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 15px;
+        /* NEW: Visual Cart with Drawers */
+        .cart-visual-container {
+            perspective: 1200px;
+            padding: 20px;
         }
 
-        .cart-card {
-            background: white;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            padding: 15px;
+        .cart-label {
             text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .cart-card:active {
-            transform: scale(0.95);
-        }
-
-        .cart-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
-
-        .cart-card h4 {
-            font-size: 14px;
+            font-size: 18px;
+            font-weight: bold;
             color: #333;
+            margin-bottom: 20px;
         }
 
-        /* Drawer List */
-        .drawer-list {
+        .cart-visual {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-        }
-
-        .drawer-card {
-            background: white;
-            border: 2px solid #eee;
-            border-radius: 10px;
+            gap: 12px;
+            max-width: 400px;
+            margin: 0 auto;
+            background: linear-gradient(to bottom, #666, #555);
             padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .drawer-visual {
+            position: relative;
+            height: 85px;
             cursor: pointer;
-            transition: all 0.2s;
+            transform-style: preserve-3d;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .drawer-visual:hover {
+            transform: translateZ(15px);
+        }
+
+        .drawer-visual:active {
+            transform: translateZ(5px) translateX(20px);
+            transition: transform 0.2s ease-out;
+        }
+
+        .drawer-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 
+                inset 0 3px 6px rgba(255,255,255,0.3),
+                inset 0 -2px 4px rgba(0,0,0,0.2),
+                0 4px 12px rgba(0,0,0,0.3),
+                -3px 0 10px rgba(0,0,0,0.15);
+            position: relative;
+            border: 2px solid rgba(0,0,0,0.25);
+            background: linear-gradient(to right, 
+                var(--drawer-color) 0%, 
+                var(--drawer-color-light) 50%, 
+                var(--drawer-color) 100%);
         }
 
-        .drawer-card:active {
-            transform: scale(0.98);
+        .drawer-visual:active .drawer-face {
+            box-shadow: 
+                inset 0 3px 6px rgba(255,255,255,0.3),
+                inset 0 -2px 4px rgba(0,0,0,0.2),
+                0 2px 6px rgba(0,0,0,0.3),
+                -8px 0 20px rgba(0,0,0,0.2);
         }
 
-        .drawer-card h4 {
+        /* Drawer handle with screws */
+        .drawer-handle {
+            width: 70px;
+            height: 10px;
+            background: linear-gradient(to bottom, #777, #444);
+            border-radius: 5px;
+            box-shadow: 
+                0 3px 6px rgba(0,0,0,0.4),
+                inset 0 1px 2px rgba(255,255,255,0.3);
+            position: relative;
+        }
+
+        .drawer-handle::before,
+        .drawer-handle::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #333 30%, #555 70%, #333 100%);
+            border-radius: 50%;
+            top: 1px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .drawer-handle::before {
+            left: 5px;
+        }
+
+        .drawer-handle::after {
+            right: 5px;
+        }
+
+        .drawer-label {
             font-size: 14px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Item count indicator */
+        .drawer-item-count {
+            background: rgba(255,255,255,0.9);
             color: #333;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Essential items indicator */
+        .drawer-has-essential::after {
+            content: '★';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #ffc107;
+            font-size: 24px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
         }
 
         /* Item Grid */
@@ -560,18 +642,12 @@
             margin: 0;
         }
 
-        /* Procedure Table in Room - shows inventory (HIDDEN - now shown as cart in center) */
+        /* Procedure Table in Room */
         .procedure-table {
             display: none !important;
         }
 
-        .procedure-table h3 {
-            font-size: 14px;
-            color: #007bff;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
+        /* Inventory Modal Items */
         .procedure-table-items {
             display: flex;
             flex-direction: column;
@@ -1053,14 +1129,6 @@
         <div class="room-container">
             <canvas id="room-canvas"></canvas>
             <div class="room-hint" id="room-hint">Open Scenarios menu to begin</div>
-            
-            <!-- Procedure Table - Inventory Display -->
-            <div class="procedure-table" id="procedure-table" style="display: none;">
-                <h3>🎒 Procedure Table</h3>
-                <div class="procedure-table-items" id="procedure-table-items">
-                    <div class="procedure-table-empty">No items collected yet</div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -1087,13 +1155,13 @@
                 <div class="tutorial-step" data-step="2">
                     <div class="tutorial-icon">🚪</div>
                     <h3>Explore the Room</h3>
-                    <p>Tap on carts in the trauma room to open them. Each cart contains multiple drawers with different medical supplies organized by type.</p>
+                    <p>Tap on carts in the trauma room to open them. Each cart has 3 drawers you can see and interact with.</p>
                 </div>
 
                 <div class="tutorial-step" data-step="3">
                     <div class="tutorial-icon">🎒</div>
                     <h3>Collect Items</h3>
-                    <p>Open drawers and tap items to select them. Selected items will be highlighted. Tap "Add to Table" to collect them. View your collected items by tapping the purple Procedure Table cart in the center.</p>
+                    <p>Tap drawers to open them and select items. Selected items will be highlighted. Tap "Add to Table" to collect them. View your collected items by tapping the purple Procedure Table cart in the center.</p>
                 </div>
 
                 <div class="tutorial-step" data-step="4">
@@ -1179,14 +1247,14 @@
         </div>
     </div>
 
-    <!-- Cart Modal -->
+    <!-- Cart Modal - Now with Visual Drawers -->
     <div class="modal" id="cart-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="cart-modal-title">Select Drawer</h2>
             </div>
-            <div class="modal-body">
-                <div class="drawer-list" id="drawer-list"></div>
+            <div class="modal-body" id="cart-modal-body">
+                <!-- Will be populated with visual cart -->
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('cart-modal')">Close</button>
@@ -1379,120 +1447,176 @@
             totalPoints: 0,
             soundEnabled: true,
             hapticEnabled: true,
-            sessionResults: [] // Store results for current session
+            sessionResults: []
         };
 
         // ===== CANVAS SETUP =====
         const canvas = document.getElementById('room-canvas');
         const ctx = canvas.getContext('2d');
 
-        // Store DPR and dimensions for consistent access
         let canvasDPR = 1;
         let canvasWidth = 0;
         let canvasHeight = 0;
-
-        // Track last tapped cart for visual feedback
         let lastTappedCart = null;
         let tapFeedbackTimeout = null;
 
-        function resizeCanvas() {
-            // Get device pixel ratio for crisp rendering on retina displays
-            canvasDPR = window.devicePixelRatio || 1;
+        // Helper function to lighten colors
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace("#",""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 +
+                (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255))
+                .toString(16).slice(1);
+        }
 
-            // Get CSS dimensions (use getBoundingClientRect for sub-pixel accuracy)
+        function resizeCanvas() {
+            canvasDPR = window.devicePixelRatio || 1;
             const rect = canvas.getBoundingClientRect();
             canvasWidth = rect.width;
             canvasHeight = rect.height;
-
-            // Set internal canvas resolution accounting for DPR
             canvas.width = canvasWidth * canvasDPR;
             canvas.height = canvasHeight * canvasDPR;
-
-            // Reset transform and scale context to match DPR
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.scale(canvasDPR, canvasDPR);
-
-            // Log for debugging on mobile devices
-            console.log(`Canvas resize - DPR: ${canvasDPR}, CSS: ${canvasWidth}x${canvasHeight}, Internal: ${canvas.width}x${canvas.height}`);
-
             drawRoom();
         }
 
+        // NEW: Draw cart with visible drawers
+        function drawCartWithDrawers(cart, x, y, size) {
+            const drawerHeight = size / 4;
+            const drawerCount = 3;
+            
+            // Cart frame/body - darker background
+            ctx.fillStyle = '#444';
+            ctx.fillRect(x - size/2, y - size/2 - 10, size, size + 20);
+            
+            // Draw 3 visible drawer fronts
+            for (let i = 0; i < drawerCount; i++) {
+                const drawerY = y - size/2 + (i * drawerHeight) + 8;
+                
+                // Drawer face with gradient for depth
+                const gradient = ctx.createLinearGradient(x - size/2, drawerY, x + size/2, drawerY);
+                const lightColor = lightenColor(cart.color, 15);
+                gradient.addColorStop(0, cart.color);
+                gradient.addColorStop(0.5, lightColor);
+                gradient.addColorStop(1, cart.color);
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x - size/2 + 8, drawerY, size - 16, drawerHeight - 8);
+                
+                // Drawer border for definition
+                ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x - size/2 + 8, drawerY, size - 16, drawerHeight - 8);
+                
+                // Inner shadow for depth
+                ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x - size/2 + 9, drawerY + 1, size - 18, drawerHeight - 10);
+                
+                // Drawer handle (horizontal bar)
+                ctx.fillStyle = '#333';
+                ctx.fillRect(x - size/4, drawerY + drawerHeight/2 - 3, size/2, 6);
+                
+                // Handle highlights
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.fillRect(x - size/4, drawerY + drawerHeight/2 - 3, size/2, 2);
+                
+                // Drawer number
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${size * 0.10}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`${i + 1}`, x, drawerY + drawerHeight/2);
+            }
+            
+            // Cart wheels
+            ctx.fillStyle = '#222';
+            const wheelSize = size * 0.10;
+            ctx.beginPath();
+            ctx.arc(x - size/3, y + size/2 + 10, wheelSize, 0, Math.PI * 2);
+            ctx.arc(x + size/3, y + size/2 + 10, wheelSize, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Wheel highlights
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.beginPath();
+            ctx.arc(x - size/3 - wheelSize/3, y + size/2 + 10 - wheelSize/3, wheelSize/3, 0, Math.PI * 2);
+            ctx.arc(x + size/3 - wheelSize/3, y + size/2 + 10 - wheelSize/3, wheelSize/3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Cart label at top
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.12}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 4;
+            ctx.fillText(cart.name.split(' ')[0], x, y - size/2 - 12);
+            ctx.shadowBlur = 0;
+        }
+
         function drawRoom() {
-            // ALWAYS use fresh dimensions for perfect alignment with touch handlers
             const rect = canvas.getBoundingClientRect();
             const width = rect.width;
             const height = rect.height;
 
-            // Ensure we have valid dimensions
             if (width === 0 || height === 0) {
                 console.warn('Canvas dimensions not initialized, skipping draw');
                 return;
             }
 
-            // Update stored dimensions to match current state
             canvasWidth = width;
             canvasHeight = height;
-
             ctx.clearRect(0, 0, width, height);
 
-            // Draw carts - larger touch targets during active scenarios
+            // Draw carts with drawer visualization
             DATA.carts.forEach(cart => {
                 const x = cart.x * width;
                 const y = cart.y * height;
-                // Increased from 0.15 to 0.22 for better mobile touch targets
                 const size = Math.min(width, height) * 0.22;
 
-                // Visual feedback: highlight tapped cart
                 const isTapped = lastTappedCart === cart.id;
 
-                // Cart body with optional highlight
-                ctx.fillStyle = cart.color;
                 if (isTapped) {
-                    // Draw white glow behind tapped cart
                     ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
                     ctx.shadowBlur = 20;
-                    ctx.fillRect(x - size/2, y - size/2, size, size);
-                    ctx.shadowBlur = 0;
-                } else {
-                    ctx.fillRect(x - size/2, y - size/2, size, size);
                 }
 
-                // Draw subtle border for better definition
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x - size/2, y - size/2, size, size);
-
-                // Cart label
-                ctx.fillStyle = 'white';
-                ctx.font = `bold ${size * 0.15}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
                 if (cart.isInventory) {
-                    // Special rendering for inventory cart
+                    // Special rendering for inventory (procedure table)
+                    ctx.fillStyle = cart.color;
+                    ctx.fillRect(x - size/2, y - size/2, size, size);
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x - size/2, y - size/2, size, size);
+                    
+                    ctx.fillStyle = 'white';
                     ctx.font = `bold ${size * 0.35}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
                     ctx.fillText('🎒', x, y - size * 0.1);
                     ctx.font = `bold ${size * 0.12}px Arial`;
                     ctx.fillText(`(${state.inventory.length})`, x, y + size * 0.25);
                 } else {
-                    ctx.fillText(cart.name.split(' ')[0], x, y);
+                    // Draw cart with visible drawers
+                    drawCartWithDrawers(cart, x, y, size);
                 }
+
+                ctx.shadowBlur = 0;
             });
         }
 
-        // Handle canvas clicks and touches with perfect alignment
         function handleCanvasInteraction(e) {
-            e.preventDefault(); // Prevent default touch behavior
+            e.preventDefault();
 
-            // Get the actual touch/click position
             let clientX, clientY;
             if (e.type === 'touchstart' || e.type === 'touchend') {
                 const touch = e.touches[0] || e.changedTouches[0];
-                if (!touch) {
-                    console.warn('No touch data available');
-                    return;
-                }
+                if (!touch) return;
                 clientX = touch.clientX;
                 clientY = touch.clientY;
             } else {
@@ -1500,54 +1624,29 @@
                 clientY = e.clientY;
             }
 
-            // CRITICAL: Get fresh rect each time to handle any layout changes
             const rect = canvas.getBoundingClientRect();
-
-            // Account for page scroll (though should be 0 with fixed positioning)
             const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
             const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-
-            // Calculate position relative to canvas with all offsets
             const x = clientX - rect.left - scrollX;
             const y = clientY - rect.top - scrollY;
-
-            // Use the EXACT same dimensions that drawRoom() uses
             const width = rect.width;
             const height = rect.height;
-
-            // Enhanced debug logging
-            console.log(`==== TOUCH DEBUG ====`);
-            console.log(`Client: ${clientX.toFixed(1)}, ${clientY.toFixed(1)}`);
-            console.log(`Rect: left=${rect.left.toFixed(1)}, top=${rect.top.toFixed(1)}`);
-            console.log(`Canvas relative: ${x.toFixed(1)}, ${y.toFixed(1)}`);
-            console.log(`Canvas size: ${width.toFixed(1)}x${height.toFixed(1)}`);
 
             let hitAnyCart = false;
 
             DATA.carts.forEach(cart => {
                 const cartX = cart.x * width;
                 const cartY = cart.y * height;
-                // Match the EXACT same size calculation as drawRoom()
                 const size = Math.min(width, height) * 0.22;
-
-                // Calculate distances
                 const dx = Math.abs(x - cartX);
                 const dy = Math.abs(y - cartY);
                 const hitRadius = size / 2;
 
-                // More detailed logging per cart
-                console.log(`${cart.name}: center=(${cartX.toFixed(1)}, ${cartY.toFixed(1)}), distance=(${dx.toFixed(1)}, ${dy.toFixed(1)}), radius=${hitRadius.toFixed(1)}`);
-
-                // Check if click/touch is within cart bounds
                 if (dx < hitRadius && dy < hitRadius) {
-                    console.log(`✓ HIT: ${cart.name}`);
                     hitAnyCart = true;
-
-                    // Visual feedback: highlight the tapped cart
                     lastTappedCart = cart.id;
                     drawRoom();
 
-                    // Clear highlight after animation
                     clearTimeout(tapFeedbackTimeout);
                     tapFeedbackTimeout = setTimeout(() => {
                         lastTappedCart = null;
@@ -1557,19 +1656,10 @@
                     openCart(cart);
                     playSound('click');
                     triggerHaptic('light');
-
-                    // Stop checking other carts once we found a hit
-                    return;
                 }
             });
-
-            if (!hitAnyCart) {
-                console.log(`✗ MISS: No cart hit`);
-            }
-            console.log(`====================`);
         }
 
-        // Add both click and touch event listeners for universal support
         canvas.addEventListener('click', handleCanvasInteraction);
         canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
 
@@ -1622,7 +1712,6 @@
             state.startTime = Date.now();
             state.hasSubmittedOnce = false;
             
-            // Update UI
             document.getElementById('scenario-name').textContent = scenario.name + ':';
             document.getElementById('task-description').textContent = scenario.description;
             document.getElementById('scenario-description').classList.add('active');
@@ -1630,15 +1719,10 @@
             document.getElementById('restart-btn').style.display = 'inline-block';
             document.getElementById('advance-btn').style.display = 'none';
             
-            // Clear any previous feedback
             document.getElementById('scenario-feedback').classList.remove('active', 'success', 'partial', 'error');
             document.getElementById('scenario-feedback').innerHTML = '';
             
-            // Show procedure table
-            document.getElementById('procedure-table').style.display = 'block';
-            
-            // Update hint
-            document.getElementById('room-hint').textContent = 'Tap a cart to open';
+            document.getElementById('room-hint').textContent = 'Tap a cart to open its drawers';
             document.getElementById('room-hint').classList.remove('hidden');
             
             updateInventoryDisplay();
@@ -1649,42 +1733,102 @@
         }
 
         // ===== CART & DRAWER NAVIGATION =====
+        // Helper to get drawer IDs for a cart
+        function getDrawerIds(cart) {
+            return DATA.drawers.filter(d => d.cart === cart.id).map(d => d.id);
+        }
+
+        // Helper to check if drawer has essential items for current scenario
+        function drawerHasEssentialItems(drawerId) {
+            if (!state.currentScenario) return false;
+            const drawerItems = DATA.items.filter(i => i.drawer === drawerId);
+            return drawerItems.some(item => state.currentScenario.essential.includes(item.id));
+        }
+
+        // Helper to get item count in drawer
+        function getDrawerItemCount(drawerId) {
+            return DATA.items.filter(i => i.drawer === drawerId).length;
+        }
+
         function openCart(cart) {
             if (!state.currentScenario) {
                 alert('Please select a scenario first!');
                 return;
             }
 
-            // Special handling for inventory cart
             if (cart.isInventory) {
                 openInventoryModal();
                 return;
             }
 
             state.selectedCart = cart;
-            document.getElementById('cart-modal-title').textContent = `${cart.name} - Select Drawer`;
+            document.getElementById('cart-modal-title').textContent = `${cart.name}`;
 
-            const drawerList = document.getElementById('drawer-list');
-            drawerList.innerHTML = '';
-
-            const cartDrawers = DATA.drawers.filter(d => d.cart === cart.id);
-            cartDrawers.forEach(drawer => {
-                const div = document.createElement('div');
-                div.className = 'drawer-card';
-                div.innerHTML = `
-                    <h4>${drawer.name}</h4>
-                    <span>→</span>
+            const modalBody = document.getElementById('cart-modal-body');
+            const drawers = DATA.drawers.filter(d => d.cart === cart.id);
+            
+            // Calculate lighter color for gradient
+            const lightColor = lightenColor(cart.color, 20);
+            
+            let html = '<div class="cart-visual-container">';
+            html += `<div class="cart-label">${cart.name}</div>`;
+            html += '<div class="cart-visual">';
+            
+            drawers.forEach(drawer => {
+                const itemCount = getDrawerItemCount(drawer.id);
+                const hasEssential = drawerHasEssentialItems(drawer.id);
+                const essentialClass = hasEssential ? 'drawer-has-essential' : '';
+                
+                html += `
+                    <div class="drawer-visual ${essentialClass}" 
+                         data-drawer="${drawer.id}" 
+                         onclick="openDrawer('${drawer.id}')"
+                         style="--drawer-color: ${cart.color}; --drawer-color-light: ${lightColor}">
+                        <div class="drawer-face">
+                            <div class="drawer-label">
+                                ${drawer.name}
+                                <span class="drawer-item-count">${itemCount} items</span>
+                            </div>
+                            <div class="drawer-handle"></div>
+                        </div>
+                    </div>
                 `;
-                div.onclick = () => openDrawer(drawer);
-                drawerList.appendChild(div);
             });
+            
+            html += '</div></div>';
+            modalBody.innerHTML = html;
 
             document.getElementById('cart-modal').classList.add('active');
             document.getElementById('room-hint').classList.add('hidden');
         }
 
-        function openDrawer(drawer) {
+        function openDrawer(drawerId) {
+            const drawer = DATA.drawers.find(d => d.id === drawerId);
+            if (!drawer) return;
+            
             state.selectedDrawer = drawer;
+            
+            // Animate drawer sliding out
+            const drawerElement = document.querySelector(`[data-drawer="${drawerId}"]`);
+            if (drawerElement) {
+                drawerElement.style.transform = 'translateX(20px)';
+                drawerElement.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                
+                // Play drawer open sound
+                playSound('collect');
+                
+                setTimeout(() => {
+                    drawerElement.style.transform = '';
+                }, 300);
+            }
+            
+            // Show items after brief delay for animation
+            setTimeout(() => {
+                showDrawerItems(drawer);
+            }, 150);
+        }
+
+        function showDrawerItems(drawer) {
             document.getElementById('item-modal-title').textContent = `${drawer.name} - Select Items`;
 
             const itemGrid = document.getElementById('item-grid');
@@ -1695,49 +1839,40 @@
                 const div = document.createElement('div');
                 div.className = 'item-card';
 
-                // Check if already in inventory
                 if (state.inventory.find(i => i.id === item.id)) {
                     div.classList.add('in-inventory');
                 }
 
-                // Restore selection state if item was previously selected
                 if (state.selectedItems.find(i => i.id === item.id)) {
                     div.classList.add('selected');
                 }
 
-                // Create icon container
                 const iconDiv = document.createElement('div');
                 iconDiv.className = 'item-icon';
 
-                // Try to load image if available
                 if (item.image) {
                     iconDiv.classList.add('loading');
                     const img = document.createElement('img');
                     img.src = item.image;
                     img.alt = item.name;
 
-                    // On successful load, show image
                     img.onload = () => {
                         iconDiv.classList.remove('loading');
                         iconDiv.textContent = '';
                         iconDiv.appendChild(img);
                     };
 
-                    // On error, show text initials
                     img.onerror = () => {
                         iconDiv.classList.remove('loading');
                         iconDiv.textContent = item.name.substring(0, 2).toUpperCase();
                     };
                 } else {
-                    // No image specified, show text initials
                     iconDiv.textContent = item.name.substring(0, 2).toUpperCase();
                 }
 
-                // Create name element
                 const nameEl = document.createElement('h5');
                 nameEl.textContent = item.name;
 
-                // Assemble card
                 div.appendChild(iconDiv);
                 div.appendChild(nameEl);
 
@@ -1779,34 +1914,28 @@
                 }
             });
 
-            // Show visual feedback
             if (itemsAdded > 0) {
                 showItemCollectedFeedback(itemsAdded);
             }
 
-            // Clear selections and refresh the drawer display
             state.selectedItems = [];
             updateInventoryDisplay();
             updateStats();
 
-            // Refresh the drawer to show updated states (don't close modal)
             if (state.selectedDrawer) {
-                openDrawer(state.selectedDrawer);
+                openDrawer(state.selectedDrawer.id);
             }
         }
 
-        // Show visual feedback when items are collected
         function showItemCollectedFeedback(count) {
             const toast = document.getElementById('item-collected-toast');
             const itemText = count === 1 ? '1 Item' : `${count} Items`;
             toast.textContent = `✓ ${itemText} Added to Table!`;
             toast.classList.add('show');
 
-            // Pulse the inventory count in header
             const statItems = document.getElementById('stat-items').parentElement;
             statItems.classList.add('stat-pulse');
 
-            // Remove animations after they complete
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 600);
@@ -1815,13 +1944,11 @@
                 statItems.classList.remove('stat-pulse');
             }, 400);
 
-            // Trigger canvas redraw to update inventory count on cart
             drawRoom();
         }
 
         function backToCart() {
             closeModal('item-modal');
-            // Keep selectedItems to preserve user selections across drawers
             if (state.selectedCart) {
                 openCart(state.selectedCart);
             }
@@ -1846,7 +1973,6 @@
                     const div = document.createElement('div');
                     div.className = 'procedure-table-item';
 
-                    // Check if item is essential or optional for current scenario
                     let itemBadge = '';
                     if (state.currentScenario) {
                         if (state.currentScenario.essential.includes(item.id)) {
@@ -1872,21 +1998,12 @@
         function updateInventoryDisplay() {
             const submitBtn = document.getElementById('submit-btn-yellow');
             submitBtn.disabled = state.inventory.length === 0;
-
-            // Redraw room to update inventory count on cart
             drawRoom();
         }
 
         function removeItemFromModal(index) {
             state.inventory.splice(index, 1);
             updateInventoryModalDisplay();
-            updateInventoryDisplay();
-            updateStats();
-            playSound('click');
-        }
-
-        function removeItem(index) {
-            state.inventory.splice(index, 1);
             updateInventoryDisplay();
             updateStats();
             playSound('click');
@@ -1910,14 +2027,12 @@
             const allRequired = allEssential && missingOptional.length === 0;
             const noExtras = extra.length === 0;
 
-            // Calculate score
             const essentialScore = (foundEssential.length / scenario.essential.length) * 60;
             const optionalScore = scenario.optional.length > 0 ? 
                 (foundOptional.length / scenario.optional.length) * 20 : 20;
             const penaltyScore = extra.length * 5;
             const totalScore = Math.max(0, Math.round(essentialScore + optionalScore - penaltyScore));
 
-            // Calculate stars
             let stars = 0;
             if (allRequired && noExtras && timeElapsed < 60) stars = 5;
             else if (allRequired && noExtras) stars = 4;
@@ -1950,33 +2065,28 @@
                 triggerHaptic('heavy');
             }
 
-            // Speed bonus
             if (timeElapsed < 60 && allEssential) {
                 bonusPoints += 300;
                 feedbackMessage += ' Amazing speed!';
             }
 
-            // Award points
             if (bonusPoints > 0) {
                 setTimeout(() => {
                     awardPoints(bonusPoints, 'Completion Bonus!');
                 }, 500);
             }
 
-            // Track completed scenario
             if (allEssential && !state.completedScenarios.includes(scenario.id)) {
                 state.completedScenarios.push(scenario.id);
                 saveUserProgress();
             }
 
-            // Star rating HTML for feedback
             let starsHTML = '<div class="star-rating">';
             for (let i = 0; i < 5; i++) {
                 starsHTML += `<span class="star ${i < stars ? 'filled' : ''}">★</span>`;
             }
             starsHTML += '</div>';
 
-            // Progress bars
             const essentialProgress = (foundEssential.length / scenario.essential.length) * 100;
             const optionalProgress = scenario.optional.length > 0 ? 
                 (foundOptional.length / scenario.optional.length) * 100 : 0;
@@ -2005,7 +2115,6 @@
             }
             detailsHTML += '</div>';
 
-            // Build missed items HTML
             let missedItemsHTML = '';
 
             if (missingEssential.length > 0) {
@@ -2050,7 +2159,6 @@
                 missedItemsHTML += '</div></div>';
             }
 
-            // Show feedback in modal (doesn't displace layout)
             const feedbackModalTitle = document.getElementById('feedback-modal-title');
             const feedbackModalBody = document.getElementById('feedback-modal-body');
 
@@ -2070,7 +2178,6 @@
                 ${missedItemsHTML}
             `;
 
-            // Update modal footer with action buttons
             const feedbackModalFooter = document.getElementById('feedback-modal-footer');
             let footerButtons = '<button class="btn-secondary" onclick="closeModal(\'feedback-modal\')">Close</button>';
             footerButtons += '<button class="btn-primary restart-btn" onclick="closeModal(\'feedback-modal\'); retryScenario()">🔄 Try Again</button>';
@@ -2083,13 +2190,10 @@
 
             feedbackModalFooter.innerHTML = footerButtons;
 
-            // Show the modal
             document.getElementById('feedback-modal').classList.add('active');
 
-            // Mark as submitted
             state.hasSubmittedOnce = true;
 
-            // Store result for viewing in settings
             state.sessionResults.push({
                 scenarioName: scenario.name,
                 score: totalScore,
@@ -2099,7 +2203,6 @@
                 feedbackClass: feedbackClass
             });
 
-            // Check achievements
             setTimeout(() => {
                 if (state.completedScenarios.length === 1) {
                     checkAchievement('first-scenario');
@@ -2121,7 +2224,6 @@
                 }
             }, 800);
 
-            // Save analytics
             saveAnalytics({
                 sessionId: state.sessionId,
                 scenarioId: scenario.id,
@@ -2141,23 +2243,19 @@
                 achievements: state.achievements.length
             });
             
-            // Update scenarios list
             loadScenarios();
         }
 
-        // Retry current scenario
         function retryScenario() {
             state.inventory = [];
             state.startTime = Date.now();
             state.hasSubmittedOnce = false;
 
-            // Clear feedback
             document.getElementById('scenario-feedback').classList.remove('active', 'success', 'partial', 'error');
             document.getElementById('scenario-feedback').innerHTML = '';
             document.getElementById('advance-btn').style.display = 'none';
 
-            // Reset room hint
-            document.getElementById('room-hint').textContent = 'Tap a cart to open';
+            document.getElementById('room-hint').textContent = 'Tap a cart to open its drawers';
             document.getElementById('room-hint').classList.remove('hidden');
 
             updateInventoryDisplay();
@@ -2165,37 +2263,29 @@
             playSound('click');
         }
 
-        // Continue to next scenario
         function continueToNext() {
-            // Check if last scenario
             if (state.currentScenarioIndex === DATA.scenarios.length - 1) {
                 completeTraining();
                 return;
             }
 
-            // Increment current scenario index
             state.currentScenarioIndex++;
 
-            // Unlock next scenario if needed
             if (state.currentScenarioIndex >= state.scenariosUnlocked) {
                 state.scenariosUnlocked = state.currentScenarioIndex + 1;
             }
 
-            // Reset for new scenario
             state.inventory = [];
             state.currentScenario = null;
             state.startTime = null;
             state.hasSubmittedOnce = false;
 
-            // Clear feedback
             document.getElementById('scenario-description').classList.remove('active');
             document.getElementById('scenario-feedback').classList.remove('active', 'success', 'partial', 'error');
             document.getElementById('scenario-feedback').innerHTML = '';
             document.getElementById('restart-btn').style.display = 'none';
             document.getElementById('advance-btn').style.display = 'none';
-            document.getElementById('procedure-table').style.display = 'none';
 
-            // Reset UI
             document.getElementById('scenario-name').textContent = 'Select the next scenario';
             document.getElementById('room-hint').textContent = 'Open Scenarios menu to begin next scenario';
             document.getElementById('room-hint').classList.remove('hidden');
@@ -2204,16 +2294,13 @@
             updateStats();
             updateProgressBadge();
 
-            // Open scenarios modal for user to select next
             openScenariosModal();
             playSound('click');
         }
 
-        // Complete training
         function completeTraining() {
             alert(`🎉 Training Complete!\n\nCongratulations! You've completed all training scenarios.\n\nTotal Points Earned: ${state.totalPoints} pts\nAchievements Unlocked: ${state.achievements.length}/${achievements.length}`);
             
-            // Reset for another round
             state.currentScenarioIndex = 0;
             state.scenariosUnlocked = 1;
             state.inventory = [];
@@ -2227,7 +2314,6 @@
             document.getElementById('scenario-feedback').innerHTML = '';
             document.getElementById('restart-btn').style.display = 'none';
             document.getElementById('advance-btn').style.display = 'none';
-            document.getElementById('procedure-table').style.display = 'none';
 
             document.getElementById('scenario-name').textContent = 'Select a scenario to begin';
             document.getElementById('room-hint').textContent = 'Open Scenarios menu to begin training';
@@ -2281,14 +2367,12 @@
                 toast.classList.remove('show');
             }, 4000);
             
-            // Award points for achievement
             awardPoints(100, 'Achievement!');
             
             saveUserProgress();
         }
 
         // ===== AUDIO & HAPTICS =====
-        // Create a single AudioContext for better performance and mobile compatibility
         let audioContext = null;
 
         function getAudioContext() {
@@ -2301,7 +2385,6 @@
                 }
             }
 
-            // Resume context if suspended (required on mobile after user interaction)
             if (audioContext.state === 'suspended') {
                 audioContext.resume();
             }
@@ -2372,7 +2455,6 @@
             document.getElementById('sound-toggle').checked = state.soundEnabled;
             document.getElementById('haptic-toggle').checked = state.hapticEnabled;
             
-            // Load results
             updateResultsList();
         }
 
@@ -2504,7 +2586,6 @@
         }
 
         function updateTutorialDisplay() {
-            // Update progress dots
             const progressContainer = document.getElementById('tutorial-progress');
             progressContainer.innerHTML = '';
             for (let i = 0; i < totalTutorialSteps; i++) {
@@ -2513,13 +2594,11 @@
                 progressContainer.appendChild(dot);
             }
 
-            // Show current step
             const steps = document.querySelectorAll('.tutorial-step');
             steps.forEach((step, index) => {
                 step.classList.toggle('active', index === currentTutorialStep);
             });
 
-            // Update buttons
             const prevBtn = document.getElementById('tutorial-prev');
             const nextBtn = document.getElementById('tutorial-next');
 
@@ -2558,18 +2637,14 @@
 
         // ===== INIT =====
         function init() {
-            // Initial resize
             resizeCanvas();
 
-            // Add resize listener with debounce for performance
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(resizeCanvas, 100);
             });
 
-            // Force a second resize after a brief delay to ensure proper dimensions on mobile
-            // This handles cases where the initial layout hasn't fully completed
             setTimeout(() => {
                 requestAnimationFrame(resizeCanvas);
             }, 100);
@@ -2577,7 +2652,6 @@
             loadUserProgress();
             updateStats();
 
-            // Always show tutorial on page load/refresh
             initTutorial();
             document.getElementById('tutorial-modal').classList.add('active');
         }
