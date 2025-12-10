@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Trauma Room Trainer</title>
+    <title>Cabinet Quest</title>
     <style>
         * {
             margin: 0;
@@ -61,9 +61,11 @@
         }
 
         .scenario-name {
-            font-size: inherit;
-            color: inherit;
-            font-weight: 600;
+            font-size: 15px;
+            color: #007bff;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 3px;
         }
 
         /* Compact icon-only buttons */
@@ -104,7 +106,7 @@
         .scenario-description-box {
             background: #fff3cd;
             border-left: 3px solid #ffc107;
-            padding: 6px 10px;
+            padding: 8px 10px;
             margin: 0;
             font-size: 11px;
             color: #856404;
@@ -120,8 +122,8 @@
 
         .scenario-task-row {
             display: flex;
-            align-items: center;
-            gap: 6px;
+            flex-direction: column;
+            gap: 3px;
         }
 
         .scenario-task-text {
@@ -1077,6 +1079,10 @@
                 min-height: 32px;
                 min-width: 60px;
             }
+            
+            .scenario-name {
+                font-size: 13px;
+            }
         }
     </style>
 </head>
@@ -1085,7 +1091,7 @@
         <!-- Ultra-Compact Header - Single Row -->
         <div class="header">
             <button class="scenarios-menu-btn" onclick="openScenariosModal()" title="Scenarios">📋</button>
-            <h1>🏥 Trauma Trainer</h1>
+            <h1>🗄️ CABINET QUEST</h1>
             <div class="header-info">
                 <div class="stats-compact">
                     <div class="stat-compact">
@@ -1103,7 +1109,7 @@
         <div class="scenario-description-box" id="scenario-description">
             <div class="scenario-task-row">
                 <div class="scenario-task-text" id="scenario-task">
-                    <strong id="scenario-name" style="font-weight: 600; margin-right: 4px;">Select a scenario</strong>
+                    <span class="scenario-name" id="scenario-name">Select a scenario</span>
                     <span id="task-description"></span>
                 </div>
             </div>
@@ -1136,14 +1142,14 @@
     <div class="modal" id="tutorial-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="tutorial-header">🎓 Welcome to Trauma Room Trainer!</h2>
+                <h2 id="tutorial-header">🎓 Welcome to Cabinet Quest!</h2>
                 <div class="tutorial-progress" id="tutorial-progress"></div>
             </div>
             <div class="modal-body">
                 <div class="tutorial-step active" data-step="0">
-                    <div class="tutorial-icon">🏥</div>
+                    <div class="tutorial-icon">🗄️</div>
                     <h3>Welcome!</h3>
-                    <p>Learn how to use the Trauma Room Trainer to master emergency medical equipment locations and procedures.</p>
+                    <p>Learn how to use Cabinet Quest to master emergency medical equipment locations and procedures.</p>
                 </div>
 
                 <div class="tutorial-step" data-step="1">
@@ -1161,7 +1167,7 @@
                 <div class="tutorial-step" data-step="3">
                     <div class="tutorial-icon">🎒</div>
                     <h3>Collect Items</h3>
-                    <p>Tap drawers to open them and select items. Selected items will be highlighted. Tap "Add to Table" to collect them. View your collected items by tapping the purple Procedure Table cart in the center.</p>
+                    <p>Tap drawers to open them and select items. Selected items will be highlighted. Tap "Add to Table" to collect them. View your collected items by tapping the Procedure Table cart in the center.</p>
                 </div>
 
                 <div class="tutorial-step" data-step="4">
@@ -1282,7 +1288,7 @@
     <div class="modal" id="inventory-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>🎒 Procedure Table</h2>
+                <h2>📦 Procedure Table</h2>
                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
                     Items collected: <strong id="inventory-count">0</strong>
                 </p>
@@ -1337,7 +1343,7 @@
                 { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, color: '#2196F3' },
                 { id: 'code', name: 'Code Cart', x: 0.2, y: 0.7, color: '#F44336' },
                 { id: 'trauma', name: 'Trauma Cart', x: 0.8, y: 0.7, color: '#FF9800' },
-                { id: 'inventory', name: 'Procedure Table', x: 0.5, y: 0.5, color: '#9C27B0', isInventory: true }
+                { id: 'inventory', name: 'Procedure Table', x: 0.5, y: 0.5, color: '#17a2b8', isInventory: true }
             ],
             drawers: [
                 { id: 'd1', cart: 'airway', name: 'Top Drawer', number: 1 },
@@ -1573,7 +1579,7 @@
             canvasHeight = height;
             ctx.clearRect(0, 0, width, height);
 
-            // Draw carts with drawer visualization
+            // Draw carts and procedure table
             DATA.carts.forEach(cart => {
                 const x = cart.x * width;
                 const y = cart.y * height;
@@ -1587,20 +1593,62 @@
                 }
 
                 if (cart.isInventory) {
-                    // Special rendering for inventory (procedure table)
-                    ctx.fillStyle = cart.color;
-                    ctx.fillRect(x - size/2, y - size/2, size, size);
-                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(x - size/2, y - size/2, size, size);
+                    // Special rendering for Procedure Table - make it look like a table
+                    const tableWidth = size * 1.2;
+                    const tableHeight = size * 0.6;
                     
+                    // Table legs
+                    ctx.fillStyle = '#666';
+                    const legWidth = size * 0.08;
+                    const legHeight = size * 0.3;
+                    // Front left leg
+                    ctx.fillRect(x - tableWidth/2 + legWidth, y + tableHeight/2 - 5, legWidth, legHeight);
+                    // Front right leg
+                    ctx.fillRect(x + tableWidth/2 - legWidth * 2, y + tableHeight/2 - 5, legWidth, legHeight);
+                    // Back left leg (slightly visible)
+                    ctx.fillRect(x - tableWidth/2 + legWidth * 1.5, y - tableHeight/2 + 5, legWidth * 0.7, legHeight * 0.8);
+                    // Back right leg (slightly visible)
+                    ctx.fillRect(x + tableWidth/2 - legWidth * 2.2, y - tableHeight/2 + 5, legWidth * 0.7, legHeight * 0.8);
+                    
+                    // Table top - with 3D effect
+                    const gradient = ctx.createLinearGradient(x - tableWidth/2, y - tableHeight/2, x + tableWidth/2, y + tableHeight/2);
+                    gradient.addColorStop(0, lightenColor(cart.color, 20));
+                    gradient.addColorStop(0.5, cart.color);
+                    gradient.addColorStop(1, lightenColor(cart.color, 10));
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x - tableWidth/2, y - tableHeight/2, tableWidth, tableHeight);
+                    
+                    // Table top edge/border for depth
+                    ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(x - tableWidth/2, y - tableHeight/2, tableWidth, tableHeight);
+                    
+                    // Highlight on top edge
+                    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x - tableWidth/2 + 2, y - tableHeight/2 + 2);
+                    ctx.lineTo(x + tableWidth/2 - 2, y - tableHeight/2 + 2);
+                    ctx.stroke();
+                    
+                    // Table label
                     ctx.fillStyle = 'white';
-                    ctx.font = `bold ${size * 0.35}px Arial`;
+                    ctx.font = `bold ${size * 0.14}px Arial`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    ctx.fillText('🎒', x, y - size * 0.1);
-                    ctx.font = `bold ${size * 0.12}px Arial`;
-                    ctx.fillText(`(${state.inventory.length})`, x, y + size * 0.25);
+                    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                    ctx.shadowBlur = 4;
+                    ctx.fillText('Procedure', x, y - size * 0.08);
+                    ctx.fillText('Table', x, y + size * 0.08);
+                    ctx.shadowBlur = 0;
+                    
+                    // Item count badge if items collected
+                    if (state.inventory.length > 0) {
+                        ctx.fillStyle = 'white';
+                        ctx.font = `bold ${size * 0.12}px Arial`;
+                        ctx.fillText(`(${state.inventory.length} items)`, x, y + tableHeight/2 + legHeight + size * 0.12);
+                    }
                 } else {
                     // Draw cart with visible drawers
                     drawCartWithDrawers(cart, x, y, size);
@@ -1712,7 +1760,7 @@
             state.startTime = Date.now();
             state.hasSubmittedOnce = false;
             
-            document.getElementById('scenario-name').textContent = scenario.name + ':';
+            document.getElementById('scenario-name').textContent = scenario.name;
             document.getElementById('task-description').textContent = scenario.description;
             document.getElementById('scenario-description').classList.add('active');
             document.getElementById('submit-btn-yellow').disabled = true;
@@ -2501,7 +2549,7 @@
                 return;
             }
             
-            localStorage.removeItem('traumaRoomProgress');
+            localStorage.removeItem('cabinetQuestProgress');
             localStorage.removeItem('analytics');
             location.reload();
         }
@@ -2527,7 +2575,7 @@
 
         // ===== PERSISTENCE =====
         function saveUserProgress() {
-            localStorage.setItem('traumaRoomProgress', JSON.stringify({
+            localStorage.setItem('cabinetQuestProgress', JSON.stringify({
                 completedScenarios: state.completedScenarios,
                 achievements: state.achievements,
                 totalPoints: state.totalPoints,
@@ -2539,7 +2587,7 @@
         }
 
         function loadUserProgress() {
-            const saved = localStorage.getItem('traumaRoomProgress');
+            const saved = localStorage.getItem('cabinetQuestProgress');
             if (saved) {
                 const data = JSON.parse(saved);
                 state.completedScenarios = data.completedScenarios || [];
@@ -2566,7 +2614,7 @@
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `trauma-room-analytics-${Date.now()}.json`;
+            link.download = `cabinet-quest-analytics-${Date.now()}.json`;
             link.click();
             playSound('click');
         }
