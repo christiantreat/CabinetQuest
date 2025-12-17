@@ -1626,7 +1626,7 @@
                 { id: 'airway', name: 'Airway Cart', x: 0.2, y: 0.3, color: '#8fb33f' },
                 { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, color: '#6b8fb3' },
                 { id: 'code', name: 'Code Cart', x: 0.2, y: 0.7, color: '#b54a3d' },
-                { id: 'trauma', name: 'Trauma Cart', x: 0.8, y: 0.7, color: '#d4850e' },
+                { id: 'resus', name: 'Resuscitation Cart', x: 0.5, y: 0.8, color: '#b33f6f' },
                 { id: 'inventory', name: 'Procedure Table', x: 0.5, y: 0.5, color: '#8b7355', isInventory: true }
             ],
             drawers: [
@@ -1645,10 +1645,13 @@
                 { id: 'code-d2', cart: 'code', name: 'Middle Drawer', number: 2 },
                 { id: 'code-d3', cart: 'code', name: 'Bottom Drawer', number: 3 },
 
-                // Trauma Cart
-                { id: 'trauma-d1', cart: 'trauma', name: 'Top Drawer', number: 1 },
-                { id: 'trauma-d2', cart: 'trauma', name: 'Middle Drawer', number: 2 },
-                { id: 'trauma-d3', cart: 'trauma', name: 'Bottom Drawer', number: 3 }
+                // Resuscitation Cart
+                { id: 'resus-d1', cart: 'resus', name: 'Top Drawer', number: 1 },
+                { id: 'resus-d2', cart: 'resus', name: 'Drawer 2', number: 2 },
+                { id: 'resus-d3', cart: 'resus', name: 'Drawer 3', number: 3 },
+                { id: 'resus-d4', cart: 'resus', name: 'Drawer 4', number: 4 },
+                { id: 'resus-d5', cart: 'resus', name: 'Drawer 5', number: 5 },
+                { id: 'resus-d6', cart: 'resus', name: 'Bottom Drawer', number: 6 }
             ],
             items: [
                 { id: 'ett', name: 'Endotracheal Tube', cart: 'airway', drawer: 'airway-d1', image: 'images/ett.jpg' },
@@ -1669,12 +1672,34 @@
                 { id: 'saline', name: 'Saline Flush', cart: 'code', drawer: 'code-d2', image: 'images/saline.jpg' },
                 { id: 'cpr-board', name: 'CPR Board', cart: 'code', drawer: 'code-d3', image: 'images/cpr-board.jpg' },
                 { id: 'aed', name: 'AED', cart: 'code', drawer: 'code-d3', image: 'images/aed.jpg' },
-                { id: 'chest-tube', name: 'Chest Tube Kit', cart: 'trauma', drawer: 'trauma-d1', image: 'images/chest-tube.jpg' },
-                { id: 'scalpel', name: 'Scalpel', cart: 'trauma', drawer: 'trauma-d1', image: 'images/scalpel.jpg' },
-                { id: 'gauze', name: 'Gauze Pads', cart: 'trauma', drawer: 'trauma-d2', image: 'images/gauze.jpg' },
-                { id: 'tourniquet', name: 'Tourniquet', cart: 'trauma', drawer: 'trauma-d2', image: 'images/tourniquet.jpg' },
-                { id: 'splint', name: 'Splint', cart: 'trauma', drawer: 'trauma-d3', image: 'images/splint.jpg' },
-                { id: 'cervical-collar', name: 'Cervical Collar', cart: 'trauma', drawer: 'trauma-d3', image: 'images/cervical-collar.jpg' }
+                // Resuscitation Cart - Drawer 1
+                { id: 'or-towels', name: 'O.R. Towels', cart: 'resus', drawer: 'resus-d1', image: 'images/or-towels.jpg' },
+                { id: 'silk-suture-2-0', name: '2-0 Silk Suture', cart: 'resus', drawer: 'resus-d1', image: 'images/silk-suture-2-0.jpg' },
+                { id: 'tegaderm-4x4', name: '4x4 Tegaderm', cart: 'resus', drawer: 'resus-d1', image: 'images/tegaderm-4x4.jpg' },
+                { id: 'betadine-bottle', name: 'Betadine Bottle', cart: 'resus', drawer: 'resus-d1', image: 'images/betadine-bottle.jpg' },
+
+                // Resuscitation Cart - Drawer 2
+                { id: 'gauze-bandage-roll', name: 'Gauze Bandage Roll', cart: 'resus', drawer: 'resus-d2', image: 'images/gauze-bandage-roll.jpg' },
+                { id: 'chloraprep', name: 'ChloraPrep', cart: 'resus', drawer: 'resus-d2', image: 'images/chloraprep.jpg' },
+
+                // Resuscitation Cart - Drawer 3
+                { id: 'us-probe-cover', name: 'Ultrasound Probe Cover', cart: 'resus', drawer: 'resus-d3', image: 'images/us-probe-cover.jpg' },
+                { id: 'us-gel', name: 'Ultrasound Gel', cart: 'resus', drawer: 'resus-d3', image: 'images/us-gel.jpg' },
+                { id: 'arterial-line-kit', name: 'Arterial Line Kit', cart: 'resus', drawer: 'resus-d3', image: 'images/arterial-line-kit.jpg' },
+                { id: 'arrow-radial-cath', name: 'Arrow Radial Arterial Cath Kit', cart: 'resus', drawer: 'resus-d3', image: 'images/arrow-radial-cath.jpg' },
+
+                // Resuscitation Cart - Drawer 4
+                { id: 'cl-insertion-tray-1', name: 'Central Line Insertion Tray', cart: 'resus', drawer: 'resus-d4', image: 'images/cl-insertion-tray.jpg' },
+                { id: 'cordis-sheath-7-5', name: '7.5 Fr Cordis Sheath Kit', cart: 'resus', drawer: 'resus-d4', image: 'images/cordis-sheath-7-5.jpg' },
+
+                // Resuscitation Cart - Drawer 5
+                { id: 'cl-insertion-tray-2', name: 'Central Line Insertion Tray', cart: 'resus', drawer: 'resus-d5', image: 'images/cl-insertion-tray.jpg' },
+                { id: 'triple-lumen-cl', name: 'Triple Lumen Central Line Kit', cart: 'resus', drawer: 'resus-d5', image: 'images/triple-lumen-cl.jpg' },
+
+                // Resuscitation Cart - Drawer 6
+                { id: 'chest-tube', name: 'Chest Tube', cart: 'resus', drawer: 'resus-d6', image: 'images/chest-tube.jpg' },
+                { id: 'pleur-evac', name: 'Pleur-evac Chest Drain', cart: 'resus', drawer: 'resus-d6', image: 'images/pleur-evac.jpg' },
+                { id: 'chest-tube-tray', name: 'Chest Tube Tray', cart: 'resus', drawer: 'resus-d6', image: 'images/chest-tube-tray.jpg' }
             ],
             scenarios: [
                 {
