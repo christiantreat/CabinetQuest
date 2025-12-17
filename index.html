@@ -199,9 +199,55 @@
 
         .scenario-action-btn:active {
             transform: translate(2px, 2px);
-            box-shadow: 
+            box-shadow:
                 inset 0 1px 0 rgba(255,255,255,0.3),
                 1px 1px 0 rgba(0,0,0,0.3);
+        }
+
+        /* Floating Action Bar */
+        .floating-action-bar {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: rgba(42, 37, 32, 0.95);
+            padding: 10px;
+            border-radius: 8px;
+            border: 3px solid #5a4d38;
+            box-shadow:
+                0 4px 12px rgba(0,0,0,0.4),
+                inset 0 0 20px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        /* Scenario Info Button */
+        .scenario-info-btn {
+            background: linear-gradient(180deg, #6b8fb5 0%, #5a7a9f 100%);
+            border: 2px solid #3d5a7a;
+            border-bottom-width: 4px;
+            border-right-width: 3px;
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #f5e6d3;
+            font-weight: bold;
+            transition: all 0.1s ease;
+            margin-left: 8px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.3),
+                2px 2px 4px rgba(0,0,0,0.4);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .scenario-info-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 2px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.3),
+                1px 1px 2px rgba(0,0,0,0.4);
         }
 
         /* Restart button - Burnt Orange */
@@ -1323,34 +1369,31 @@
                         📦<span id="stat-items">0</span>
                     </div>
                 </div>
+                <button class="scenario-info-btn" id="scenario-info-btn" onclick="openScenarioDetailsModal()" title="View Scenario Details" style="display: none;">
+                    ℹ️
+                </button>
             </div>
             <button class="settings-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
         </div>
 
-        <!-- CRT Monitor Style Task Bar -->
-        <div class="scenario-description-box" id="scenario-description">
-            <div class="scenario-task-row">
-                <div class="scenario-task-text" id="scenario-task">
-                    <span class="scenario-name" id="scenario-name">Select a scenario</span>
-                    <span id="task-description"></span>
-                </div>
-            </div>
-            
-            <!-- Feedback area within scenario box -->
+        <!-- Hidden storage for scenario data -->
+        <div style="display: none;">
+            <span class="scenario-name" id="scenario-name">Select a scenario</span>
+            <span id="task-description"></span>
             <div class="scenario-feedback" id="scenario-feedback"></div>
-            
-            <!-- Chunky Retro Action Buttons -->
-            <div class="scenario-actions">
-                <button class="scenario-action-btn restart-btn" id="restart-btn" onclick="retryScenario()" style="display: none;">
-                    🔄 Retry
-                </button>
-                <button class="scenario-action-btn submit-btn-yellow" id="submit-btn-yellow" onclick="submitInventory()" disabled>
-                    ✓ Submit
-                </button>
-                <button class="scenario-action-btn advance-btn" id="advance-btn" onclick="continueToNext()" style="display: none;">
-                    → Next
-                </button>
-            </div>
+        </div>
+
+        <!-- Floating Action Bar -->
+        <div class="floating-action-bar" id="floating-action-bar" style="display: none;">
+            <button class="scenario-action-btn restart-btn" id="restart-btn" onclick="retryScenario()" style="display: none;">
+                🔄 Retry
+            </button>
+            <button class="scenario-action-btn submit-btn-yellow" id="submit-btn-yellow" onclick="submitInventory()" disabled>
+                ✓ Submit
+            </button>
+            <button class="scenario-action-btn advance-btn" id="advance-btn" onclick="continueToNext()" style="display: none;">
+                → Next
+            </button>
         </div>
 
         <!-- Room Container -->
@@ -1502,6 +1545,25 @@
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="backToCart()">← Back to Drawers</button>
                 <button class="btn-primary" onclick="collectSelectedItems()">Add to Table</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenario Details Modal -->
+    <div class="modal" id="scenario-details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="scenario-details-title">📋 Current Scenario</h2>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: #5a4d38; font-size: 16px; margin-bottom: 8px;" id="scenario-details-name">Scenario Name</h3>
+                    <p style="color: #3d3426; font-size: 14px; line-height: 1.6;" id="scenario-details-description">Scenario description will appear here.</p>
+                </div>
+                <div id="scenario-details-feedback" style="margin-top: 15px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('scenario-details-modal')">Close</button>
             </div>
         </div>
     </div>
@@ -2017,24 +2079,41 @@
             state.inventory = [];
             state.startTime = Date.now();
             state.hasSubmittedOnce = false;
-            
+
             document.getElementById('scenario-name').textContent = scenario.name;
             document.getElementById('task-description').textContent = scenario.description;
-            document.getElementById('scenario-description').classList.add('active');
+
+            // Show floating action bar and info button instead of scenario-description-box
+            document.getElementById('floating-action-bar').style.display = 'flex';
+            document.getElementById('scenario-info-btn').style.display = 'inline-block';
             document.getElementById('submit-btn-yellow').disabled = true;
             document.getElementById('restart-btn').style.display = 'inline-block';
             document.getElementById('advance-btn').style.display = 'none';
-            
+
             document.getElementById('scenario-feedback').classList.remove('active', 'success', 'partial', 'error');
             document.getElementById('scenario-feedback').innerHTML = '';
-            
+
             document.getElementById('room-hint').textContent = 'Tap a cart to open its drawers';
             document.getElementById('room-hint').classList.remove('hidden');
-            
+
             updateInventoryDisplay();
             updateStats();
-            
+
             closeModal('scenarios-modal');
+            playSound('click');
+        }
+
+        function openScenarioDetailsModal() {
+            if (!state.currentScenario) return;
+
+            document.getElementById('scenario-details-name').textContent = state.currentScenario.name;
+            document.getElementById('scenario-details-description').textContent = state.currentScenario.description;
+
+            // Copy feedback content to modal if present
+            const feedbackContent = document.getElementById('scenario-feedback').innerHTML;
+            document.getElementById('scenario-details-feedback').innerHTML = feedbackContent;
+
+            document.getElementById('scenario-details-modal').classList.add('active');
             playSound('click');
         }
 
@@ -2578,7 +2657,9 @@
             state.startTime = null;
             state.hasSubmittedOnce = false;
 
-            document.getElementById('scenario-description').classList.remove('active');
+            // Hide floating action bar and info button
+            document.getElementById('floating-action-bar').style.display = 'none';
+            document.getElementById('scenario-info-btn').style.display = 'none';
             document.getElementById('scenario-feedback').classList.remove('active', 'success', 'partial', 'error');
             document.getElementById('scenario-feedback').innerHTML = '';
             document.getElementById('restart-btn').style.display = 'none';
@@ -2598,7 +2679,7 @@
 
         function completeTraining() {
             alert(`🎉 Training Complete!\n\nCongratulations! You've completed all training scenarios.\n\nTotal Points Earned: ${state.totalPoints} pts\nAchievements Unlocked: ${state.achievements.length}/${achievements.length}`);
-            
+
             state.currentScenarioIndex = 0;
             state.scenariosUnlocked = 1;
             state.inventory = [];
@@ -2607,7 +2688,9 @@
             state.hasSubmittedOnce = false;
             state.completedScenarios = [];
 
-            document.getElementById('scenario-description').classList.remove('active');
+            // Hide floating action bar and info button
+            document.getElementById('floating-action-bar').style.display = 'none';
+            document.getElementById('scenario-info-btn').style.display = 'none';
             document.getElementById('scenario-feedback').classList.remove('active');
             document.getElementById('scenario-feedback').innerHTML = '';
             document.getElementById('restart-btn').style.display = 'none';
