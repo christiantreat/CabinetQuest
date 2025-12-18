@@ -1623,27 +1623,15 @@
         // ===== DATA =====
         const DATA = {
             carts: [
-                { id: 'airway', name: 'Airway Cart', x: 0.2, y: 0.3, color: '#8fb33f' },
-                { id: 'med', name: 'Medication Cart', x: 0.8, y: 0.3, color: '#6b8fb3' },
-                { id: 'code', name: 'Code Cart', x: 0.2, y: 0.7, color: '#b54a3d' },
-                { id: 'resus', name: 'Resuscitation Cart', x: 0.5, y: 0.8, color: '#b33f6f' },
+                { id: 'airway', name: 'Green IV Cart', x: 0.7, y: 0.3, color: '#8fb33f' },
+                { id: 'resus', name: 'Resuscitation Cart', x: 0.3, y: 0.5, color: '#b33f6f' },
                 { id: 'inventory', name: 'Procedure Table', x: 0.5, y: 0.5, color: '#8b7355', isInventory: true }
             ],
             drawers: [
-                // Airway Cart
+                // Green IV Cart (formerly Airway Cart)
                 { id: 'airway-d1', cart: 'airway', name: 'Top Drawer', number: 1 },
                 { id: 'airway-d2', cart: 'airway', name: 'Middle Drawer', number: 2 },
                 { id: 'airway-d3', cart: 'airway', name: 'Bottom Drawer', number: 3 },
-
-                // Medication Cart
-                { id: 'med-d1', cart: 'med', name: 'Top Drawer', number: 1 },
-                { id: 'med-d2', cart: 'med', name: 'Middle Drawer', number: 2 },
-                { id: 'med-d3', cart: 'med', name: 'Bottom Drawer', number: 3 },
-
-                // Code Cart
-                { id: 'code-d1', cart: 'code', name: 'Top Drawer', number: 1 },
-                { id: 'code-d2', cart: 'code', name: 'Middle Drawer', number: 2 },
-                { id: 'code-d3', cart: 'code', name: 'Bottom Drawer', number: 3 },
 
                 // Resuscitation Cart
                 { id: 'resus-d1', cart: 'resus', name: 'Top Drawer', number: 1 },
@@ -1654,24 +1642,14 @@
                 { id: 'resus-d6', cart: 'resus', name: 'Bottom Drawer', number: 6 }
             ],
             items: [
+                // Green IV Cart (formerly Airway Cart)
                 { id: 'ett', name: 'Endotracheal Tube', cart: 'airway', drawer: 'airway-d1', image: 'images/ett.jpg' },
                 { id: 'laryngoscope', name: 'Laryngoscope', cart: 'airway', drawer: 'airway-d1', image: 'images/laryngoscope.jpg' },
                 { id: 'bvm', name: 'Bag-Valve-Mask', cart: 'airway', drawer: 'airway-d2', image: 'images/bvm.jpg' },
                 { id: 'oropharyngeal', name: 'Oropharyngeal Airway', cart: 'airway', drawer: 'airway-d2', image: 'images/oropharyngeal.jpg' },
                 { id: 'suction', name: 'Suction Catheter', cart: 'airway', drawer: 'airway-d3', image: 'images/suction.jpg' },
                 { id: 'oxygen', name: 'Oxygen Mask', cart: 'airway', drawer: 'airway-d3', image: 'images/oxygen.jpg' },
-                { id: 'epinephrine', name: 'Epinephrine', cart: 'med', drawer: 'med-d1', image: 'images/epinephrine.jpg' },
-                { id: 'atropine', name: 'Atropine', cart: 'med', drawer: 'med-d1', image: 'images/atropine.jpg' },
-                { id: 'amiodarone', name: 'Amiodarone', cart: 'med', drawer: 'med-d2', image: 'images/amiodarone.jpg' },
-                { id: 'lidocaine', name: 'Lidocaine', cart: 'med', drawer: 'med-d2', image: 'images/lidocaine.jpg' },
-                { id: 'morphine', name: 'Morphine', cart: 'med', drawer: 'med-d3', image: 'images/morphine.jpg' },
-                { id: 'naloxone', name: 'Naloxone', cart: 'med', drawer: 'med-d3', image: 'images/naloxone.jpg' },
-                { id: 'defibrillator', name: 'Defibrillator Pads', cart: 'code', drawer: 'code-d1', image: 'images/defibrillator.jpg' },
-                { id: 'ecg', name: 'ECG Leads', cart: 'code', drawer: 'code-d1', image: 'images/ecg.jpg' },
-                { id: 'iv-start', name: 'IV Start Kit', cart: 'code', drawer: 'code-d2', image: 'images/iv-start.jpg' },
-                { id: 'saline', name: 'Saline Flush', cart: 'code', drawer: 'code-d2', image: 'images/saline.jpg' },
-                { id: 'cpr-board', name: 'CPR Board', cart: 'code', drawer: 'code-d3', image: 'images/cpr-board.jpg' },
-                { id: 'aed', name: 'AED', cart: 'code', drawer: 'code-d3', image: 'images/aed.jpg' },
+
                 // Resuscitation Cart - Drawer 1
                 { id: 'or-towels', name: 'O.R. Towels', cart: 'resus', drawer: 'resus-d1', image: 'images/or-towels.jpg' },
                 { id: 'silk-suture-2-0', name: '2-0 Silk Suture', cart: 'resus', drawer: 'resus-d1', image: 'images/silk-suture-2-0.jpg' },
@@ -1704,38 +1682,38 @@
             scenarios: [
                 {
                     id: 's1',
-                    name: 'Cardiac Arrest',
-                    description: 'Patient in cardiac arrest. Prepare for immediate resuscitation.',
-                    essential: ['defibrillator', 'ecg', 'epinephrine', 'amiodarone'],
-                    optional: ['cpr-board', 'iv-start', 'saline']
-                },
-                {
-                    id: 's2',
                     name: 'Airway Obstruction',
                     description: 'Patient with complete airway obstruction requiring immediate intervention.',
                     essential: ['laryngoscope', 'ett', 'bvm', 'suction'],
                     optional: ['oropharyngeal', 'oxygen']
                 },
                 {
+                    id: 's2',
+                    name: 'Central Line Placement',
+                    description: 'Patient requires central venous access for resuscitation.',
+                    essential: ['cl-insertion-tray-1', 'triple-lumen-cl', 'chloraprep', 'betadine-bottle'],
+                    optional: ['or-towels', 'us-gel', 'us-probe-cover']
+                },
+                {
                     id: 's3',
-                    name: 'Severe Trauma',
-                    description: 'Multiple trauma patient with suspected internal bleeding.',
-                    essential: ['gauze', 'tourniquet', 'chest-tube', 'iv-start'],
-                    optional: ['cervical-collar', 'splint', 'scalpel']
+                    name: 'Chest Tube Insertion',
+                    description: 'Patient with pneumothorax requiring chest tube placement.',
+                    essential: ['chest-tube', 'chest-tube-tray', 'pleur-evac', 'betadine-bottle'],
+                    optional: ['or-towels', 'chloraprep', 'gauze-bandage-roll']
                 },
                 {
                     id: 's4',
-                    name: 'Anaphylaxis',
-                    description: 'Severe allergic reaction with respiratory compromise.',
-                    essential: ['epinephrine', 'oxygen', 'bvm', 'iv-start'],
-                    optional: ['saline', 'ecg']
+                    name: 'Arterial Line Placement',
+                    description: 'Patient requires arterial line for hemodynamic monitoring.',
+                    essential: ['arterial-line-kit', 'arrow-radial-cath', 'chloraprep', 'us-gel'],
+                    optional: ['us-probe-cover', 'tegaderm-4x4', 'gauze-bandage-roll']
                 },
                 {
                     id: 's5',
-                    name: 'Overdose',
-                    description: 'Suspected opioid overdose with decreased respirations.',
-                    essential: ['naloxone', 'bvm', 'oxygen', 'iv-start'],
-                    optional: ['suction', 'ecg', 'saline']
+                    name: 'Emergency Airway Management',
+                    description: 'Rapid sequence intubation for critically ill patient.',
+                    essential: ['laryngoscope', 'ett', 'bvm', 'suction'],
+                    optional: ['oropharyngeal', 'oxygen']
                 }
             ]
         };
@@ -1808,22 +1786,23 @@
 
         // Retro-styled cart drawing with visible drawers
         function drawCartWithDrawers(cart, x, y, size) {
-            const drawerHeight = size / 4;
-            const drawerCount = 3;
-            
+            // Calculate actual drawer count for this cart
+            const drawerCount = DATA.drawers.filter(d => d.cart === cart.id).length;
+            const drawerHeight = size / Math.max(3, drawerCount * 0.75); // Adjust height based on drawer count
+
             // Cart frame/body - dark brown metal
             const frameGradient = ctx.createLinearGradient(x - size/2, y - size/2, x + size/2, y + size/2);
             frameGradient.addColorStop(0, '#4a3f2f');
             frameGradient.addColorStop(1, '#3d3426');
             ctx.fillStyle = frameGradient;
             ctx.fillRect(x - size/2, y - size/2 - 10, size, size + 20);
-            
+
             // Frame border
             ctx.strokeStyle = '#2a2520';
             ctx.lineWidth = 3;
             ctx.strokeRect(x - size/2, y - size/2 - 10, size, size + 20);
-            
-            // Draw 3 visible drawer fronts
+
+            // Draw visible drawer fronts based on actual drawer count
             for (let i = 0; i < drawerCount; i++) {
                 const drawerY = y - size/2 + (i * drawerHeight) + 8;
                 
@@ -1931,29 +1910,29 @@
                 }
 
                 if (cart.isInventory) {
-                    // Special rendering for Procedure Table - retro table style
-                    const tableWidth = size * 1.2;
-                    const tableHeight = size * 0.6;
-                    
-                    // Table legs - chunky wood style
+                    // Special rendering for Procedure Table - retro table style (VERTICAL)
+                    const tableWidth = size * 0.6;  // Swapped - now narrower
+                    const tableHeight = size * 1.2; // Swapped - now taller
+
+                    // Table legs - chunky wood style (adjusted for vertical orientation)
                     const legGradient = ctx.createLinearGradient(x, y, x, y + size * 0.3);
                     legGradient.addColorStop(0, '#5a4d38');
                     legGradient.addColorStop(1, '#3d3426');
-                    
+
                     const legWidth = size * 0.09;
                     const legHeight = size * 0.3;
-                    
+
                     ctx.fillStyle = legGradient;
                     // Front left leg
                     ctx.fillRect(x - tableWidth/2 + legWidth, y + tableHeight/2 - 5, legWidth, legHeight);
                     ctx.strokeStyle = '#2a2520';
                     ctx.lineWidth = 2;
                     ctx.strokeRect(x - tableWidth/2 + legWidth, y + tableHeight/2 - 5, legWidth, legHeight);
-                    
+
                     // Front right leg
                     ctx.fillRect(x + tableWidth/2 - legWidth * 2, y + tableHeight/2 - 5, legWidth, legHeight);
                     ctx.strokeRect(x + tableWidth/2 - legWidth * 2, y + tableHeight/2 - 5, legWidth, legHeight);
-                    
+
                     // Back legs (slightly visible)
                     ctx.fillStyle = '#3d3426';
                     ctx.fillRect(x - tableWidth/2 + legWidth * 1.5, y - tableHeight/2 + 5, legWidth * 0.7, legHeight * 0.8);
