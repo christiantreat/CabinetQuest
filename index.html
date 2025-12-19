@@ -1623,8 +1623,8 @@
         // ===== DATA =====
         const DATA = {
             carts: [
-                { id: 'airway', name: 'Green IV Cart', x: 0.7, y: 0.3, color: '#8fb33f' },
-                { id: 'resus', name: 'Resuscitation Cart', x: 0.3, y: 0.5, color: '#b33f6f' },
+                { id: 'airway', name: 'Green IV Cart', x: 0.25, y: 0.25, color: '#8fb33f' },
+                { id: 'resus', name: 'Resuscitation Cart', x: 0.25, y: 0.65, color: '#b33f6f' },
                 { id: 'inventory', name: 'Procedure Table', x: 0.5, y: 0.5, color: '#8b7355', isInventory: true }
             ],
             drawers: [
@@ -1681,13 +1681,6 @@
             ],
             scenarios: [
                 {
-                    id: 's1',
-                    name: 'Airway Obstruction',
-                    description: 'Patient with complete airway obstruction requiring immediate intervention.',
-                    essential: ['laryngoscope', 'ett', 'bvm', 'suction'],
-                    optional: ['oropharyngeal', 'oxygen']
-                },
-                {
                     id: 's2',
                     name: 'Central Line Placement',
                     description: 'Patient requires central venous access for resuscitation.',
@@ -1707,13 +1700,6 @@
                     description: 'Patient requires arterial line for hemodynamic monitoring.',
                     essential: ['arterial-line-kit', 'arrow-radial-cath', 'chloraprep', 'us-gel'],
                     optional: ['us-probe-cover', 'tegaderm-4x4', 'gauze-bandage-roll']
-                },
-                {
-                    id: 's5',
-                    name: 'Emergency Airway Management',
-                    description: 'Rapid sequence intubation for critically ill patient.',
-                    essential: ['laryngoscope', 'ett', 'bvm', 'suction'],
-                    optional: ['oropharyngeal', 'oxygen']
                 }
             ]
         };
@@ -1790,21 +1776,24 @@
             const drawerCount = DATA.drawers.filter(d => d.cart === cart.id).length;
             const drawerHeight = size / Math.max(3, drawerCount * 0.75); // Adjust height based on drawer count
 
+            // Calculate cabinet height based on drawer count
+            const cabinetHeight = drawerCount * drawerHeight + 16; // Total height needed for all drawers plus padding
+
             // Cart frame/body - dark brown metal
             const frameGradient = ctx.createLinearGradient(x - size/2, y - size/2, x + size/2, y + size/2);
             frameGradient.addColorStop(0, '#4a3f2f');
             frameGradient.addColorStop(1, '#3d3426');
             ctx.fillStyle = frameGradient;
-            ctx.fillRect(x - size/2, y - size/2 - 10, size, size + 20);
+            ctx.fillRect(x - size/2, y - cabinetHeight/2 - 10, size, cabinetHeight + 20);
 
             // Frame border
             ctx.strokeStyle = '#2a2520';
             ctx.lineWidth = 3;
-            ctx.strokeRect(x - size/2, y - size/2 - 10, size, size + 20);
+            ctx.strokeRect(x - size/2, y - cabinetHeight/2 - 10, size, cabinetHeight + 20);
 
             // Draw visible drawer fronts based on actual drawer count
             for (let i = 0; i < drawerCount; i++) {
-                const drawerY = y - size/2 + (i * drawerHeight) + 8;
+                const drawerY = y - cabinetHeight/2 + (i * drawerHeight) + 8;
                 
                 // Drawer face with retro gradient
                 const gradient = ctx.createLinearGradient(x - size/2, drawerY, x + size/2, drawerY);
@@ -1853,7 +1842,7 @@
             // Cart wheels - chunky retro style
             ctx.fillStyle = '#2a2520';
             const wheelSize = size * 0.12;
-            const wheelY = y + size/2 + 10;
+            const wheelY = y + cabinetHeight/2 + 10;
             
             // Left wheel
             ctx.fillRect(x - size/3 - wheelSize/2, wheelY - wheelSize/2, wheelSize, wheelSize);
@@ -1878,7 +1867,7 @@
             ctx.shadowColor = 'rgba(245,230,211,0.5)';
             ctx.shadowBlur = 3;
             const words = cart.name.split(' ');
-            ctx.fillText(words[0].toUpperCase(), x, y - size/2 - 14);
+            ctx.fillText(words[0].toUpperCase(), x, y - cabinetHeight/2 - 14);
             ctx.shadowBlur = 0;
         }
 
