@@ -2003,11 +2003,22 @@
                 const cartX = cart.x * width;
                 const cartY = cart.y * height;
                 const size = Math.min(width, height) * 0.22;
-                const dx = Math.abs(x - cartX);
-                const dy = Math.abs(y - cartY);
-                const hitRadius = size / 2;
 
-                if (dx < hitRadius && dy < hitRadius) {
+                // Calculate exact cart dimensions to match drawCartWithDrawers
+                const drawerCount = DATA.drawers.filter(d => d.cart === cart.id).length;
+                const drawerHeight = size / Math.max(3, drawerCount * 0.75);
+                const cabinetHeight = drawerCount * drawerHeight + 16;
+                const wheelSize = size * 0.12;
+                const labelTextHeight = size * 0.13;
+
+                // Calculate actual bounding box (pixel-perfect with rendered cart)
+                const cartLeft = cartX - size / 2;
+                const cartRight = cartX + size / 2;
+                const cartTop = cartY - cabinetHeight / 2 - 14 - labelTextHeight;
+                const cartBottom = cartY + cabinetHeight / 2 + 10 + wheelSize / 2;
+
+                // Rectangular hit detection matching actual cart bounds
+                if (x >= cartLeft && x <= cartRight && y >= cartTop && y <= cartBottom) {
                     hitAnyCart = true;
                     lastTappedCart = cart.id;
                     drawRoom();
