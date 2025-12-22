@@ -1493,19 +1493,43 @@
                 </div>
                 
                 <hr style="margin: 20px 0; border: none; border-top: 2px solid #8b7355;">
-                
+
+                <h3 style="font-size: 16px; margin-bottom: 10px; font-family: 'Courier New', Courier, monospace; color: #3d3426;">👤 Participant Info</h3>
+                <div id="participant-info-display" style="background: #f5e6d3; padding: 12px; border-radius: 4px; margin-bottom: 10px; font-size: 13px;">
+                    <strong>ID:</strong> <span id="participant-id-display">Not enrolled</span>
+                </div>
+                <div style="margin: 15px 0;">
+                    <button onclick="openEnrollmentModal()" style="width: 100%; padding: 12px; background: linear-gradient(180deg, #6b8fb5 0%, #5a7a9f 100%); color: #f5e6d3; border: 3px solid #3d5a7a; border-radius: 4px; cursor: pointer; font-family: 'Courier New', Courier, monospace; font-weight: bold; box-shadow: 3px 3px 0 rgba(0,0,0,0.3); font-size: 14px;">
+                        👤 Update Participant Info
+                    </button>
+                </div>
+
+                <hr style="margin: 20px 0; border: none; border-top: 2px solid #8b7355;">
+
                 <h3 style="font-size: 16px; margin-bottom: 10px; font-family: 'Courier New', Courier, monospace; color: #3d3426;">📊 Your Results</h3>
                 <div class="results-list" id="results-list">
                     <div class="procedure-table-empty">No results yet. Complete a scenario to see your performance!</div>
                 </div>
-                
+
                 <hr style="margin: 20px 0; border: none; border-top: 2px solid #8b7355;">
-                
+
+                <h3 style="font-size: 16px; margin-bottom: 10px; font-family: 'Courier New', Courier, monospace; color: #3d3426;">📥 Research Data Export</h3>
                 <div style="margin: 15px 0;">
-                    <button onclick="exportAnalytics()" style="width: 100%; padding: 12px; background: linear-gradient(180deg, #8fb33f 0%, #739b2f 100%); color: #2a2520; border: 3px solid #5a7b24; border-radius: 4px; cursor: pointer; font-family: 'Courier New', Courier, monospace; font-weight: bold; box-shadow: 3px 3px 0 rgba(0,0,0,0.3); font-size: 14px;">
-                        📊 Export Analytics Data
+                    <button onclick="exportResearchJSON()" style="width: 100%; padding: 12px; background: linear-gradient(180deg, #8fb33f 0%, #739b2f 100%); color: #2a2520; border: 3px solid #5a7b24; border-radius: 4px; cursor: pointer; font-family: 'Courier New', Courier, monospace; font-weight: bold; box-shadow: 3px 3px 0 rgba(0,0,0,0.3); font-size: 14px; margin-bottom: 8px;">
+                        📄 Export Research Data (JSON)
+                    </button>
+                    <button onclick="exportResearchCSV()" style="width: 100%; padding: 12px; background: linear-gradient(180deg, #8fb33f 0%, #739b2f 100%); color: #2a2520; border: 3px solid #5a7b24; border-radius: 4px; cursor: pointer; font-family: 'Courier New', Courier, monospace; font-weight: bold; box-shadow: 3px 3px 0 rgba(0,0,0,0.3); font-size: 14px;">
+                        📊 Export Research Data (CSV)
                     </button>
                 </div>
+                <div style="margin: 15px 0;">
+                    <button onclick="exportAnalytics()" style="width: 100%; padding: 12px; background: linear-gradient(180deg, #d4850e 0%, #b56f0a 100%); color: #2a2520; border: 3px solid #8b5608; border-radius: 4px; cursor: pointer; font-family: 'Courier New', Courier, monospace; font-weight: bold; box-shadow: 3px 3px 0 rgba(0,0,0,0.3); font-size: 14px;">
+                        📊 Export Legacy Analytics
+                    </button>
+                </div>
+
+                <hr style="margin: 20px 0; border: none; border-top: 2px solid #8b7355;">
+
                 <div style="margin: 15px 0;">
                     <button onclick="resetProgress()" style="width: 100%; padding: 12px; background: linear-gradient(180deg, #b54a3d 0%, #954030 100%); color: #f5e6d3; border: 3px solid #753020; border-radius: 4px; cursor: pointer; font-family: 'Courier New', Courier, monospace; font-weight: bold; box-shadow: 3px 3px 0 rgba(0,0,0,0.3); font-size: 14px;">
                         🔄 Reset All Progress
@@ -1514,6 +1538,99 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="closeModal('settings-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Participant Enrollment Modal -->
+    <div class="modal" id="enrollment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Research Participant Enrollment</h2>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; color: #5a4d38;">Please provide your information to participate in the research study.</p>
+
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Participant ID *</label>
+                    <input type="text" id="participant-id-input" placeholder="e.g., P001"
+                           style="width: 100%; padding: 10px; border: 2px solid #8b7355; border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Training Level *</label>
+                    <select id="training-level-input" style="width: 100%; padding: 10px; border: 2px solid #8b7355; border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+                        <option value="">Select...</option>
+                        <option value="pgy1">PGY-1</option>
+                        <option value="pgy2">PGY-2</option>
+                        <option value="pgy3">PGY-3</option>
+                        <option value="pgy4">PGY-4</option>
+                        <option value="fellow">Fellow</option>
+                        <option value="attending">Attending</option>
+                    </select>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Prior EM Experience (months)</label>
+                    <input type="number" id="prior-em-months-input" placeholder="0" min="0"
+                           style="width: 100%; padding: 10px; border: 2px solid #8b7355; border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Prior Trauma Level Experience</label>
+                    <select id="prior-trauma-input" style="width: 100%; padding: 10px; border: 2px solid #8b7355; border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+                        <option value="none">None</option>
+                        <option value="level3">Level 3</option>
+                        <option value="level2">Level 2</option>
+                        <option value="level1">Level 1</option>
+                    </select>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Fellowship Type</label>
+                    <select id="fellowship-type-input" style="width: 100%; padding: 10px; border: 2px solid #8b7355; border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+                        <option value="none">None</option>
+                        <option value="ultrasound">Ultrasound</option>
+                        <option value="toxicology">Toxicology</option>
+                        <option value="ems">EMS</option>
+                        <option value="wilderness">Wilderness</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Medical Degree</label>
+                    <select id="medical-degree-input" style="width: 100%; padding: 10px; border: 2px solid #8b7355; border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+                        <option value="md_us">MD (US)</option>
+                        <option value="do_us">DO (US)</option>
+                        <option value="img">IMG</option>
+                    </select>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Gender (optional)</label>
+                    <select id="gender-input" style="width: 100%; padding: 10px; border: 2px solid #8b7355; border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+                        <option value="prefer_not_to_say">Prefer not to say</option>
+                        <option value="m">Male</option>
+                        <option value="f">Female</option>
+                        <option value="nb">Non-binary</option>
+                    </select>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Age Range (optional)</label>
+                    <select id="age-range-input" style="width: 100%; padding: 10px; border: 2px solid #8b7355; border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+                        <option value="prefer_not_to_say">Prefer not to say</option>
+                        <option value="25-29">25-29</option>
+                        <option value="30-34">30-34</option>
+                        <option value="35-39">35-39</option>
+                        <option value="40+">40+</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="skipEnrollment()">Skip (Demo Mode)</button>
+                <button class="btn-primary" onclick="submitEnrollment()">Enroll</button>
             </div>
         </div>
     </div>
@@ -1734,6 +1851,506 @@
             soundEnabled: true,
             hapticEnabled: true,
             sessionResults: []
+        };
+
+        // ===== RESEARCH DATA TRACKING MODULE =====
+        const ResearchData = {
+            // Research state
+            participantId: null,
+            currentSessionId: null,
+            sessionStartTime: null,
+            scenarioStartTime: null,
+            scenarioAttemptCounter: {},
+            drawerOpenCounter: {},
+            itemViewedTracker: {},
+
+            // Data storage
+            participants: {},
+            sessions: [],
+            events: [],
+            outcomes: [],
+
+            // Helper: Generate unique IDs
+            generateSessionId() {
+                const now = new Date();
+                const dateStr = now.toISOString().split('T')[0].replace(/-/g, '');
+                const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '');
+                const random = Math.random().toString(36).substring(2, 6);
+                return `S_${dateStr}_${timeStr}_${random}`;
+            },
+
+            generateEventId() {
+                const timestamp = Date.now();
+                const random = Math.random().toString(36).substring(2, 5);
+                return `E_${timestamp}_${random}`;
+            },
+
+            generateOutcomeId() {
+                const timestamp = Date.now();
+                const random = Math.random().toString(36).substring(2, 5);
+                return `O_${timestamp}_${random}`;
+            },
+
+            // Get elapsed time since scenario start
+            getElapsedTime() {
+                return this.scenarioStartTime ?
+                    (Date.now() - this.scenarioStartTime) / 1000 : 0;
+            },
+
+            // Get attempt number for a scenario
+            getAttemptNumber(scenarioId) {
+                if (!this.scenarioAttemptCounter[scenarioId]) {
+                    this.scenarioAttemptCounter[scenarioId] = 0;
+                }
+                return this.scenarioAttemptCounter[scenarioId] + 1;
+            },
+
+            // Initialize or enroll participant
+            enrollParticipant(participantData) {
+                this.participantId = participantData.participant_id;
+                this.participants[this.participantId] = {
+                    participant_id: participantData.participant_id,
+                    enrollment_date: new Date().toISOString().split('T')[0],
+                    training_level: participantData.training_level || 'unknown',
+                    prior_em_months: participantData.prior_em_months || 0,
+                    prior_trauma_level: participantData.prior_trauma_level || 'unknown',
+                    fellowship_type: participantData.fellowship_type || 'none',
+                    medical_degree: participantData.medical_degree || 'unknown',
+                    gender: participantData.gender || 'prefer_not_to_say',
+                    age_range: participantData.age_range || 'prefer_not_to_say',
+                    consent_version: '1.0',
+                    consent_date: new Date().toISOString(),
+                    study_completion_date: null,
+                    notes: participantData.notes || ''
+                };
+                this.saveResearchData();
+                return this.participantId;
+            },
+
+            // Start a new session
+            startSession() {
+                this.currentSessionId = this.generateSessionId();
+                this.sessionStartTime = Date.now();
+
+                const session = {
+                    session_id: this.currentSessionId,
+                    participant_id: this.participantId || 'DEMO',
+                    session_start: new Date().toISOString(),
+                    session_end: null,
+                    device_type: this.getDeviceType(),
+                    browser: navigator.userAgent,
+                    screen_width: window.innerWidth,
+                    screen_height: window.innerHeight,
+                    scenarios_attempted: [],
+                    scenarios_completed: [],
+                    total_session_time: 0,
+                    app_version: '1.0.0'
+                };
+
+                this.sessions.push(session);
+                this.recordEvent('app_opened');
+                this.saveResearchData();
+                return this.currentSessionId;
+            },
+
+            // End current session
+            endSession() {
+                if (!this.currentSessionId) return;
+
+                const session = this.sessions.find(s => s.session_id === this.currentSessionId);
+                if (session) {
+                    session.session_end = new Date().toISOString();
+                    session.total_session_time = Math.floor((Date.now() - this.sessionStartTime) / 1000);
+                }
+
+                this.recordEvent('session_ended');
+                this.saveResearchData();
+            },
+
+            // Start a scenario
+            startScenario(scenario) {
+                this.scenarioStartTime = Date.now();
+                this.drawerOpenCounter = {};
+                this.itemViewedTracker = {};
+
+                const session = this.sessions.find(s => s.session_id === this.currentSessionId);
+                if (session && !session.scenarios_attempted.includes(scenario.id)) {
+                    session.scenarios_attempted.push(scenario.id);
+                }
+
+                this.recordEvent('scenario_started', {
+                    scenario_id: scenario.id,
+                    scenario_name: scenario.name,
+                    attempt_number: this.getAttemptNumber(scenario.id)
+                });
+            },
+
+            // Record an event
+            recordEvent(eventType, additionalData = {}) {
+                const event = {
+                    event_id: this.generateEventId(),
+                    session_id: this.currentSessionId || 'NO_SESSION',
+                    participant_id: this.participantId || 'DEMO',
+                    timestamp: new Date().toISOString(),
+                    scenario_id: state.currentScenario?.id || null,
+                    scenario_attempt: state.currentScenario ?
+                        this.getAttemptNumber(state.currentScenario.id) : null,
+                    elapsed_time: this.getElapsedTime(),
+                    event_type: eventType,
+                    event_category: this.categorizeEvent(eventType),
+                    cart_id: additionalData.cart_id || null,
+                    drawer_id: additionalData.drawer_id || null,
+                    item_id: additionalData.item_id || null,
+                    is_essential: additionalData.is_essential || false,
+                    is_optional: additionalData.is_optional || false,
+                    is_incorrect: additionalData.is_incorrect || false,
+                    in_inventory: additionalData.in_inventory || false,
+                    current_inventory_count: state.inventory.length,
+                    essential_collected: this.countEssentialCollected(),
+                    optional_collected: this.countOptionalCollected(),
+                    incorrect_collected: this.countIncorrectCollected(),
+                    metadata: additionalData.metadata || {}
+                };
+
+                this.events.push(event);
+
+                // Save periodically (every 10 events)
+                if (this.events.length % 10 === 0) {
+                    this.saveResearchData();
+                }
+            },
+
+            // Categorize event type
+            categorizeEvent(eventType) {
+                const categories = {
+                    navigation: ['app_opened', 'scenario_selected', 'scenario_started', 'cart_opened',
+                                'drawer_opened', 'drawer_closed', 'cart_closed', 'inventory_opened',
+                                'inventory_closed'],
+                    selection: ['item_selected', 'item_deselected', 'items_collected', 'item_removed'],
+                    submission: ['submit_attempted', 'submit_confirmed', 'retry_clicked', 'next_clicked'],
+                    outcome: ['scenario_completed', 'scenario_abandoned', 'feedback_viewed', 'session_ended']
+                };
+
+                for (const [category, events] of Object.entries(categories)) {
+                    if (events.includes(eventType)) return category;
+                }
+                return 'other';
+            },
+
+            // Count items in inventory
+            countEssentialCollected() {
+                if (!state.currentScenario) return 0;
+                return state.inventory.filter(item =>
+                    state.currentScenario.essential.includes(item.id)
+                ).length;
+            },
+
+            countOptionalCollected() {
+                if (!state.currentScenario) return 0;
+                return state.inventory.filter(item =>
+                    state.currentScenario.optional.includes(item.id)
+                ).length;
+            },
+
+            countIncorrectCollected() {
+                if (!state.currentScenario) return 0;
+                return state.inventory.filter(item =>
+                    !state.currentScenario.essential.includes(item.id) &&
+                    !state.currentScenario.optional.includes(item.id)
+                ).length;
+            },
+
+            // Record scenario outcome
+            recordOutcome(scenario, scoreData) {
+                const attemptNumber = this.getAttemptNumber(scenario.id);
+                this.scenarioAttemptCounter[scenario.id] = attemptNumber;
+
+                const session = this.sessions.find(s => s.session_id === this.currentSessionId);
+                if (session && !session.scenarios_completed.includes(scenario.id)) {
+                    session.scenarios_completed.push(scenario.id);
+                }
+
+                // Calculate efficiency metrics
+                const uniqueCartsOpened = new Set(
+                    this.events
+                        .filter(e => e.scenario_id === scenario.id &&
+                                   e.scenario_attempt === attemptNumber &&
+                                   e.event_type === 'cart_opened')
+                        .map(e => e.cart_id)
+                ).size;
+
+                const uniqueDrawersOpened = new Set(
+                    this.events
+                        .filter(e => e.scenario_id === scenario.id &&
+                                   e.scenario_attempt === attemptNumber &&
+                                   e.event_type === 'drawer_opened')
+                        .map(e => e.drawer_id)
+                ).size;
+
+                const totalDrawerOpens = this.events.filter(e =>
+                    e.scenario_id === scenario.id &&
+                    e.scenario_attempt === attemptNumber &&
+                    e.event_type === 'drawer_opened'
+                ).length;
+
+                const totalItemsViewed = new Set(
+                    this.events
+                        .filter(e => e.scenario_id === scenario.id &&
+                                   e.scenario_attempt === attemptNumber &&
+                                   e.item_id)
+                        .map(e => e.item_id)
+                ).size;
+
+                const outcome = {
+                    outcome_id: this.generateOutcomeId(),
+                    session_id: this.currentSessionId || 'NO_SESSION',
+                    participant_id: this.participantId || 'DEMO',
+                    scenario_id: scenario.id,
+                    scenario_name: scenario.name,
+                    attempt_number: attemptNumber,
+                    attempt_within_session: session ?
+                        session.scenarios_attempted.filter(id => id === scenario.id).length : 1,
+
+                    // Timing
+                    start_time: new Date(Date.now() - scoreData.timeElapsed * 1000).toISOString(),
+                    end_time: new Date().toISOString(),
+                    total_time_seconds: scoreData.timeElapsed,
+
+                    // Performance
+                    final_score: scoreData.totalScore,
+                    stars_earned: scoreData.stars,
+
+                    // Item accuracy
+                    essential_total: scenario.essential.length,
+                    essential_collected: scoreData.foundEssential.length,
+                    essential_missed: scoreData.missingEssential.length,
+                    essential_missed_list: scoreData.missingEssential,
+
+                    optional_total: scenario.optional.length,
+                    optional_collected: scoreData.foundOptional.length,
+                    optional_missed: scoreData.missingOptional.length,
+                    optional_missed_list: scoreData.missingOptional,
+
+                    incorrect_collected: scoreData.extra.length,
+                    incorrect_list: scoreData.extra,
+
+                    total_items_collected: state.inventory.length,
+
+                    // Efficiency metrics
+                    unique_carts_opened: uniqueCartsOpened,
+                    unique_drawers_opened: uniqueDrawersOpened,
+                    total_drawer_opens: totalDrawerOpens,
+                    total_items_viewed: totalItemsViewed,
+
+                    navigation_efficiency: uniqueDrawersOpened > 0 ?
+                        (uniqueDrawersOpened / totalDrawerOpens) : 0,
+                    selection_efficiency: state.inventory.length > 0 ?
+                        ((scoreData.foundEssential.length + scoreData.foundOptional.length) / state.inventory.length) : 0,
+
+                    // Outcome
+                    completion_status: 'completed',
+                    retry_after_feedback: false,
+                    next_scenario: null,
+
+                    // Calculated metrics
+                    time_per_item: state.inventory.length > 0 ?
+                        (scoreData.timeElapsed / state.inventory.length) : 0,
+                    accuracy_rate: scenario.essential.length > 0 ?
+                        (scoreData.foundEssential.length / scenario.essential.length) : 0,
+                    precision: state.inventory.length > 0 ?
+                        ((scoreData.foundEssential.length + scoreData.foundOptional.length) / state.inventory.length) : 0,
+
+                    // Learning indicators
+                    previous_attempts_this_scenario: attemptNumber - 1,
+                    previous_score_this_scenario: this.getPreviousScore(scenario.id),
+                    improvement_from_previous: this.calculateImprovement(scenario.id, scoreData.totalScore)
+                };
+
+                this.outcomes.push(outcome);
+                this.recordEvent('scenario_completed', {
+                    scenario_id: scenario.id,
+                    final_score: scoreData.totalScore,
+                    stars: scoreData.stars
+                });
+
+                this.saveResearchData();
+                return outcome;
+            },
+
+            // Get previous score for a scenario
+            getPreviousScore(scenarioId) {
+                const previousOutcomes = this.outcomes.filter(o =>
+                    o.scenario_id === scenarioId &&
+                    o.participant_id === (this.participantId || 'DEMO')
+                );
+                return previousOutcomes.length > 0 ?
+                    previousOutcomes[previousOutcomes.length - 1].final_score : null;
+            },
+
+            // Calculate improvement from previous attempt
+            calculateImprovement(scenarioId, currentScore) {
+                const previousScore = this.getPreviousScore(scenarioId);
+                return previousScore !== null ? (currentScore - previousScore) : null;
+            },
+
+            // Get device type
+            getDeviceType() {
+                const ua = navigator.userAgent;
+                if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                    return 'tablet';
+                }
+                if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+                    return 'mobile';
+                }
+                return 'desktop';
+            },
+
+            // Save all research data to localStorage
+            saveResearchData() {
+                const researchData = {
+                    participants: this.participants,
+                    sessions: this.sessions,
+                    events: this.events,
+                    outcomes: this.outcomes,
+                    participantId: this.participantId,
+                    currentSessionId: this.currentSessionId,
+                    scenarioAttemptCounter: this.scenarioAttemptCounter
+                };
+                localStorage.setItem('cabinetQuestResearch', JSON.stringify(researchData));
+            },
+
+            // Load research data from localStorage
+            loadResearchData() {
+                const saved = localStorage.getItem('cabinetQuestResearch');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.participants = data.participants || {};
+                    this.sessions = data.sessions || [];
+                    this.events = data.events || [];
+                    this.outcomes = data.outcomes || [];
+                    this.participantId = data.participantId || null;
+                    this.currentSessionId = data.currentSessionId || null;
+                    this.scenarioAttemptCounter = data.scenarioAttemptCounter || {};
+                }
+            },
+
+            // Export data as JSON
+            exportJSON() {
+                const data = {
+                    export_date: new Date().toISOString(),
+                    app_version: '1.0.0',
+                    participant: this.participants[this.participantId] || null,
+                    sessions: this.sessions.filter(s => s.participant_id === (this.participantId || 'DEMO')),
+                    events: this.events.filter(e => e.participant_id === (this.participantId || 'DEMO')),
+                    outcomes: this.outcomes.filter(o => o.participant_id === (this.participantId || 'DEMO'))
+                };
+
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `research_data_${this.participantId || 'DEMO'}_${Date.now()}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+            },
+
+            // Export data as CSV
+            exportCSV() {
+                // Export participants
+                this.exportParticipantsCSV();
+                // Export outcomes
+                this.exportOutcomesCSV();
+                // Export events
+                this.exportEventsCSV();
+            },
+
+            // Export participants as CSV
+            exportParticipantsCSV() {
+                const participant = this.participants[this.participantId];
+                if (!participant) return;
+
+                const headers = ['participant_id', 'enrollment_date', 'training_level', 'prior_em_months',
+                               'prior_trauma_level', 'fellowship_type', 'medical_degree', 'gender',
+                               'age_range', 'consent_version', 'consent_date'];
+                const row = headers.map(h => participant[h] || '');
+                const csv = [headers.join(','), row.join(',')].join('\n');
+
+                this.downloadCSV(csv, `participant_${this.participantId}_${Date.now()}.csv`);
+            },
+
+            // Export outcomes as CSV
+            exportOutcomesCSV() {
+                const userOutcomes = this.outcomes.filter(o =>
+                    o.participant_id === (this.participantId || 'DEMO')
+                );
+
+                if (userOutcomes.length === 0) return;
+
+                const headers = ['outcome_id', 'participant_id', 'scenario_id', 'scenario_name',
+                               'attempt_number', 'total_time_seconds', 'final_score', 'stars_earned',
+                               'essential_collected', 'essential_missed', 'optional_collected',
+                               'incorrect_collected', 'completion_status', 'accuracy_rate', 'precision'];
+                const rows = userOutcomes.map(o => [
+                    o.outcome_id, o.participant_id, o.scenario_id, o.scenario_name,
+                    o.attempt_number, o.total_time_seconds, o.final_score, o.stars_earned,
+                    o.essential_collected, o.essential_missed, o.optional_collected,
+                    o.incorrect_collected, o.completion_status, o.accuracy_rate.toFixed(2),
+                    o.precision.toFixed(2)
+                ].join(','));
+
+                const csv = [headers.join(','), ...rows].join('\n');
+                this.downloadCSV(csv, `outcomes_${this.participantId || 'DEMO'}_${Date.now()}.csv`);
+            },
+
+            // Export events as CSV
+            exportEventsCSV() {
+                const userEvents = this.events.filter(e =>
+                    e.participant_id === (this.participantId || 'DEMO')
+                );
+
+                if (userEvents.length === 0) return;
+
+                const headers = ['event_id', 'participant_id', 'scenario_id', 'timestamp',
+                               'elapsed_time', 'event_type', 'event_category', 'cart_id',
+                               'drawer_id', 'item_id', 'is_essential', 'current_inventory_count'];
+                const rows = userEvents.map(e => [
+                    e.event_id, e.participant_id, e.scenario_id || '', e.timestamp,
+                    e.elapsed_time.toFixed(2), e.event_type, e.event_category,
+                    e.cart_id || '', e.drawer_id || '', e.item_id || '', e.is_essential,
+                    e.current_inventory_count
+                ].join(','));
+
+                const csv = [headers.join(','), ...rows].join('\n');
+                this.downloadCSV(csv, `events_${this.participantId || 'DEMO'}_${Date.now()}.csv`);
+            },
+
+            // Helper to download CSV
+            downloadCSV(csvContent, filename) {
+                const blob = new Blob([csvContent], {type: 'text/csv'});
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                link.click();
+                URL.revokeObjectURL(url);
+            },
+
+            // Initialize research tracking
+            init() {
+                this.loadResearchData();
+
+                // If no participant ID, prompt for one
+                if (!this.participantId) {
+                    const storedId = localStorage.getItem('participantId');
+                    if (storedId) {
+                        this.participantId = storedId;
+                    }
+                }
+
+                // Start a new session
+                this.startSession();
+            }
         };
 
         // ===== CANVAS SETUP =====
@@ -2091,6 +2708,9 @@
             state.startTime = Date.now();
             state.hasSubmittedOnce = false;
 
+            // Research tracking: Start scenario
+            ResearchData.startScenario(scenario);
+
             document.getElementById('scenario-name').textContent = scenario.name;
             document.getElementById('task-description').textContent = scenario.description;
 
@@ -2155,6 +2775,11 @@
             }
 
             state.selectedCart = cart;
+
+            // Research tracking: Cart opened
+            ResearchData.recordEvent('cart_opened', {
+                cart_id: cart.id
+            });
             document.getElementById('cart-modal-title').textContent = `${cart.name}`;
 
             const modalBody = document.getElementById('cart-modal-body');
@@ -2197,8 +2822,14 @@
         function openDrawer(drawerId) {
             const drawer = DATA.drawers.find(d => d.id === drawerId);
             if (!drawer) return;
-            
+
             state.selectedDrawer = drawer;
+
+            // Research tracking: Drawer opened
+            ResearchData.recordEvent('drawer_opened', {
+                drawer_id: drawerId,
+                cart_id: state.selectedCart?.id
+            });
             
             const drawerElement = document.querySelector(`[data-drawer="${drawerId}"]`);
             if (drawerElement) {
@@ -2275,15 +2906,29 @@
 
         function toggleItemSelection(item, element) {
             const index = state.selectedItems.findIndex(i => i.id === item.id);
-            
-            if (index > -1) {
+            const isSelected = index > -1;
+
+            if (isSelected) {
                 state.selectedItems.splice(index, 1);
                 element.classList.remove('selected');
             } else {
                 state.selectedItems.push(item);
                 element.classList.add('selected');
             }
-            
+
+            // Research tracking: Item selection/deselection
+            const inInventory = state.inventory.find(i => i.id === item.id) !== undefined;
+            ResearchData.recordEvent(isSelected ? 'item_deselected' : 'item_selected', {
+                item_id: item.id,
+                drawer_id: state.selectedDrawer?.id,
+                cart_id: state.selectedCart?.id,
+                is_essential: state.currentScenario?.essential.includes(item.id) || false,
+                is_optional: state.currentScenario?.optional.includes(item.id) || false,
+                is_incorrect: !state.currentScenario?.essential.includes(item.id) &&
+                             !state.currentScenario?.optional.includes(item.id),
+                in_inventory: inInventory
+            });
+
             playSound('click');
         }
 
@@ -2300,6 +2945,17 @@
                     itemsAdded++;
                     playSound('collect');
                     triggerHaptic('light');
+
+                    // Research tracking: Item collected
+                    ResearchData.recordEvent('items_collected', {
+                        item_id: item.id,
+                        drawer_id: state.selectedDrawer?.id,
+                        cart_id: state.selectedCart?.id,
+                        is_essential: state.currentScenario?.essential.includes(item.id) || false,
+                        is_optional: state.currentScenario?.optional.includes(item.id) || false,
+                        is_incorrect: !state.currentScenario?.essential.includes(item.id) &&
+                                     !state.currentScenario?.optional.includes(item.id)
+                    });
                 }
             });
 
@@ -2347,6 +3003,9 @@
             updateInventoryModalDisplay();
             document.getElementById('inventory-modal').classList.add('active');
             playSound('click');
+
+            // Research tracking: Inventory opened
+            ResearchData.recordEvent('inventory_opened');
         }
 
         function updateInventoryModalDisplay() {
@@ -2390,6 +3049,15 @@
         }
 
         function removeItemFromModal(index) {
+            const item = state.inventory[index];
+
+            // Research tracking: Item removed
+            ResearchData.recordEvent('item_removed', {
+                item_id: item?.id,
+                is_essential: state.currentScenario?.essential.includes(item?.id) || false,
+                is_optional: state.currentScenario?.optional.includes(item?.id) || false
+            });
+
             state.inventory.splice(index, 1);
             updateInventoryModalDisplay();
             updateInventoryDisplay();
@@ -2589,6 +3257,20 @@
                 timeElapsed: timeElapsed,
                 timestamp: new Date().toISOString(),
                 feedbackClass: feedbackClass
+            });
+
+            // Research tracking: Record outcome
+            ResearchData.recordEvent('submit_confirmed');
+            ResearchData.recordEvent('feedback_viewed');
+            ResearchData.recordOutcome(scenario, {
+                totalScore: totalScore,
+                stars: stars,
+                timeElapsed: timeElapsed,
+                foundEssential: foundEssential,
+                missingEssential: missingEssential,
+                foundOptional: foundOptional,
+                missingOptional: missingOptional,
+                extra: extra
             });
 
             setTimeout(() => {
@@ -2843,7 +3525,8 @@
             document.getElementById('settings-modal').classList.add('active');
             document.getElementById('sound-toggle').checked = state.soundEnabled;
             document.getElementById('haptic-toggle').checked = state.hapticEnabled;
-            
+
+            updateParticipantDisplay();
             updateResultsList();
         }
 
@@ -2889,10 +3572,98 @@
             if (!confirm('Are you sure you want to reset ALL progress? This cannot be undone!')) {
                 return;
             }
-            
+
             localStorage.removeItem('cabinetQuestProgress');
             localStorage.removeItem('analytics');
+            localStorage.removeItem('cabinetQuestResearch');
+            localStorage.removeItem('participantId');
             location.reload();
+        }
+
+        // ===== RESEARCH DATA FUNCTIONS =====
+
+        function openEnrollmentModal() {
+            // Pre-fill if already enrolled
+            if (ResearchData.participantId && ResearchData.participants[ResearchData.participantId]) {
+                const participant = ResearchData.participants[ResearchData.participantId];
+                document.getElementById('participant-id-input').value = participant.participant_id;
+                document.getElementById('training-level-input').value = participant.training_level;
+                document.getElementById('prior-em-months-input').value = participant.prior_em_months;
+                document.getElementById('prior-trauma-input').value = participant.prior_trauma_level;
+                document.getElementById('fellowship-type-input').value = participant.fellowship_type;
+                document.getElementById('medical-degree-input').value = participant.medical_degree;
+                document.getElementById('gender-input').value = participant.gender;
+                document.getElementById('age-range-input').value = participant.age_range;
+            }
+
+            document.getElementById('enrollment-modal').classList.add('active');
+        }
+
+        function submitEnrollment() {
+            const participantId = document.getElementById('participant-id-input').value.trim();
+            const trainingLevel = document.getElementById('training-level-input').value;
+
+            if (!participantId) {
+                alert('Please enter a Participant ID');
+                return;
+            }
+
+            if (!trainingLevel) {
+                alert('Please select a Training Level');
+                return;
+            }
+
+            const participantData = {
+                participant_id: participantId,
+                training_level: trainingLevel,
+                prior_em_months: parseInt(document.getElementById('prior-em-months-input').value) || 0,
+                prior_trauma_level: document.getElementById('prior-trauma-input').value,
+                fellowship_type: document.getElementById('fellowship-type-input').value,
+                medical_degree: document.getElementById('medical-degree-input').value,
+                gender: document.getElementById('gender-input').value,
+                age_range: document.getElementById('age-range-input').value
+            };
+
+            ResearchData.enrollParticipant(participantData);
+            localStorage.setItem('participantId', participantId);
+
+            updateParticipantDisplay();
+            closeModal('enrollment-modal');
+            playSound('success');
+
+            alert(`Thank you! You are now enrolled as participant ${participantId}`);
+        }
+
+        function skipEnrollment() {
+            ResearchData.participantId = 'DEMO';
+            localStorage.setItem('participantId', 'DEMO');
+            updateParticipantDisplay();
+            closeModal('enrollment-modal');
+            playSound('click');
+        }
+
+        function updateParticipantDisplay() {
+            const displayElement = document.getElementById('participant-id-display');
+            if (ResearchData.participantId) {
+                displayElement.textContent = ResearchData.participantId;
+                if (ResearchData.participantId === 'DEMO') {
+                    displayElement.textContent += ' (Demo Mode)';
+                }
+            } else {
+                displayElement.textContent = 'Not enrolled';
+            }
+        }
+
+        function exportResearchJSON() {
+            ResearchData.exportJSON();
+            playSound('success');
+            alert('Research data exported as JSON!');
+        }
+
+        function exportResearchCSV() {
+            ResearchData.exportCSV();
+            playSound('success');
+            alert('Research data exported as CSV files!');
         }
 
         function updateStats() {
@@ -2959,6 +3730,20 @@
 
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
+
+            // Research tracking: Modal closed events
+            if (id === 'cart-modal') {
+                ResearchData.recordEvent('cart_closed', {
+                    cart_id: state.selectedCart?.id
+                });
+            } else if (id === 'item-modal') {
+                ResearchData.recordEvent('drawer_closed', {
+                    drawer_id: state.selectedDrawer?.id,
+                    cart_id: state.selectedCart?.id
+                });
+            } else if (id === 'inventory-modal') {
+                ResearchData.recordEvent('inventory_closed');
+            }
         }
 
         let currentTutorialStep = 0;
@@ -3034,6 +3819,17 @@
 
             loadUserProgress();
             updateStats();
+
+            // Initialize research data tracking
+            ResearchData.init();
+            updateParticipantDisplay();
+
+            // Show enrollment modal if not enrolled
+            if (!ResearchData.participantId) {
+                setTimeout(() => {
+                    openEnrollmentModal();
+                }, 500);
+            }
 
             initTutorial();
             document.getElementById('tutorial-modal').classList.add('active');
