@@ -9,9 +9,9 @@
     <meta name="theme-color" content="#e8a020">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="CabinetQuest">
+    <meta name="apple-mobile-web-app-title" content="CodeSBU">
     <link rel="manifest" href="manifest.json">
-    <title>Cabinet Quest 3D</title>
+    <title>CodeSBU</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oxanium:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -680,26 +680,117 @@
         .landscape-blocker .icon { font-size:48px; margin-bottom:16px; }
         .landscape-blocker p { font-size:14px; opacity:.8; }
 
-        /* ===== TUTORIAL INTERACTIVE ===== */
-        .tutorial-dialogue {
-            position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
-            background:rgba(30,30,30,.92); color:var(--text-light);
-            padding:14px 24px; border-radius:12px; font-size:13px;
-            text-align:center; border:2px solid var(--accent-amber);
-            z-index:300; max-width:90vw;
-            font-family:var(--font-mono);
-            box-shadow:0 8px 32px rgba(0,0,0,.6);
-            animation:fu .4s ease;
+        /* ===== CINEMATIC INTRO ===== */
+        .intro-overlay {
+            position:fixed; inset:0; z-index:9998;
+            pointer-events:auto;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
         }
-        .tutorial-dialogue h4 {
-            font-family:var(--font-display); font-size:14px;
-            color:var(--accent-amber); margin-bottom:6px;
-            text-transform:uppercase; letter-spacing:1px;
+        .intro-overlay.hidden { display:none; }
+        .intro-title {
+            position:absolute; top:50%; left:50%;
+            transform:translate(-50%,-50%);
+            text-align:center; z-index:2;
+            transition:all 1.2s ease;
+        }
+        .intro-title.top {
+            top:18%; transform:translate(-50%,-50%) scale(.7);
+        }
+        .intro-title.fade-out {
+            opacity:0; transition:opacity .6s ease;
+        }
+        .intro-title h1 {
+            font-family:var(--font-display); font-size:36px;
+            color:var(--accent-amber); font-weight:700;
+            text-transform:uppercase; letter-spacing:6px;
+            text-shadow:0 4px 24px rgba(232,160,32,.5),0 0 60px rgba(232,160,32,.2);
+            margin-bottom:6px; opacity:0;
+            animation:intro-title-in 1.2s ease .3s forwards;
+        }
+        .intro-title p {
+            font-family:var(--font-mono); font-size:12px;
+            color:rgba(240,236,229,.6); letter-spacing:2px;
+            opacity:0; animation:intro-title-in 1s ease .8s forwards;
+        }
+        @keyframes intro-title-in {
+            from { opacity:0; transform:translateY(10px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+        .intro-welcome {
+            position:absolute; bottom:0; left:0; right:0;
+            background:linear-gradient(transparent, rgba(17,17,17,.95) 30%);
+            padding:40px 24px 32px; text-align:center;
+            z-index:2; opacity:0;
+            animation:intro-welcome-in .8s ease forwards;
+        }
+        @keyframes intro-welcome-in {
+            from { opacity:0; transform:translateY(20px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+        .intro-welcome p {
+            font-family:var(--font-mono); font-size:12px;
+            color:var(--text-muted); margin-bottom:16px; line-height:1.6;
+        }
+        .intro-welcome .intro-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+        .intro-btn {
+            padding:12px 28px; border-radius:8px;
+            font-family:var(--font-display); font-size:13px; font-weight:700;
+            text-transform:uppercase; letter-spacing:1px; cursor:pointer;
+            border:2px solid; transition:transform .1s;
+        }
+        .intro-btn:active { transform:scale(.96); }
+        .intro-btn.primary {
+            background:var(--accent-amber); color:var(--text-dark);
+            border-color:#c88a18;
+        }
+        .intro-btn.secondary {
+            background:transparent; color:var(--text-muted);
+            border-color:var(--ui-border);
+        }
+        .intro-btn.secondary:hover { color:var(--text-light); border-color:var(--accent-amber); }
+        /* Dark vignette for cinematic feel */
+        .intro-vignette {
+            position:absolute; inset:0; z-index:1;
+            pointer-events:none;
+            background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.6) 100%);
+        }
+
+        /* ===== TUTORIAL DIALOGUE (top bar) ===== */
+        .tutorial-dialogue {
+            position:fixed; top:0; left:0; right:0;
+            background:rgba(20,20,20,.94); color:var(--text-light);
+            padding:10px 16px; font-size:13px;
+            text-align:center; border-bottom:2px solid var(--accent-amber);
+            z-index:300;
+            font-family:var(--font-mono);
+            box-shadow:0 4px 20px rgba(0,0,0,.5);
+            animation:tut-slide-down .3s ease;
+            display:flex; align-items:center; gap:12px;
+        }
+        @keyframes tut-slide-down {
+            from { transform:translateY(-100%); }
+            to { transform:translateY(0); }
+        }
+        .tutorial-dialogue .tut-text {
+            flex:1; text-align:left;
+        }
+        .tutorial-dialogue .tut-text strong {
+            color:var(--accent-amber);
+        }
+        .tutorial-dialogue .tut-step {
+            font-family:var(--font-display); font-size:10px;
+            color:var(--accent-amber); text-transform:uppercase;
+            letter-spacing:.5px; margin-bottom:2px;
+        }
+        .tutorial-dialogue .tut-msg {
+            font-size:12px; line-height:1.4;
         }
         .tutorial-dialogue .tut-skip-btn {
-            margin-top:10px; background:none; border:1px solid var(--ui-border);
-            color:var(--text-muted); font-size:10px; padding:4px 14px;
+            background:none; border:1px solid var(--ui-border);
+            color:var(--text-muted); font-size:10px; padding:5px 12px;
             border-radius:4px; cursor:pointer; font-family:var(--font-display);
+            white-space:nowrap; flex-shrink:0;
         }
         .tutorial-dialogue .tut-skip-btn:hover { color:var(--text-light); border-color:var(--accent-amber); }
 
@@ -738,16 +829,7 @@
             50% { box-shadow:0 0 16px rgba(76,175,80,.7); }
         }
 
-        /* ===== TUTORIAL SLIDES ===== */
-        .ts { display:none; text-align:center; }
-        .ts.active { display:block; animation:fu .3s ease; }
-        @keyframes fu { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-        .ts h3 { font-family:var(--font-display); font-size:15px; color:var(--text-dark); text-transform:uppercase; margin-bottom:8px; }
-        .ts p { font-size:12px; line-height:1.6; color:var(--text-mid); }
-        .ts .ti { font-size:44px; margin:14px 0; }
-        .td { display:flex; justify-content:center; gap:5px; margin:12px 0; }
-        .tdt { width:9px; height:9px; border-radius:50%; background:#ddd; transition:all .3s; }
-        .tdt.active { background:var(--accent-amber); transform:scale(1.3); }
+        /* Tutorial slides removed - using cinematic intro */
 
         /* ===== SETTINGS ===== */
         .srow { display:flex; align-items:center; gap:8px; margin:10px 0; cursor:pointer; font-size:13px; }
@@ -807,16 +889,25 @@
     </style>
 </head>
 <body>
+<!-- Loading screen (brief, before 3D ready) -->
 <div id="loading-screen" style="position:fixed;inset:0;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999">
-    <div style="font-family:'Oxanium',sans-serif;font-size:18px;color:#e8a020;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:16px">Cabinet Quest 3D</div>
+    <div style="font-family:'Oxanium',sans-serif;font-size:22px;color:#e8a020;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:16px">CodeSBU</div>
     <div style="width:200px;height:4px;background:#333;border-radius:2px;overflow:hidden"><div id="load-bar" style="width:0%;height:100%;background:#e8a020;border-radius:2px;transition:width .3s"></div></div>
     <div id="load-text" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#666;margin-top:10px">Initializing...</div>
+</div>
+<!-- Cinematic intro overlay (over 3D scene) -->
+<div class="intro-overlay" id="intro-overlay">
+    <div class="intro-vignette"></div>
+    <div class="intro-title" id="intro-title">
+        <h1>CodeSBU</h1>
+        <p>Trauma Room Equipment Trainer</p>
+    </div>
 </div>
 <div class="app">
     <header class="hdr">
         <button class="hbtn" onclick="openModeSelect()" aria-label="Change mode" title="Change mode">&#x1F3AE;</button>
         <button class="hbtn ac" onclick="openScenariosModal()" aria-label="Scenarios">&#x1F4CB;</button>
-        <h1><span>Cabinet</span> Quest <span style="font-size:9px;opacity:.6">3D</span></h1>
+        <h1><span>Code</span>SBU</h1>
         <span class="mode-badge" id="mode-badge" style="display:none;cursor:pointer" onclick="openModeSelect()"></span>
         <div class="hdr-stats" role="status" aria-live="polite">
             <div class="chip"><span style="opacity:.6">&#x23F1;</span><span class="v" id="stat-time">0:00</span></div>
@@ -875,16 +966,7 @@
 <div class="toast t-ach" id="t-ach"><h4 id="ach-t"></h4><p id="ach-d"></p></div>
 <div class="toast t-pts" id="t-pts"></div>
 
-<!-- TUTORIAL -->
-<div class="modal" id="tut-modal" role="dialog" aria-modal="true" aria-labelledby="tut-h">
-<div class="mc"><div class="mh"><h2 id="tut-h">Welcome to Cabinet Quest 3D</h2><div class="td" id="tut-dots"></div></div>
-<div class="mb">
-    <div class="ts active" data-step="0"><div class="ti">&#x1F3E5;</div><h3>Explore the Trauma Room</h3><p>Navigate a 3D trauma room. Tap on equipment carts to view their contents. Carts are positioned where they'd actually be in a real resuscitation bay.</p></div>
-    <div class="ts" data-step="1"><div class="ti">&#x1F4CB;</div><h3>Pick a Scenario</h3><p>Each scenario is a clinical situation. Gather the right equipment from the correct carts and drawers.</p></div>
-    <div class="ts" data-step="2"><div class="ti">&#x1F5C4;&#xFE0F;</div><h3>Click Carts to Open</h3><p>Click or tap any cart in the 3D room to see its drawers. Open drawers to browse supplies and select what you need.</p></div>
-    <div class="ts" data-step="3"><div class="ti">&#x2705;</div><h3>Submit &amp; Review</h3><p>Submit your selections to see your score. Review what you got right, what you missed, and learn where everything lives.</p></div>
-</div>
-<div class="mf"><button class="bs" id="tut-skip" onclick="closeModal('tut-modal');skipTutorialToTraining();" style="opacity:.6;min-width:60px">Skip Tutorial</button><button class="bs" id="tut-prev" onclick="prevTut()" style="display:none">&#x2190; Back</button><button class="bp" id="tut-next" onclick="nextTut()">Next &#x2192;</button></div></div></div>
+<!-- Old tutorial modal removed - replaced by cinematic intro -->
 
 <!-- SCENARIOS -->
 <div class="modal" id="scen-modal" role="dialog" aria-modal="true" aria-labelledby="scen-h">
@@ -953,7 +1035,7 @@
 
 <!-- Assessment modal removed -->
 
-<!-- TUTORIAL DIALOGUE (interactive overlay) -->
+<!-- TUTORIAL DIALOGUE (top bar) -->
 <div id="tutorial-dialogue" class="tutorial-dialogue" style="display:none"></div>
 
 <!-- LANDSCAPE BLOCKER -->
@@ -2211,11 +2293,78 @@ function exportData(){const d=sG('cq3a');const a=d?JSON.parse(d):[];const data=a
 function resetProg(){document.getElementById('fb-h').textContent='⚠ Reset?';document.getElementById('fb-body').innerHTML='<div style="text-align:center;padding:16px"><div style="font-size:44px;margin-bottom:10px">⚠️</div><p style="color:var(--text-mid);line-height:1.5">This erases all progress permanently.</p></div>';document.getElementById('fb-foot').innerHTML=`<button class="bs" onclick="closeModal('fb-modal')">Cancel</button><button class="bd" onclick="confReset()">Reset</button>`;closeModal('set-modal');openModal('fb-modal');}
 function confReset(){closeModal('fb-modal');sR('cq3');sR('cq3a');location.reload();}
 
-let tutS=0;const TN=4;
-function initTut(){tutS=0;rTut();}
-function rTut(){const d=document.getElementById('tut-dots');d.innerHTML='';for(let i=0;i<TN;i++){const x=document.createElement('div');x.className='tdt'+(i===tutS?' active':'');d.appendChild(x);}document.querySelectorAll('.ts').forEach((el,i)=>el.classList.toggle('active',i===tutS));document.getElementById('tut-prev').style.display=tutS>0?'':'none';const n=document.getElementById('tut-next');if(tutS===TN-1){n.textContent='\uD83D\uDE80 Start!';n.onclick=()=>{closeModal('tut-modal');startInteractiveTutorial();};}else{n.textContent='Next \u2192';n.onclick=nextTut;}}
-function nextTut(){if(tutS<TN-1){tutS++;rTut();sfx('click');}}
-function prevTut(){if(tutS>0){tutS--;rTut();sfx('click');}}
+// ===== CINEMATIC INTRO =====
+var introPhase = 0; // 0=title, 1=drawer anim, 2=pan out, 3=welcome
+var introDrawerDC = null;
+
+function startCinematicIntro(){
+    var overlay = document.getElementById('intro-overlay');
+    overlay.classList.remove('hidden');
+    introPhase = 0;
+
+    // Phase 0: Start camera close-up on Green IV Cart drawer
+    var cartView = CART_VIEWS['airway'];
+    if(cartView) setCameraView(cartView);
+    hideOccludingObjects('airway');
+    // Hide labels during intro
+    document.getElementById('cart-labels').style.opacity = '0';
+    // Hide header during intro
+    document.querySelector('.hdr').style.display = 'none';
+
+    // Phase 1: After title shows, animate a drawer open/close
+    setTimeout(function(){
+        introPhase = 1;
+        introDrawerDC = drawerClickables.find(function(d){ return d.drawerId === 'airway-d3'; });
+        if(introDrawerDC){
+            slideDrawerOpen(introDrawerDC);
+            // Close it after a beat
+            setTimeout(function(){
+                slideDrawerClosed(introDrawerDC);
+                // Phase 2: Pan out to full room
+                setTimeout(function(){
+                    introPhase = 2;
+                    document.getElementById('intro-title').classList.add('top');
+                    showAllObjects();
+                    animateToView(DEFAULT_VIEW, 2500, function(){
+                        // Phase 3: Show welcome with buttons
+                        introPhase = 3;
+                        showIntroWelcome();
+                    });
+                }, 600);
+            }, 1200);
+        }
+    }, 2200);
+}
+
+function showIntroWelcome(){
+    var overlay = document.getElementById('intro-overlay');
+    var welcome = document.createElement('div');
+    welcome.className = 'intro-welcome';
+    welcome.innerHTML =
+        '<p>Tap carts to open drawers. Collect the right equipment for each clinical scenario.</p>' +
+        '<div class="intro-btns">' +
+            '<button class="intro-btn primary" onclick="dismissIntro(true)">Start Tutorial</button>' +
+            '<button class="intro-btn secondary" onclick="dismissIntro(false)">Skip to Training</button>' +
+        '</div>';
+    overlay.appendChild(welcome);
+}
+
+function dismissIntro(doTutorial){
+    var overlay = document.getElementById('intro-overlay');
+    // Fade out
+    overlay.style.transition = 'opacity .5s ease';
+    overlay.style.opacity = '0';
+    // Show header and labels
+    document.querySelector('.hdr').style.display = '';
+    document.getElementById('cart-labels').style.opacity = '';
+    setTimeout(function(){
+        overlay.classList.add('hidden');
+        overlay.style.opacity = '';
+        if(doTutorial) startInteractiveTutorial();
+        else startTrainingMode();
+    }, 500);
+}
+
 function skipTutorialToTraining(){startTrainingMode();}
 
 // ===== INTERACTIVE TUTORIAL =====
@@ -2232,6 +2381,9 @@ function startInteractiveTutorial(){
     S.inv = [];
     S.st = Date.now();
     S.sub = false;
+    // Show header (was hidden during intro)
+    document.querySelector('.hdr').style.display = '';
+    document.getElementById('cart-labels').style.opacity = '';
     // Show tray and FAB
     showTray(); renderTray();
     document.getElementById('fab').classList.add('active');
@@ -2239,8 +2391,8 @@ function startInteractiveTutorial(){
     document.getElementById('submit-btn').style.display = '';
     document.getElementById('retry-btn').style.display = 'none';
     document.getElementById('advance-btn').style.display = 'none';
-    document.getElementById('sbar').classList.add('active');
-    document.getElementById('sbar-name').textContent = 'Tutorial';
+    // No scenario bar during tutorial - the tutorial dialogue replaces it
+    document.getElementById('sbar').classList.remove('active');
     goToDefaultView(true);
     setTimeout(()=>showTutorialStep(), 500);
 }
@@ -2248,36 +2400,34 @@ function startInteractiveTutorial(){
 function showTutorialStep(){
     const dlg = document.getElementById('tutorial-dialogue');
     clearTutorialBlinks();
+    var stepNum = tutorialStep + 1;
+    var totalSteps = 5;
+    var stepLabel = 'Step ' + stepNum + '/' + totalSteps;
+    var msg = '';
     if(tutorialStep === 0){
-        // Step 1: Tap the green cart
-        dlg.innerHTML = '<h4>Tutorial</h4><p>Your task: collect a <strong>Saline Flush</strong> from the <strong>Green IV Cart</strong>.</p><p style="margin-top:6px;color:var(--accent-amber)">Tap the blinking cart to approach it.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
-        dlg.style.display = '';
-        // Blink the green cart (airway)
+        msg = 'Collect a <strong>Saline Flush</strong> from the <strong>Green IV Cart</strong>. Tap the blinking cart.';
         blinkCart3D('airway');
         blinkCartLabel('airway');
     } else if(tutorialStep === 1){
-        // Step 2: Tap the bottom drawer
-        dlg.innerHTML = '<h4>Tutorial</h4><p>Great! Now tap the <strong>blinking drawer</strong> (Bottom Drawer) to open it.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
-        dlg.style.display = '';
-        // Blink airway-d3 (bottom drawer)
+        msg = 'Tap the <strong>blinking drawer</strong> (Bottom Drawer) to open it.';
         blinkDrawer3D('airway-d3');
     } else if(tutorialStep === 2){
-        // Step 3: Tap saline flush item
-        dlg.innerHTML = '<h4>Tutorial</h4><p>Now tap the <strong>Saline Flush</strong> item to select it.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
-        dlg.style.display = '';
-        // Blink the saline flush item card
+        msg = 'Tap the <strong>Saline Flush</strong> item to select it.';
         setTimeout(()=>blinkItemCard('saline-flush'), 300);
     } else if(tutorialStep === 3){
-        // Step 4: Tap "Add to Table"
-        dlg.innerHTML = '<h4>Tutorial</h4><p>Now tap <strong>"Add to Table"</strong> to collect the item.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
-        dlg.style.display = '';
+        msg = 'Tap <strong>"Add to Table"</strong> to collect the item.';
         blinkAddButton();
     } else if(tutorialStep === 4){
-        // Step 5: Submit
-        dlg.innerHTML = '<h4>Tutorial</h4><p>Excellent! Now tap <strong>"Submit"</strong> to complete the tutorial.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
-        dlg.style.display = '';
+        msg = 'Tap <strong>Submit</strong> to finish.';
         blinkSubmitButton();
     }
+    dlg.innerHTML =
+        '<div class="tut-text">' +
+            '<div class="tut-step">' + stepLabel + '</div>' +
+            '<div class="tut-msg">' + msg + '</div>' +
+        '</div>' +
+        '<button class="tut-skip-btn" onclick="endTutorial()">Skip</button>';
+    dlg.style.display = '';
 }
 
 function blinkCart3D(cartId){
@@ -2384,39 +2534,7 @@ function handleTutorialDrawerClick(dc){
     }
 }
 
-// Hook into panelCollect for tutorial
-var _origPanelCollect = null;
-function tutorialPanelCollect(){
-    if(tutorialActive && tutorialStep === 3){
-        // Original collect
-        _origPanelCollect();
-        tutorialStep = 4;
-        // Close the panel
-        closePanel();
-        setTimeout(()=>showTutorialStep(), 400);
-        return;
-    }
-    _origPanelCollect();
-}
-
-// Hook into togPanelItem for tutorial
-var _origTogPanelItem = null;
-function tutorialTogPanelItem(item, card){
-    _origTogPanelItem(item, card);
-    if(tutorialActive && tutorialStep === 2 && item.id === 'saline-flush'){
-        tutorialStep = 3;
-        setTimeout(()=>showTutorialStep(), 300);
-    }
-}
-
-// Hook into submit for tutorial
-function tutorialSubmit(){
-    if(tutorialActive && tutorialStep === 4){
-        endTutorialWithSuccess();
-        return;
-    }
-    confirmSubmit();
-}
+// Tutorial hooks are inline in togPanelItem and panelCollect functions
 
 function endTutorialWithSuccess(){
     clearTutorialBlinks();
@@ -2449,6 +2567,9 @@ function endTutorial(){
 
 function startTrainingMode(){
     S.mode = 'training';
+    // Show header (may have been hidden during intro)
+    document.querySelector('.hdr').style.display = '';
+    document.getElementById('cart-labels').style.opacity = '';
     const b = document.getElementById('mode-badge');
     b.style.display = ''; b.textContent = 'TRAIN'; b.className = 'mode-badge training';
     // Go directly to first scenario (Arterial Line Placement)
@@ -2754,7 +2875,13 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('portrait').catch(function(){});}catch(e){}
 
 // ===== INIT =====
-function init(){load();init3D();upStats();initTut();openModal('tut-modal');}
+function init(){
+    load();
+    init3D();
+    upStats();
+    // Start cinematic intro (replaces old tutorial modal)
+    startCinematicIntro();
+}
 window.onload=init;
 </script>
 </body>
