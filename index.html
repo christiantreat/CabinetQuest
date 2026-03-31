@@ -972,7 +972,7 @@
 <div class="modal" id="scen-modal" role="dialog" aria-modal="true" aria-labelledby="scen-h">
 <div class="mc"><div class="mh"><h2 id="scen-h">Select Scenario</h2><p>Progress: <strong id="prog">0/0</strong></p></div>
 <div class="mb"><div class="sg" id="scen-list" role="list"></div></div>
-<div class="mf"><button class="bs" onclick="closeModal('scen-modal')">Close</button></div></div></div>
+</div></div>
 
 <!-- SETTINGS -->
 <div class="modal" id="set-modal" role="dialog" aria-modal="true" aria-labelledby="set-h">
@@ -1939,6 +1939,7 @@ function selScen(sc,i){
     document.getElementById('retry-btn').style.display='';document.getElementById('advance-btn').style.display='none';
     showHint('Tap a cart to approach it', 3000);
     upStats();closeModal('scen-modal');sfx('click');startTimer();
+    goToDefaultView(true);
     showTray();renderTray();
 }
 function openDetailsModal(){
@@ -2574,6 +2575,7 @@ function startTrainingMode(){
     b.style.display = ''; b.textContent = 'TRAIN'; b.className = 'mode-badge training';
     // Go directly to first scenario (Arterial Line Placement)
     S.su = DATA.scenarios.length; // unlock all
+    goToDefaultView(true);
     openScenariosModal();
 }
 
