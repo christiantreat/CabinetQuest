@@ -41,29 +41,32 @@
         }
         .app { height:100vh; height:100dvh; display:flex; flex-direction:column; }
 
-        /* ===== HEADER ===== */
+        /* ===== HEADER (tutorial-style) ===== */
         .hdr {
-            background: var(--ui-panel);
-            padding: 5px 10px;
-            display: flex; align-items: center; gap: 8px;
+            background: rgba(20,20,20,.94);
+            padding: 10px 16px;
+            display: flex; align-items: center; gap: 12px;
             z-index: 100; flex-shrink: 0;
             border-bottom: 2px solid var(--accent-amber);
+            font-family: var(--font-mono);
         }
         .hdr h1 {
             font-family: var(--font-display);
             font-size: 14px; color: var(--text-light);
             font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-            flex: 1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+            min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
         }
         .hdr h1 span { color: var(--accent-amber); }
-        .hdr-stats { display:flex; gap:10px; align-items:center; flex-shrink:0; }
-        .chip {
-            display:flex; align-items:center; gap:3px;
-            font-size:11px; color:var(--text-light);
-            background:var(--ui-panel-light); padding:2px 7px;
-            border-radius:3px; border:1px solid var(--ui-border);
+        .hdr-scenario-name {
+            font-family: var(--font-mono);
+            font-size: 12px; color: var(--text-light);
+            flex: 1; min-width: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            display: none;
         }
-        .chip .v { font-weight:600; color:var(--accent-amber); min-width:26px; text-align:center; }
+        .hdr-scenario-name strong { color: var(--accent-amber); }
+        .app.scenario-active .hdr h1 { display:none; }
+        .app.scenario-active .hdr-scenario-name { display:block; }
         .hbtn {
             background:var(--ui-panel-light); border:1px solid var(--ui-border);
             color:var(--text-light); font-size:14px;
@@ -77,14 +80,10 @@
         .hbtn.ac { border-color:var(--accent-amber); }
 
         /* ===== MOBILE HEADER ===== */
-        .hdr-stats.hdr-stats-hidden { display:none; }
         @media (max-width: 480px) {
-            .hdr { padding:4px 6px; gap:5px; }
+            .hdr { padding:8px 10px; gap:8px; }
             .hbtn { width:28px; height:28px; font-size:12px; }
-            .chip-items { display:none; }
             .mode-badge { display:none !important; }
-            #info-btn { display:none !important; }
-            .app.scenario-active .hdr h1 { display:none; }
             .app.scenario-active .hbtn.ac { display:none; }
         }
 
@@ -101,30 +100,7 @@
         .mode-card p{font-size:11px;color:var(--text-mid);line-height:1.4}
         .mode-card .mode-icon{font-size:32px;margin-bottom:8px}
 
-        /* ===== SCENARIO BAR ===== */
-        .sbar {
-            background:var(--monitor-bg); border-bottom:2px solid #1a3322;
-            padding:6px 12px; display:none; align-items:center; gap:10px;
-            flex-shrink:0; position:relative; overflow:hidden;
-        }
-        .sbar.active { display:flex; }
-        .sbar::before {
-            content:''; position:absolute; inset:0;
-            background:repeating-linear-gradient(0deg,rgba(51,255,102,.02) 0,rgba(51,255,102,.02) 1px,transparent 1px,transparent 3px);
-            pointer-events:none;
-        }
-        .sbar-name {
-            font-family:var(--font-display); font-size:12px; font-weight:700;
-            color:var(--monitor-text); text-transform:uppercase; letter-spacing:1px;
-            flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-            text-shadow:0 0 6px rgba(51,255,102,.4);
-        }
-        .sbar-btn {
-            background:transparent; border:1px solid rgba(51,255,102,.3);
-            color:var(--monitor-text); font-size:11px; padding:2px 8px;
-            border-radius:3px; cursor:pointer; font-family:var(--font-mono);
-        }
-        .sbar-btn:hover { background:rgba(51,255,102,.1); }
+        /* ===== SCENARIO BAR (removed - scenario name now in header) ===== */
 
         /* ===== 3D VIEWPORT ===== */
         .viewport {
@@ -889,7 +865,7 @@
         /* Ring removed - no hover state, direct click-to-view */
 
         /* FIX 10: Assessment progress */
-        #assess-progress { flex-shrink:0; }
+        /* assess-progress removed */
 
         /* FIX 11: Correct items section in feedback */
         .correct-section { margin:8px 0; }
@@ -921,15 +897,10 @@
         <button class="hbtn ac" onclick="openScenariosModal()" aria-label="Scenarios">&#x1F4CB;</button>
         <h1><span>Code</span>SBU</h1>
         <span class="mode-badge" id="mode-badge" style="display:none;cursor:pointer" onclick="openModeSelect()"></span>
-        <div class="hdr-stats hdr-stats-hidden" role="status" aria-live="polite">
-            <div class="chip"><span style="opacity:.6">&#x23F1;</span><span class="v" id="stat-time">0:00</span></div>
-            <div class="chip chip-items"><span style="opacity:.6">&#x1F4E6;</span><span class="v" id="stat-items">0</span></div>
-        </div>
-        <button class="hbtn" id="info-btn" onclick="openDetailsModal()" style="display:none" aria-label="Scenario info">&#x2139;&#xFE0F;</button>
-        <button class="hbtn" onclick="openSettingsModal()" aria-label="Settings">&#x2699;&#xFE0F;</button>
+        <span class="hdr-scenario-name" id="hdr-scenario-name"></span>
     </header>
 
-    <div class="sbar" id="sbar"><span class="sbar-name" id="sbar-name"></span><div id="assess-progress" style="display:none;width:80px;height:4px;background:rgba(51,255,102,.15);border-radius:2px;overflow:hidden;flex-shrink:0"><div id="assess-bar" style="height:100%;background:var(--monitor-text);border-radius:2px;transition:width .3s;width:0%"></div></div><button class="sbar-btn" onclick="openDetailsModal()">DETAILS</button></div>
+    <div class="sbar" id="sbar" style="display:none"></div>
 
     <div class="fab" id="fab">
         <button class="fb ret" id="retry-btn" onclick="retryScenario()" style="display:none">&#x1F504; Retry</button>
@@ -1944,14 +1915,11 @@ function renderScenList(){
 function selScen(sc,i){
     S.scenario=sc;S.si=i;S.inv=[];S.st=Date.now();S.sub=false;
     document.querySelector('.app').classList.add('scenario-active');
-    document.getElementById('sbar').classList.add('active');
-    document.getElementById('sbar-name').textContent=sc.name;
-    document.getElementById('info-btn').style.display='';
+    document.getElementById('hdr-scenario-name').textContent=sc.name;
     const f=document.getElementById('fab');f.classList.add('active');
     document.getElementById('submit-btn').disabled=true;document.getElementById('submit-btn').style.display='';
     document.getElementById('retry-btn').style.display='';document.getElementById('advance-btn').style.display='none';
     showHint('Tap a cart to approach it', 3000);
-    document.querySelector('.hdr-stats').classList.remove('hdr-stats-hidden');
     upStats();closeModal('scen-modal');sfx('click');startTimer();
     goToDefaultView(true);
     showTray();renderTray();
@@ -2161,7 +2129,7 @@ function showTray(){document.getElementById('tray').classList.add('active');}
 function hideTray(){document.getElementById('tray').classList.remove('active');}
 function upInv(){document.getElementById('submit-btn').disabled=S.inv.length===0;}
 let tmr=null;function startTimer(){stopTimer();tmr=setInterval(()=>{if(S.st)upStats();},1000);}function stopTimer(){if(tmr){clearInterval(tmr);tmr=null;}}
-function upStats(){if(S.st){const e=Math.floor((Date.now()-S.st)/1000);document.getElementById('stat-time').textContent=fT(e);}document.getElementById('stat-items').textContent=S.inv.length;}
+function upStats(){/* timer/stats display removed from top bar */}
 function fT(s){return`${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;}
 
 function confirmSubmit(){
@@ -2259,8 +2227,8 @@ function continueToNext(){
     goToDefaultView(true);
     if(S.si===DATA.scenarios.length-1){compTrain();return;}
     S.si++;if(S.si>=S.su)S.su=S.si+1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;
-    document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');
-    document.getElementById('info-btn').style.display='none';
+    document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');
+    document.getElementById('hdr-scenario-name').textContent='';
     showHint('Open Scenarios for next', 3000);
     upInv();upStats();stopTimer();openScenariosModal();sfx('click');
 }
@@ -2298,7 +2266,7 @@ function compTrain(){
     document.getElementById('fb-foot').innerHTML = fo;
     openModal('fb-modal');sfx('success');
 }
-function resetStart(){hideTray();S.si=0;S.su=1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;S.comp=[];document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');document.getElementById('info-btn').style.display='none';document.querySelector('.hdr-stats').classList.add('hdr-stats-hidden');showHint('Open Scenarios menu to begin', 0);upInv();upStats();stopTimer();save();}
+function resetStart(){hideTray();S.si=0;S.su=1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;S.comp=[];document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('hdr-scenario-name').textContent='';showHint('Open Scenarios menu to begin', 0);upInv();upStats();stopTimer();save();}
 
 function openSettingsModal(){openModal('set-modal');document.getElementById('snd-tog').checked=S.snd;document.getElementById('hap-tog').checked=S.hap;renderRes();}
 function toggleSound(){S.snd=document.getElementById('snd-tog').checked;save();sfx('click');}
@@ -2408,7 +2376,7 @@ function startInteractiveTutorial(){
     document.getElementById('advance-btn').style.display = 'none';
     // No scenario bar during tutorial - the tutorial dialogue replaces it
     document.querySelector('.app').classList.remove('scenario-active');
-    document.getElementById('sbar').classList.remove('active');
+    document.getElementById('hdr-scenario-name').textContent='';
     goToDefaultView(true);
     setTimeout(()=>showTutorialStep(), 500);
 }
@@ -2559,7 +2527,7 @@ function endTutorialWithSuccess(){
     hideTray();
     document.getElementById('fab').classList.remove('active');
     document.querySelector('.app').classList.remove('scenario-active');
-    document.getElementById('sbar').classList.remove('active');
+    document.getElementById('hdr-scenario-name').textContent='';
     S.scenario = null; S.inv = []; S.st = null;
     // Show completion message then start training
     document.getElementById('fb-h').textContent = 'Tutorial Complete!';
@@ -2574,7 +2542,7 @@ function endTutorial(){
     document.getElementById('tutorial-dialogue').style.display = 'none';
     hideTray();
     document.getElementById('fab').classList.remove('active');
-    document.getElementById('sbar').classList.remove('active');
+    document.getElementById('hdr-scenario-name').textContent='';
     document.getElementById('cart-panel').classList.remove('active');
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
     S.scenario = null; S.inv = []; S.st = null;
@@ -2606,8 +2574,7 @@ function openModeSelect(){
     hideTray();
     document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('fab').classList.remove('active');
-    document.getElementById('sbar').classList.remove('active');
-    document.querySelector('.hdr-stats').classList.add('hdr-stats-hidden');
+    document.getElementById('hdr-scenario-name').textContent='';
     goToDefaultView(false);
     openModal('mode-modal');
 }
@@ -2628,22 +2595,16 @@ function startAssessment(){
     loadAssessScenario();
 }
 function loadAssessScenario(){
-    // FIX 10: Update progress bar
-    const ap=document.getElementById('assess-progress');ap.style.display='';
-    document.getElementById('assess-bar').style.width=Math.round((S.assessIdx/S.assessQueue.length)*100)+'%';
-    if(S.assessIdx>=S.assessQueue.length){ap.style.display='none';finishAssessment();return;}
+    if(S.assessIdx>=S.assessQueue.length){finishAssessment();return;}
     const sc=S.assessQueue[S.assessIdx];
     S.scenario=sc;S.si=DATA.scenarios.indexOf(sc);S.inv=[];S.st=Date.now();S.sub=false;
     document.querySelector('.app').classList.add('scenario-active');
-    document.getElementById('sbar').classList.add('active');
-    document.getElementById('sbar-name').textContent='['+( S.assessIdx+1)+'/'+S.assessQueue.length+'] '+sc.name;
-    document.getElementById('info-btn').style.display='';
+    document.getElementById('hdr-scenario-name').textContent='['+( S.assessIdx+1)+'/'+S.assessQueue.length+'] '+sc.name;
     document.getElementById('fab').classList.add('active');
     document.getElementById('submit-btn').disabled=true;document.getElementById('submit-btn').style.display='';
     document.getElementById('retry-btn').style.display='none';
     document.getElementById('advance-btn').style.display='none';
     showHint('Scenario '+(S.assessIdx+1)+' of '+S.assessQueue.length+': Gather items', 4000);
-    document.querySelector('.hdr-stats').classList.remove('hdr-stats-hidden');
     upStats();startTimer();
     showTray();renderTray();
     goToDefaultView(true);
@@ -2656,7 +2617,7 @@ function assessSubmit(){
     S.assessIdx++;setTimeout(()=>loadAssessScenario(),800);
 }
 function finishAssessment(){
-    stopTimer();document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');
+    stopTimer();document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('hdr-scenario-name').textContent='';
     let html='<div style="text-align:center;margin-bottom:14px"><p style="font-family:var(--font-display);font-size:15px;font-weight:700;text-transform:uppercase">Assessment Complete</p><p style="font-size:11px;color:var(--text-muted)">'+S.assessResults.length+' scenarios</p></div>';
     let total=0;
     S.assessResults.forEach(r=>{
@@ -2693,7 +2654,7 @@ function startFindIt(){
     findItIdx = 0;
     findItScore = {correct:0, wrong:0};
     document.querySelector('.app').classList.remove('scenario-active');
-    document.getElementById('sbar').classList.remove('active');
+    document.getElementById('hdr-scenario-name').textContent='';
     document.getElementById('fab').classList.remove('active');
     hideTray();
     loadFindItItem();
@@ -2791,7 +2752,7 @@ var exploreActive = false;
 function startExplore(){
     exploreActive = true;
     document.querySelector('.app').classList.remove('scenario-active');
-    document.getElementById('sbar').classList.remove('active');
+    document.getElementById('hdr-scenario-name').textContent='';
     document.getElementById('fab').classList.remove('active');
     hideTray();
     document.getElementById('explore-bar').classList.add('active');
