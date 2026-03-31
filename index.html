@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <meta name="browsermode" content="application">
     <meta name="theme-color" content="#e8a020">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -76,8 +79,7 @@
         /* MODE BADGE */
         .mode-badge{font-family:var(--font-display);font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
         .mode-badge.training{background:var(--accent-green);color:#fff}
-        .mode-badge.assessment{background:var(--accent-red);color:#fff;animation:pbadge 2s infinite}
-        @keyframes pbadge{0%,100%{opacity:1}50%{opacity:.7}}
+        /* assessment badge removed */
 
         /* MODE SELECT CARDS */
         .mode-card{background:#fff;border:3px solid #ddd;border-radius:8px;padding:16px;cursor:pointer;transition:border-color .15s;text-align:center;margin-bottom:10px}
@@ -665,7 +667,78 @@
         @keyframes tsl { from{transform:translateX(300px);opacity:0} to{transform:translateX(0);opacity:1} }
         @keyframes tpp { 0%{transform:translate(-50%,-50%) scale(0);opacity:0} 50%{transform:translate(-50%,-50%) scale(1.1)} 100%{transform:translate(-50%,-50%) scale(1);opacity:1} }
 
-        /* ===== TUTORIAL ===== */
+        /* ===== PORTRAIT LOCK ===== */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            .landscape-blocker { display:flex !important; }
+        }
+        .landscape-blocker {
+            display:none; position:fixed; inset:0; z-index:10000;
+            background:#111; color:var(--text-light);
+            flex-direction:column; align-items:center; justify-content:center;
+            font-family:var(--font-display); text-align:center; padding:20px;
+        }
+        .landscape-blocker .icon { font-size:48px; margin-bottom:16px; }
+        .landscape-blocker p { font-size:14px; opacity:.8; }
+
+        /* ===== TUTORIAL INTERACTIVE ===== */
+        .tutorial-dialogue {
+            position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
+            background:rgba(30,30,30,.92); color:var(--text-light);
+            padding:14px 24px; border-radius:12px; font-size:13px;
+            text-align:center; border:2px solid var(--accent-amber);
+            z-index:300; max-width:90vw;
+            font-family:var(--font-mono);
+            box-shadow:0 8px 32px rgba(0,0,0,.6);
+            animation:fu .4s ease;
+        }
+        .tutorial-dialogue h4 {
+            font-family:var(--font-display); font-size:14px;
+            color:var(--accent-amber); margin-bottom:6px;
+            text-transform:uppercase; letter-spacing:1px;
+        }
+        .tutorial-dialogue .tut-skip-btn {
+            margin-top:10px; background:none; border:1px solid var(--ui-border);
+            color:var(--text-muted); font-size:10px; padding:4px 14px;
+            border-radius:4px; cursor:pointer; font-family:var(--font-display);
+        }
+        .tutorial-dialogue .tut-skip-btn:hover { color:var(--text-light); border-color:var(--accent-amber); }
+
+        @keyframes cart-blink {
+            0%, 100% { opacity:1; }
+            50% { opacity:0.3; }
+        }
+        .cart-blink .cart-label-3d { animation:label-blink 1.5s ease-in-out infinite; }
+        @keyframes label-blink {
+            0%, 100% { opacity:1; box-shadow:0 0 8px rgba(232,160,32,.6); }
+            50% { opacity:0.5; box-shadow:0 0 20px rgba(232,160,32,.9); }
+        }
+
+        .drawer-blink {
+            animation:drawer-blink-anim 1.5s ease-in-out infinite !important;
+        }
+        @keyframes drawer-blink-anim {
+            0%, 100% { opacity:1; }
+            50% { opacity:0.3; }
+        }
+
+        .icard-blink {
+            animation:icard-blink-anim 1.5s ease-in-out infinite;
+            border-color:var(--accent-amber) !important;
+        }
+        @keyframes icard-blink-anim {
+            0%, 100% { box-shadow:0 0 0 rgba(232,160,32,0); }
+            50% { box-shadow:0 0 16px rgba(232,160,32,.7); }
+        }
+
+        .panel-add-blink {
+            animation:add-blink-anim 1.5s ease-in-out infinite;
+        }
+        @keyframes add-blink-anim {
+            0%, 100% { box-shadow:0 0 0 rgba(76,175,80,0); }
+            50% { box-shadow:0 0 16px rgba(76,175,80,.7); }
+        }
+
+        /* ===== TUTORIAL SLIDES ===== */
         .ts { display:none; text-align:center; }
         .ts.active { display:block; animation:fu .3s ease; }
         @keyframes fu { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
@@ -698,14 +771,19 @@
         .cart-label-3d {
             position:absolute; pointer-events:none; z-index:5;
             font-family:var(--font-display); font-size:11px; font-weight:700;
-            color:#fff; text-transform:uppercase; letter-spacing:1px;
+            color:#fff; text-transform:uppercase; letter-spacing:.5px;
             text-align:center; white-space:nowrap;
             transform:translate(-50%,-100%);
             text-shadow:0 2px 6px rgba(0,0,0,.9),0 0 16px rgba(0,0,0,.6);
             transition:opacity .3s;
             background:rgba(0,0,0,.35);
-            padding:3px 10px;
+            padding:3px 8px;
             border-radius:4px;
+        }
+        @media(max-width:420px){
+            .cart-label-3d {
+                font-size:8px; letter-spacing:0; padding:2px 5px;
+            }
         }
         .cart-label-3d .label-dot {
             display:block; width:6px; height:6px; border-radius:50%;
@@ -752,7 +830,7 @@
 
     <div class="fab" id="fab">
         <button class="fb ret" id="retry-btn" onclick="retryScenario()" style="display:none">&#x1F504; Retry</button>
-        <button class="fb sub" id="submit-btn" onclick="confirmSubmit()" disabled>&#x2713; Submit</button>
+        <button class="fb sub" id="submit-btn" onclick="if(tutorialActive){endTutorialWithSuccess();}else{confirmSubmit();}" disabled>&#x2713; Submit</button>
         <button class="fb adv" id="advance-btn" onclick="continueToNext()" style="display:none">&#x2192; Next</button>
     </div>
 
@@ -781,12 +859,7 @@
         <div class="findit-result-detail" id="findit-result-detail"></div>
     </div>
 
-    <!-- Explore Mode bar -->
-    <div class="explore-bar" id="explore-bar">
-        <span class="explore-title">Explore Mode</span>
-        <input class="explore-search" id="explore-search" type="text" placeholder="Search items..." oninput="exploreSearch(this.value)">
-        <button class="explore-close" onclick="exitExplore()">Exit</button>
-    </div>
+    <!-- Explore Mode bar (removed) -->
 
     <main class="viewport" id="viewport">
         <canvas id="three-canvas"></canvas>
@@ -806,12 +879,12 @@
 <div class="modal" id="tut-modal" role="dialog" aria-modal="true" aria-labelledby="tut-h">
 <div class="mc"><div class="mh"><h2 id="tut-h">Welcome to Cabinet Quest 3D</h2><div class="td" id="tut-dots"></div></div>
 <div class="mb">
-    <div class="ts active" data-step="0"><div class="ti">&#x1F3E5;</div><h3>Explore the Trauma Room</h3><p>Navigate a 3D trauma room. Drag to orbit, pinch to zoom. Equipment carts are positioned where they'd actually be in a real resuscitation bay.</p></div>
+    <div class="ts active" data-step="0"><div class="ti">&#x1F3E5;</div><h3>Explore the Trauma Room</h3><p>Navigate a 3D trauma room. Tap on equipment carts to view their contents. Carts are positioned where they'd actually be in a real resuscitation bay.</p></div>
     <div class="ts" data-step="1"><div class="ti">&#x1F4CB;</div><h3>Pick a Scenario</h3><p>Each scenario is a clinical situation. Gather the right equipment from the correct carts and drawers.</p></div>
     <div class="ts" data-step="2"><div class="ti">&#x1F5C4;&#xFE0F;</div><h3>Click Carts to Open</h3><p>Click or tap any cart in the 3D room to see its drawers. Open drawers to browse supplies and select what you need.</p></div>
     <div class="ts" data-step="3"><div class="ti">&#x2705;</div><h3>Submit &amp; Review</h3><p>Submit your selections to see your score. Review what you got right, what you missed, and learn where everything lives.</p></div>
 </div>
-<div class="mf"><button class="bs" id="tut-skip" onclick="closeModal('tut-modal');openModeSelect();" style="opacity:.6;min-width:60px">Skip</button><button class="bs" id="tut-prev" onclick="prevTut()" style="display:none">&#x2190; Back</button><button class="bp" id="tut-next" onclick="nextTut()">Next &#x2192;</button></div></div></div>
+<div class="mf"><button class="bs" id="tut-skip" onclick="closeModal('tut-modal');skipTutorialToTraining();" style="opacity:.6;min-width:60px">Skip Tutorial</button><button class="bs" id="tut-prev" onclick="prevTut()" style="display:none">&#x2190; Back</button><button class="bp" id="tut-next" onclick="nextTut()">Next &#x2192;</button></div></div></div>
 
 <!-- SCENARIOS -->
 <div class="modal" id="scen-modal" role="dialog" aria-modal="true" aria-labelledby="scen-h">
@@ -868,9 +941,7 @@
 <div class="mc"><div class="mh"><h2 id="mode-h">Select Mode</h2></div>
 <div class="mb">
     <div class="mode-card" onclick="selectMode('training')" tabindex="0"><div class="mode-icon">&#x1F4DA;</div><h4>Training Mode</h4><p>Full feedback after each scenario. See what you got right and wrong. Retries allowed.</p></div>
-    <div class="mode-card" onclick="selectMode('assessment')" tabindex="0"><div class="mode-icon">&#x1F4DD;</div><h4>Assessment Mode</h4><p>No feedback until all scenarios complete. Randomized order. No retries. Tests true recall.</p></div>
     <div class="mode-card" onclick="selectMode('findit')" tabindex="0"><div class="mode-icon">&#x1F50D;</div><h4>Find It</h4><p>Given an item, navigate to the correct cabinet and drawer. Tests spatial memory and equipment recognition.</p></div>
-    <div class="mode-card" onclick="selectMode('explore')" tabindex="0"><div class="mode-icon">&#x1F5FA;</div><h4>Explore</h4><p>Browse all cabinets and items freely. Study where everything lives. No timer, no scoring.</p></div>
 </div>
 <div class="mf"><button class="bs" onclick="closeModal('mode-modal')">Cancel</button></div></div></div>
 
@@ -880,11 +951,13 @@
 <div class="mb" id="confirm-body"></div>
 <div class="mf"><button class="bs" onclick="closeModal('confirm-modal')">Cancel</button><button class="bp" id="confirm-yes" onclick="closeModal('confirm-modal');doSubmit()">Submit</button></div></div></div>
 
-<!-- ASSESSMENT SUMMARY -->
-<div class="modal" id="assess-modal" role="dialog" aria-modal="true" aria-labelledby="assess-h">
-<div class="mc"><div class="mh"><h2 id="assess-h">Assessment Results</h2></div>
-<div class="mb" id="assess-body"></div>
-<div class="mf"><button class="bp" onclick="closeModal('assess-modal');resetStart()">Done</button></div></div></div>
+<!-- Assessment modal removed -->
+
+<!-- TUTORIAL DIALOGUE (interactive overlay) -->
+<div id="tutorial-dialogue" class="tutorial-dialogue" style="display:none"></div>
+
+<!-- LANDSCAPE BLOCKER -->
+<div class="landscape-blocker"><div class="icon">&#x1F4F1;</div><p>Please rotate your device to portrait mode</p></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -907,7 +980,7 @@ const DATA = {
     items: [
         {id:'ett',name:'Endotracheal Tube',cart:'airway',drawer:'airway-d1'},{id:'laryngoscope',name:'Laryngoscope',cart:'airway',drawer:'airway-d1'},
         {id:'bvm',name:'Bag-Valve-Mask',cart:'airway',drawer:'airway-d2'},{id:'oropharyngeal',name:'Oropharyngeal Airway',cart:'airway',drawer:'airway-d2'},
-        {id:'suction',name:'Suction Catheter',cart:'airway',drawer:'airway-d3'},{id:'oxygen',name:'Oxygen Mask',cart:'airway',drawer:'airway-d3'},
+        {id:'suction',name:'Suction Catheter',cart:'airway',drawer:'airway-d3'},{id:'oxygen',name:'Oxygen Mask',cart:'airway',drawer:'airway-d3'},{id:'saline-flush',name:'Saline Flush',cart:'airway',drawer:'airway-d3'},
         {id:'or-towels',name:'O.R. Towels',cart:'resus',drawer:'resus-d1'},{id:'silk-suture-2-0',name:'2-0 Silk Suture',cart:'resus',drawer:'resus-d1'},
         {id:'tegaderm-4x4',name:'4x4 Tegaderm',cart:'resus',drawer:'resus-d1'},{id:'betadine-bottle',name:'Betadine Bottle',cart:'resus',drawer:'resus-d1'},
         {id:'gauze-bandage-roll',name:'Gauze Bandage Roll',cart:'resus',drawer:'resus-d2'},{id:'chloraprep',name:'ChloraPrep',cart:'resus',drawer:'resus-d2'},
@@ -929,16 +1002,12 @@ const DATA = {
         {id:'sterile-gloves',name:'Sterile Gloves',cart:'supply-cabinet',drawer:'supply-d3'},{id:'sterile-gown',name:'Sterile Gown',cart:'supply-cabinet',drawer:'supply-d3'},{id:'face-shield',name:'Face Shield',cart:'supply-cabinet',drawer:'supply-d3'}
     ],
     scenarios: [
-        {id:'s1',name:'Rapid Sequence Intubation',description:'Unresponsive patient requiring emergent airway management.',
-         essential:['ett','laryngoscope','bvm','suction','etco2'],optional:['bougie','glidescope','tube-holder','oropharyngeal']},
+        {id:'s4',name:'Arterial Line Placement',description:'Patient requires arterial line for hemodynamic monitoring.',
+         essential:['arterial-line-kit','arrow-radial-cath','chloraprep','us-gel','sterile-gloves'],optional:['us-probe-cover','tegaderm-4x4','gauze-bandage-roll']},
         {id:'s2',name:'Central Line Placement',description:'Patient requires central venous access for resuscitation.',
          essential:['cl-insertion-tray-1','triple-lumen-cl','chloraprep','betadine-bottle','sterile-gloves','sterile-gown'],optional:['or-towels','us-gel','us-probe-cover']},
         {id:'s3',name:'Chest Tube Insertion',description:'Patient with pneumothorax requiring chest tube placement.',
-         essential:['chest-tube','chest-tube-tray','pleur-evac','betadine-bottle','sterile-gloves'],optional:['or-towels','chloraprep','gauze-bandage-roll','sterile-gown']},
-        {id:'s4',name:'Arterial Line Placement',description:'Patient requires arterial line for hemodynamic monitoring.',
-         essential:['arterial-line-kit','arrow-radial-cath','chloraprep','us-gel','sterile-gloves'],optional:['us-probe-cover','tegaderm-4x4','gauze-bandage-roll']},
-        {id:'s5',name:'Massive Transfusion Setup',description:'Trauma patient with hemorrhagic shock requiring rapid volume resuscitation.',
-         essential:['normal-saline','blood-tubing','pressure-bag','iv-tubing','cordis-sheath-7-5'],optional:['lr','rapid-infuser-tubing','cl-insertion-tray-2']}
+         essential:['chest-tube','chest-tube-tray','pleur-evac','betadine-bottle','sterile-gloves'],optional:['or-towels','chloraprep','gauze-bandage-roll','sterile-gown']}
     ]
 };
 function gCN(id){const c=DATA.carts.find(x=>x.id===id);return c?c.name:id;}
@@ -1566,8 +1635,8 @@ function setupInteraction(vp, canvas) {
         pointerDown = false;
         if (pointerMoved) return;
         if (cameraAnimating) return;
-        // Allow clicks in findit/explore modes without a scenario
-        if (!S.scenario && S.mode !== 'findit' && S.mode !== 'explore') return;
+        // Allow clicks in findit mode or tutorial without a scenario
+        if (!S.scenario && S.mode !== 'findit' && !tutorialActive) return;
 
         const t = e.changedTouches ? e.changedTouches[0] : e;
         const rect = canvas.getBoundingClientRect();
@@ -1583,6 +1652,7 @@ function setupInteraction(vp, canvas) {
                     sfx('click'); hap('light');
                     S.cart = obj.data;
                     hideHint();
+                    if(tutorialActive) handleTutorialCartClick(obj.data.id);
                     goToCartView(obj.data.id);
                 }
             }
@@ -1595,8 +1665,8 @@ function setupInteraction(vp, canvas) {
                     sfx('click'); hap('light');
                     if (S.mode === 'findit') {
                         checkFindItAnswer(dc);
-                    } else if (S.mode === 'explore') {
-                        openDrawer3DExplore(dc);
+                    } else if (tutorialActive) {
+                        handleTutorialDrawerClick(dc);
                     } else {
                         openDrawer3D(dc);
                     }
@@ -1916,6 +1986,11 @@ function togPanelItem(item,card){
     if(i>-1){S.sel.splice(i,1);card.classList.remove('selected');}
     else{S.sel.push(item);card.classList.add('selected');}
     sfx('click'); updatePanelSelCount();
+    // Tutorial hook
+    if(tutorialActive && tutorialStep === 2 && item.id === 'saline-flush' && S.sel.find(x=>x.id==='saline-flush')){
+        tutorialStep = 3;
+        setTimeout(()=>showTutorialStep(), 300);
+    }
 }
 
 function updatePanelSelCount(){
@@ -1937,6 +2012,12 @@ function panelCollect(){
     S.sel=[];upInv();upStats();updatePanelSelCount();
     // Re-render current drawer to update in-inv states
     if(S.drawer) renderPanelItems(S.drawer);
+    // Tutorial hook
+    if(tutorialActive && tutorialStep === 3){
+        tutorialStep = 4;
+        closePanel();
+        setTimeout(()=>showTutorialStep(), 400);
+    }
 }
 
 function closePanel(){
@@ -1945,7 +2026,7 @@ function closePanel(){
     document.getElementById('panel-add-btn').style.display = '';  // restore for training mode
     document.getElementById('panel-action-bar').style.display = 'none';  // hidden until items selected
     if (activeDrawer3D) { slideDrawerClosed(activeDrawer3D); activeDrawer3D = null; }
-    if(S.mode !== 'explore' && S.mode !== 'findit') renderTray();
+    if(S.mode !== 'findit') renderTray();
 }
 // openInvModal removed - using collection tray
 // Inventory rendered via collection tray now
@@ -1995,7 +2076,6 @@ function confirmSubmit(){
 }
 function doSubmit(){submitInventory();}
 function submitInventory(){
-    if(S.mode==='assessment'){assessSubmit();return;}
     const sc=S.scenario;if(!sc)return;
     const ids=S.inv.map(i=>i.id);
     const fE=sc.essential.filter(id=>ids.includes(id)),mE=sc.essential.filter(id=>!ids.includes(id));
@@ -2133,9 +2213,248 @@ function confReset(){closeModal('fb-modal');sR('cq3');sR('cq3a');location.reload
 
 let tutS=0;const TN=4;
 function initTut(){tutS=0;rTut();}
-function rTut(){const d=document.getElementById('tut-dots');d.innerHTML='';for(let i=0;i<TN;i++){const x=document.createElement('div');x.className='tdt'+(i===tutS?' active':'');d.appendChild(x);}document.querySelectorAll('.ts').forEach((el,i)=>el.classList.toggle('active',i===tutS));document.getElementById('tut-prev').style.display=tutS>0?'':'none';const n=document.getElementById('tut-next');if(tutS===TN-1){n.textContent='🚀 Start!';n.onclick=()=>{closeModal('tut-modal');openModeSelect();};}else{n.textContent='Next →';n.onclick=nextTut;}}
+function rTut(){const d=document.getElementById('tut-dots');d.innerHTML='';for(let i=0;i<TN;i++){const x=document.createElement('div');x.className='tdt'+(i===tutS?' active':'');d.appendChild(x);}document.querySelectorAll('.ts').forEach((el,i)=>el.classList.toggle('active',i===tutS));document.getElementById('tut-prev').style.display=tutS>0?'':'none';const n=document.getElementById('tut-next');if(tutS===TN-1){n.textContent='\uD83D\uDE80 Start!';n.onclick=()=>{closeModal('tut-modal');startInteractiveTutorial();};}else{n.textContent='Next \u2192';n.onclick=nextTut;}}
 function nextTut(){if(tutS<TN-1){tutS++;rTut();sfx('click');}}
 function prevTut(){if(tutS>0){tutS--;rTut();sfx('click');}}
+function skipTutorialToTraining(){startTrainingMode();}
+
+// ===== INTERACTIVE TUTORIAL =====
+var tutorialActive = false;
+var tutorialStep = 0; // 0=tap green cart, 1=tap bottom drawer, 2=tap saline flush, 3=add to inventory, 4=submit
+var tutBlinkInterval = null;
+var tutCartBlinkMats = []; // store materials being blinked for cleanup
+
+function startInteractiveTutorial(){
+    tutorialActive = true;
+    tutorialStep = 0;
+    S.mode = 'training';
+    S.scenario = {id:'tutorial',name:'Tutorial',description:'Learn the basics.',essential:['saline-flush'],optional:[]};
+    S.inv = [];
+    S.st = Date.now();
+    S.sub = false;
+    // Show tray and FAB
+    showTray(); renderTray();
+    document.getElementById('fab').classList.add('active');
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-btn').style.display = '';
+    document.getElementById('retry-btn').style.display = 'none';
+    document.getElementById('advance-btn').style.display = 'none';
+    document.getElementById('sbar').classList.add('active');
+    document.getElementById('sbar-name').textContent = 'Tutorial';
+    goToDefaultView(true);
+    setTimeout(()=>showTutorialStep(), 500);
+}
+
+function showTutorialStep(){
+    const dlg = document.getElementById('tutorial-dialogue');
+    clearTutorialBlinks();
+    if(tutorialStep === 0){
+        // Step 1: Tap the green cart
+        dlg.innerHTML = '<h4>Tutorial</h4><p>Your task: collect a <strong>Saline Flush</strong> from the <strong>Green IV Cart</strong>.</p><p style="margin-top:6px;color:var(--accent-amber)">Tap the blinking cart to approach it.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
+        dlg.style.display = '';
+        // Blink the green cart (airway)
+        blinkCart3D('airway');
+        blinkCartLabel('airway');
+    } else if(tutorialStep === 1){
+        // Step 2: Tap the bottom drawer
+        dlg.innerHTML = '<h4>Tutorial</h4><p>Great! Now tap the <strong>blinking drawer</strong> (Bottom Drawer) to open it.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
+        dlg.style.display = '';
+        // Blink airway-d3 (bottom drawer)
+        blinkDrawer3D('airway-d3');
+    } else if(tutorialStep === 2){
+        // Step 3: Tap saline flush item
+        dlg.innerHTML = '<h4>Tutorial</h4><p>Now tap the <strong>Saline Flush</strong> item to select it.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
+        dlg.style.display = '';
+        // Blink the saline flush item card
+        setTimeout(()=>blinkItemCard('saline-flush'), 300);
+    } else if(tutorialStep === 3){
+        // Step 4: Tap "Add to Table"
+        dlg.innerHTML = '<h4>Tutorial</h4><p>Now tap <strong>"Add to Table"</strong> to collect the item.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
+        dlg.style.display = '';
+        blinkAddButton();
+    } else if(tutorialStep === 4){
+        // Step 5: Submit
+        dlg.innerHTML = '<h4>Tutorial</h4><p>Excellent! Now tap <strong>"Submit"</strong> to complete the tutorial.</p><button class="tut-skip-btn" onclick="endTutorial()">Skip Tutorial</button>';
+        dlg.style.display = '';
+        blinkSubmitButton();
+    }
+}
+
+function blinkCart3D(cartId){
+    // Blink the cart's 3D materials
+    const obj = clickables.find(c => c.data.id === cartId);
+    if(!obj) return;
+    tutCartBlinkMats = [];
+    obj.group.traverse(function(child){
+        if(child.material && child.material.emissive){
+            tutCartBlinkMats.push({mat: child.material, origEmissive: child.material.emissive.getHex()});
+        }
+    });
+    var blinkOn = true;
+    tutBlinkInterval = setInterval(function(){
+        blinkOn = !blinkOn;
+        tutCartBlinkMats.forEach(function(m){
+            m.mat.emissive.setHex(blinkOn ? 0x554400 : m.origEmissive);
+        });
+    }, 750);
+}
+
+function blinkCartLabel(cartId){
+    var lbl = document.getElementById('lbl-' + cartId);
+    if(lbl) lbl.classList.add('cart-blink');
+}
+
+function blinkDrawer3D(drawerId){
+    var dc = drawerClickables.find(function(d){return d.drawerId === drawerId;});
+    if(!dc) return;
+    // Blink the drawer face
+    dc.group.traverse(function(child){
+        if(child.material && child.material.emissive){
+            tutCartBlinkMats.push({mat: child.material, origEmissive: child.material.emissive.getHex()});
+        }
+    });
+    var blinkOn = true;
+    tutBlinkInterval = setInterval(function(){
+        blinkOn = !blinkOn;
+        dc.group.traverse(function(child){
+            if(child.material && child.material.emissive){
+                child.material.emissive.setHex(blinkOn ? 0x554400 : 0x000000);
+            }
+        });
+    }, 750);
+}
+
+function blinkItemCard(itemId){
+    var cards = document.querySelectorAll('.icard');
+    cards.forEach(function(card){
+        if(card.getAttribute('aria-label') === 'Saline Flush'){
+            card.classList.add('icard-blink');
+        }
+    });
+}
+
+function blinkAddButton(){
+    var btn = document.getElementById('panel-add-btn');
+    if(btn) btn.classList.add('panel-add-blink');
+}
+
+function blinkSubmitButton(){
+    var btn = document.getElementById('submit-btn');
+    if(btn) btn.classList.add('panel-add-blink');
+}
+
+function clearTutorialBlinks(){
+    if(tutBlinkInterval){clearInterval(tutBlinkInterval);tutBlinkInterval=null;}
+    // Restore cart materials
+    tutCartBlinkMats.forEach(function(m){m.mat.emissive.setHex(m.origEmissive);});
+    tutCartBlinkMats = [];
+    // Remove CSS blink classes
+    document.querySelectorAll('.cart-blink').forEach(function(el){el.classList.remove('cart-blink');});
+    document.querySelectorAll('.icard-blink').forEach(function(el){el.classList.remove('icard-blink');});
+    document.querySelectorAll('.panel-add-blink').forEach(function(el){el.classList.remove('panel-add-blink');});
+    // Remove label blink
+    DATA.carts.forEach(function(c){
+        var lbl = document.getElementById('lbl-' + c.id);
+        if(lbl) lbl.classList.remove('cart-blink');
+    });
+}
+
+function handleTutorialCartClick(cartId){
+    if(!tutorialActive) return false;
+    if(tutorialStep === 0 && cartId === 'airway'){
+        tutorialStep = 1;
+        setTimeout(()=>showTutorialStep(), 400);
+        return true;
+    }
+    return false;
+}
+
+function handleTutorialDrawerClick(dc){
+    if(!tutorialActive) return;
+    if(tutorialStep === 1 && dc.drawerId === 'airway-d3'){
+        tutorialStep = 2;
+        // Open the drawer normally
+        openDrawer3D(dc);
+        setTimeout(()=>showTutorialStep(), 400);
+        return;
+    }
+    // If wrong drawer, show hint
+    if(tutorialStep === 1){
+        showToast('Try the Bottom Drawer');
+    }
+}
+
+// Hook into panelCollect for tutorial
+var _origPanelCollect = null;
+function tutorialPanelCollect(){
+    if(tutorialActive && tutorialStep === 3){
+        // Original collect
+        _origPanelCollect();
+        tutorialStep = 4;
+        // Close the panel
+        closePanel();
+        setTimeout(()=>showTutorialStep(), 400);
+        return;
+    }
+    _origPanelCollect();
+}
+
+// Hook into togPanelItem for tutorial
+var _origTogPanelItem = null;
+function tutorialTogPanelItem(item, card){
+    _origTogPanelItem(item, card);
+    if(tutorialActive && tutorialStep === 2 && item.id === 'saline-flush'){
+        tutorialStep = 3;
+        setTimeout(()=>showTutorialStep(), 300);
+    }
+}
+
+// Hook into submit for tutorial
+function tutorialSubmit(){
+    if(tutorialActive && tutorialStep === 4){
+        endTutorialWithSuccess();
+        return;
+    }
+    confirmSubmit();
+}
+
+function endTutorialWithSuccess(){
+    clearTutorialBlinks();
+    tutorialActive = false;
+    document.getElementById('tutorial-dialogue').style.display = 'none';
+    hideTray();
+    document.getElementById('fab').classList.remove('active');
+    document.getElementById('sbar').classList.remove('active');
+    S.scenario = null; S.inv = []; S.st = null;
+    // Show completion message then start training
+    document.getElementById('fb-h').textContent = 'Tutorial Complete!';
+    document.getElementById('fb-body').innerHTML = '<div style="text-align:center;padding:16px"><div style="font-size:48px;margin-bottom:12px">\uD83C\uDF89</div><p style="font-size:14px;font-weight:600;margin-bottom:6px">Great job!</p><p style="font-size:12px;color:var(--text-mid)">You\'ve learned how to navigate carts, open drawers, select items, and submit. Now let\'s start the real training!</p></div>';
+    document.getElementById('fb-foot').innerHTML = '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');startTrainingMode()">Start Training \u2192</button>';
+    openModal('fb-modal'); sfx('success');
+}
+
+function endTutorial(){
+    clearTutorialBlinks();
+    tutorialActive = false;
+    document.getElementById('tutorial-dialogue').style.display = 'none';
+    hideTray();
+    document.getElementById('fab').classList.remove('active');
+    document.getElementById('sbar').classList.remove('active');
+    document.getElementById('cart-panel').classList.remove('active');
+    if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
+    S.scenario = null; S.inv = []; S.st = null;
+    goToDefaultView(true);
+    startTrainingMode();
+}
+
+function startTrainingMode(){
+    S.mode = 'training';
+    const b = document.getElementById('mode-badge');
+    b.style.display = ''; b.textContent = 'TRAIN'; b.className = 'mode-badge training';
+    // Go directly to first scenario (Arterial Line Placement)
+    S.su = DATA.scenarios.length; // unlock all
+    openScenariosModal();
+}
 
 // ===== MODE SELECTION =====
 function openModeSelect(){
@@ -2143,10 +2462,6 @@ function openModeSelect(){
     if(S.mode==='findit'){
         document.getElementById('findit-prompt').classList.remove('active');
         document.getElementById('findit-result').classList.remove('active');
-    }
-    if(S.mode==='explore'){
-        document.getElementById('explore-bar').classList.remove('active');
-        document.getElementById('cart-panel').classList.remove('active');
     }
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
     hideTray();
@@ -2158,12 +2473,10 @@ function openModeSelect(){
 function selectMode(mode){
     S.mode=mode;closeModal('mode-modal');
     const b=document.getElementById('mode-badge');b.style.display='';
-    var labels={training:'TRAIN',assessment:'ASSESS',findit:'FIND IT',explore:'EXPLORE'};
+    var labels={training:'TRAIN',findit:'FIND IT'};
     b.textContent=labels[mode]||mode.toUpperCase();
-    b.className='mode-badge '+(mode==='assessment'?'assessment':'training');
-    if(mode==='assessment') startAssessment();
-    else if(mode==='findit') startFindIt();
-    else if(mode==='explore') startExplore();
+    b.className='mode-badge training';
+    if(mode==='findit') startFindIt();
     else openScenariosModal();
 }
 
@@ -2436,6 +2749,9 @@ function exitExplore(){
 }
 // ===== PWA =====
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+
+// ===== PORTRAIT LOCK =====
+try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('portrait').catch(function(){});}catch(e){}
 
 // ===== INIT =====
 function init(){load();init3D();upStats();initTut();openModal('tut-modal');}
