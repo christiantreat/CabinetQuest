@@ -76,6 +76,18 @@
         .hbtn:focus-visible { outline:2px solid var(--accent-amber); outline-offset:2px; }
         .hbtn.ac { border-color:var(--accent-amber); }
 
+        /* ===== MOBILE HEADER ===== */
+        .hdr-stats.hdr-stats-hidden { display:none; }
+        @media (max-width: 480px) {
+            .hdr { padding:4px 6px; gap:5px; }
+            .hbtn { width:28px; height:28px; font-size:12px; }
+            .chip-items { display:none; }
+            .mode-badge { display:none !important; }
+            #info-btn { display:none !important; }
+            .app.scenario-active .hdr h1 { display:none; }
+            .app.scenario-active .hbtn.ac { display:none; }
+        }
+
         /* MODE BADGE */
         .mode-badge{font-family:var(--font-display);font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
         .mode-badge.training{background:var(--accent-green);color:#fff}
@@ -909,9 +921,9 @@
         <button class="hbtn ac" onclick="openScenariosModal()" aria-label="Scenarios">&#x1F4CB;</button>
         <h1><span>Code</span>SBU</h1>
         <span class="mode-badge" id="mode-badge" style="display:none;cursor:pointer" onclick="openModeSelect()"></span>
-        <div class="hdr-stats" role="status" aria-live="polite">
+        <div class="hdr-stats hdr-stats-hidden" role="status" aria-live="polite">
             <div class="chip"><span style="opacity:.6">&#x23F1;</span><span class="v" id="stat-time">0:00</span></div>
-            <div class="chip"><span style="opacity:.6">&#x1F4E6;</span><span class="v" id="stat-items">0</span></div>
+            <div class="chip chip-items"><span style="opacity:.6">&#x1F4E6;</span><span class="v" id="stat-items">0</span></div>
         </div>
         <button class="hbtn" id="info-btn" onclick="openDetailsModal()" style="display:none" aria-label="Scenario info">&#x2139;&#xFE0F;</button>
         <button class="hbtn" onclick="openSettingsModal()" aria-label="Settings">&#x2699;&#xFE0F;</button>
@@ -1931,6 +1943,7 @@ function renderScenList(){
 }
 function selScen(sc,i){
     S.scenario=sc;S.si=i;S.inv=[];S.st=Date.now();S.sub=false;
+    document.querySelector('.app').classList.add('scenario-active');
     document.getElementById('sbar').classList.add('active');
     document.getElementById('sbar-name').textContent=sc.name;
     document.getElementById('info-btn').style.display='';
@@ -1938,6 +1951,7 @@ function selScen(sc,i){
     document.getElementById('submit-btn').disabled=true;document.getElementById('submit-btn').style.display='';
     document.getElementById('retry-btn').style.display='';document.getElementById('advance-btn').style.display='none';
     showHint('Tap a cart to approach it', 3000);
+    document.querySelector('.hdr-stats').classList.remove('hdr-stats-hidden');
     upStats();closeModal('scen-modal');sfx('click');startTimer();
     goToDefaultView(true);
     showTray();renderTray();
@@ -2245,7 +2259,7 @@ function continueToNext(){
     goToDefaultView(true);
     if(S.si===DATA.scenarios.length-1){compTrain();return;}
     S.si++;if(S.si>=S.su)S.su=S.si+1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;
-    document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');
+    document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');
     document.getElementById('info-btn').style.display='none';
     showHint('Open Scenarios for next', 3000);
     upInv();upStats();stopTimer();openScenariosModal();sfx('click');
@@ -2284,7 +2298,7 @@ function compTrain(){
     document.getElementById('fb-foot').innerHTML = fo;
     openModal('fb-modal');sfx('success');
 }
-function resetStart(){hideTray();S.si=0;S.su=1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;S.comp=[];document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');document.getElementById('info-btn').style.display='none';showHint('Open Scenarios menu to begin', 0);upInv();upStats();stopTimer();save();}
+function resetStart(){hideTray();S.si=0;S.su=1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;S.comp=[];document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');document.getElementById('info-btn').style.display='none';document.querySelector('.hdr-stats').classList.add('hdr-stats-hidden');showHint('Open Scenarios menu to begin', 0);upInv();upStats();stopTimer();save();}
 
 function openSettingsModal(){openModal('set-modal');document.getElementById('snd-tog').checked=S.snd;document.getElementById('hap-tog').checked=S.hap;renderRes();}
 function toggleSound(){S.snd=document.getElementById('snd-tog').checked;save();sfx('click');}
@@ -2393,6 +2407,7 @@ function startInteractiveTutorial(){
     document.getElementById('retry-btn').style.display = 'none';
     document.getElementById('advance-btn').style.display = 'none';
     // No scenario bar during tutorial - the tutorial dialogue replaces it
+    document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('sbar').classList.remove('active');
     goToDefaultView(true);
     setTimeout(()=>showTutorialStep(), 500);
@@ -2543,6 +2558,7 @@ function endTutorialWithSuccess(){
     document.getElementById('tutorial-dialogue').style.display = 'none';
     hideTray();
     document.getElementById('fab').classList.remove('active');
+    document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('sbar').classList.remove('active');
     S.scenario = null; S.inv = []; S.st = null;
     // Show completion message then start training
@@ -2588,8 +2604,10 @@ function openModeSelect(){
     }
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
     hideTray();
+    document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('fab').classList.remove('active');
     document.getElementById('sbar').classList.remove('active');
+    document.querySelector('.hdr-stats').classList.add('hdr-stats-hidden');
     goToDefaultView(false);
     openModal('mode-modal');
 }
@@ -2616,6 +2634,7 @@ function loadAssessScenario(){
     if(S.assessIdx>=S.assessQueue.length){ap.style.display='none';finishAssessment();return;}
     const sc=S.assessQueue[S.assessIdx];
     S.scenario=sc;S.si=DATA.scenarios.indexOf(sc);S.inv=[];S.st=Date.now();S.sub=false;
+    document.querySelector('.app').classList.add('scenario-active');
     document.getElementById('sbar').classList.add('active');
     document.getElementById('sbar-name').textContent='['+( S.assessIdx+1)+'/'+S.assessQueue.length+'] '+sc.name;
     document.getElementById('info-btn').style.display='';
@@ -2624,6 +2643,7 @@ function loadAssessScenario(){
     document.getElementById('retry-btn').style.display='none';
     document.getElementById('advance-btn').style.display='none';
     showHint('Scenario '+(S.assessIdx+1)+' of '+S.assessQueue.length+': Gather items', 4000);
+    document.querySelector('.hdr-stats').classList.remove('hdr-stats-hidden');
     upStats();startTimer();
     showTray();renderTray();
     goToDefaultView(true);
@@ -2636,7 +2656,7 @@ function assessSubmit(){
     S.assessIdx++;setTimeout(()=>loadAssessScenario(),800);
 }
 function finishAssessment(){
-    stopTimer();document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');
+    stopTimer();document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('sbar').classList.remove('active');
     let html='<div style="text-align:center;margin-bottom:14px"><p style="font-family:var(--font-display);font-size:15px;font-weight:700;text-transform:uppercase">Assessment Complete</p><p style="font-size:11px;color:var(--text-muted)">'+S.assessResults.length+' scenarios</p></div>';
     let total=0;
     S.assessResults.forEach(r=>{
@@ -2672,6 +2692,7 @@ function startFindIt(){
     findItQueue = [...DATA.items].sort(function(){return Math.random()-.5;});
     findItIdx = 0;
     findItScore = {correct:0, wrong:0};
+    document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('sbar').classList.remove('active');
     document.getElementById('fab').classList.remove('active');
     hideTray();
@@ -2769,6 +2790,7 @@ var exploreActive = false;
 
 function startExplore(){
     exploreActive = true;
+    document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('sbar').classList.remove('active');
     document.getElementById('fab').classList.remove('active');
     hideTray();
