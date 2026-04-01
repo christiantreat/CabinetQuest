@@ -142,10 +142,7 @@
         }
         .fb:active { transform:scale(.96); }
         .fb:focus-visible { outline:2px solid var(--accent-amber); outline-offset:2px; }
-        .fb.sub { background:var(--accent-green); color:#fff; border-color:#388e3c; }
-        .fb.sub:not(:disabled) { animation:pg 2s ease-in-out infinite; }
         @keyframes pg { 0%,100%{box-shadow:0 0 0 rgba(76,175,80,0)} 50%{box-shadow:0 0 12px rgba(76,175,80,.5)} }
-        .fb.sub:disabled { background:#444; border-color:#333; color:#666; cursor:not-allowed; animation:none; }
         .fb.ret { background:var(--accent-amber); color:var(--text-dark); border-color:#c88a18; }
         .fb.adv { background:var(--ui-panel-light); color:var(--text-light); border-color:var(--ui-border); }
 
@@ -347,49 +344,82 @@
         }
 
 
-        /* ===== COLLECTION TRAY ===== */
+        /* ===== COLLECTED ITEMS SIDE PANEL ===== */
         .tray {
-            position:fixed; bottom:0; left:0; right:0;
+            position:fixed; top:50px; right:0; bottom:0;
+            width:0; max-width:320px;
             z-index:90; display:none;
-            background:rgba(30,30,30,.92);
-            border-top:2px solid var(--accent-amber);
+            background:rgba(30,30,30,.95);
+            border-left:2px solid var(--accent-amber);
             backdrop-filter:blur(6px);
             padding:0;
-            transition:transform .3s ease;
+            transition:width .3s ease;
+            flex-direction:column;
+            overflow:hidden;
         }
-        .tray.active { display:block; }
-        .tray.panel-open { transform:translateY(-62vh); pointer-events:none; opacity:0; }
+        .tray.active { display:flex; width:0; }
+        .tray.active.open { width:280px; }
+        @media(min-width:600px){ .tray.active.open { width:320px; } }
+        .tray.panel-open { opacity:.3; pointer-events:none; }
+
+        /* Side tab handle - always visible when tray is active */
+        .tray-tab {
+            position:fixed; right:0; top:50%; transform:translateY(-50%);
+            z-index:91; display:none;
+            background:rgba(30,30,30,.92); border:2px solid var(--accent-amber);
+            border-right:none; border-radius:8px 0 0 8px;
+            padding:12px 6px; cursor:pointer;
+            writing-mode:vertical-rl; text-orientation:mixed;
+            font-family:var(--font-display); font-size:10px; font-weight:700;
+            color:var(--accent-amber); text-transform:uppercase; letter-spacing:1px;
+            transition:right .3s ease, background .2s;
+            backdrop-filter:blur(6px);
+        }
+        .tray-tab:hover { background:rgba(50,50,50,.95); }
+        .tray-tab:active { transform:translateY(-50%) scale(.96); }
+        .tray-tab.active { display:flex; align-items:center; gap:6px; }
+        .tray-tab.shifted { right:280px; }
+        @media(min-width:600px){ .tray-tab.shifted { right:320px; } }
+        .tray-tab-count {
+            background:var(--accent-amber); color:var(--text-dark);
+            border-radius:50%; width:20px; height:20px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:10px; font-weight:700; writing-mode:horizontal-tb;
+        }
 
         .tray-header {
             display:flex; align-items:center; justify-content:space-between;
-            padding:6px 12px 2px;
+            padding:10px 12px 6px; flex-shrink:0;
+            border-bottom:1px solid rgba(255,255,255,.1);
         }
         .tray-title {
-            font-family:var(--font-display); font-size:10px; font-weight:700;
+            font-family:var(--font-display); font-size:12px; font-weight:700;
             color:var(--accent-amber); text-transform:uppercase; letter-spacing:1px;
         }
         .tray-count {
             font-family:var(--font-mono); font-size:10px; color:var(--text-muted);
         }
 
-        .tray-scroll {
-            display:flex; gap:6px; padding:4px 12px 8px;
-            overflow-x:auto; -webkit-overflow-scrolling:touch;
-            scroll-snap-type:x mandatory;
+        .tray-items-scroll {
+            flex:1; overflow-y:auto; padding:8px;
+            display:flex; flex-direction:column; gap:6px;
+            -webkit-overflow-scrolling:touch;
         }
-        .tray-scroll::-webkit-scrollbar { display:none; }
+        .tray-items-scroll::-webkit-scrollbar { width:4px; }
+        .tray-items-scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,.2); border-radius:2px; }
 
         .tray-item {
-            flex-shrink:0; width:56px; scroll-snap-align:start;
-            position:relative; cursor:pointer;
-            transition:transform .15s;
+            display:flex; align-items:center; gap:8px;
+            background:rgba(255,255,255,.06); border-radius:6px;
+            padding:6px 8px; position:relative; cursor:default;
+            transition:background .15s;
         }
-        .tray-item:active { transform:scale(.9); }
+        .tray-item:hover { background:rgba(255,255,255,.1); }
 
         .tray-item-img {
-            width:56px; height:56px; border-radius:6px; overflow:hidden;
+            width:44px; height:44px; border-radius:6px; overflow:hidden;
             border:2px solid rgba(255,255,255,.15);
-            background:#333;
+            background:#333; flex-shrink:0;
             display:flex; align-items:center; justify-content:center;
         }
         .tray-item-img img { width:100%; height:100%; object-fit:cover; }
@@ -399,25 +429,42 @@
         }
 
         .tray-item-name {
-            font-size:7px; font-family:var(--font-mono); color:var(--text-muted);
-            text-align:center; margin-top:2px; line-height:1.2;
+            font-size:11px; font-family:var(--font-mono); color:var(--text-light);
+            flex:1; min-width:0;
             overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-            width:56px;
         }
 
         .tray-item-remove {
-            position:absolute; top:-4px; right:-4px;
-            width:16px; height:16px; border-radius:50%;
-            background:var(--accent-red); color:#fff; border:2px solid rgba(30,30,30,.9);
-            font-size:10px; font-weight:700; cursor:pointer;
+            width:22px; height:22px; border-radius:50%;
+            background:var(--accent-red); color:#fff; border:none;
+            font-size:12px; font-weight:700; cursor:pointer;
             display:flex; align-items:center; justify-content:center;
-            line-height:1;
+            flex-shrink:0; transition:transform .1s;
         }
+        .tray-item-remove:hover { transform:scale(1.1); }
 
         .tray-empty {
-            padding:10px 12px; text-align:center;
-            font-family:var(--font-mono); font-size:10px; color:var(--text-muted);
+            padding:24px 12px; text-align:center;
+            font-family:var(--font-mono); font-size:11px; color:var(--text-muted);
         }
+
+        .tray-actions {
+            flex-shrink:0; padding:10px 12px;
+            border-top:1px solid rgba(255,255,255,.1);
+            display:flex; flex-direction:column; gap:6px;
+        }
+        .tray-actions button {
+            width:100%; padding:10px; border:2px solid; border-radius:6px;
+            font-family:var(--font-display); font-size:12px; font-weight:600;
+            cursor:pointer; text-transform:uppercase; letter-spacing:.5px;
+            transition:transform .1s;
+        }
+        .tray-actions button:active { transform:scale(.97); }
+        .tray-submit-btn { background:var(--accent-green); color:#fff; border-color:#388e3c; }
+        .tray-submit-btn:not(:disabled) { animation:pg 2s ease-in-out infinite; }
+        .tray-submit-btn:disabled { background:#444; border-color:#333; color:#666; cursor:not-allowed; animation:none; }
+        .tray-reset-btn { background:transparent; color:var(--accent-red); border-color:rgba(192,68,68,.4); font-size:10px; padding:7px; }
+        .tray-reset-btn:hover { background:rgba(192,68,68,.15); }
 
         /* ===== INVENTORY (legacy, kept for feedback display) ===== */
         .il { display:flex; flex-direction:column; gap:7px; }
@@ -904,17 +951,26 @@
 
     <div class="fab" id="fab">
         <button class="fb ret" id="retry-btn" onclick="retryScenario()" style="display:none">&#x1F504; Retry</button>
-        <button class="fb sub" id="submit-btn" onclick="if(tutorialActive){endTutorialWithSuccess();}else{confirmSubmit();}" disabled>&#x2713; Submit</button>
         <button class="fb adv" id="advance-btn" onclick="continueToNext()" style="display:none">&#x2192; Next</button>
     </div>
 
-    <!-- Collection Tray -->
+    <!-- Side tab handle for collected items -->
+    <div class="tray-tab" id="tray-tab" onclick="toggleSidePanel()">
+        <span class="tray-tab-count" id="tray-tab-count">0</span>
+        <span>Collected</span>
+    </div>
+
+    <!-- Collected Items Side Panel -->
     <div class="tray" id="tray">
         <div class="tray-header">
-            <span class="tray-title">&#x1F4E6; Collected</span>
+            <span class="tray-title">&#x1F4E6; Collected Items</span>
             <span class="tray-count" id="tray-count">0 items</span>
         </div>
-        <div id="tray-content"><div class="tray-empty">Items you collect will appear here</div></div>
+        <div class="tray-items-scroll" id="tray-content"><div class="tray-empty">Items you collect will appear here</div></div>
+        <div class="tray-actions" id="tray-actions">
+            <button class="tray-submit-btn" id="submit-btn" onclick="if(tutorialActive){endTutorialWithSuccess();}else{confirmSubmit();}" disabled>&#x2713; Submit</button>
+            <button class="tray-reset-btn" id="tray-reset-btn" onclick="confirmResetItems()">&#x1F504; Reset All Items</button>
+        </div>
     </div>
 
     <!-- Find It Mode prompt bar -->
@@ -938,7 +994,7 @@
     <main class="viewport" id="viewport">
         <canvas id="three-canvas"></canvas>
         <div id="cart-labels"></div>
-        <button id="back-to-room" onclick="backToRoom()" style="display:none;position:absolute;top:10px;left:10px;z-index:15;background:rgba(30,30,30,.85);color:var(--text-light);border:1px solid var(--accent-amber);border-radius:6px;padding:6px 14px;font-family:var(--font-display);font-size:11px;font-weight:600;cursor:pointer;text-transform:uppercase" aria-label="Back to room view">&#x2190; Room</button>
+        <button id="back-to-room" onclick="confirmBackToRoom()" style="display:none;position:absolute;top:10px;left:10px;z-index:15;background:rgba(30,30,30,.85);color:var(--text-light);border:1px solid var(--accent-amber);border-radius:6px;padding:6px 14px;font-family:var(--font-display);font-size:11px;font-weight:600;cursor:pointer;text-transform:uppercase" aria-label="Back to room view">&#x2190; Room</button>
         <div class="room-hint hidden" id="room-hint"></div>
     </main>
 </div>
@@ -1363,13 +1419,30 @@ function backToRoom() {
     // Close panel if open
     if (document.getElementById('cart-panel').classList.contains('active')) {
         document.getElementById('cart-panel').classList.remove('active');
-        document.getElementById('tray').classList.remove('panel-open');
         renderTray();
     }
     // Close any open drawer
     if (activeDrawer3D) { slideDrawerClosed(activeDrawer3D); activeDrawer3D = null; }
     // Return to room view
     goToDefaultView(true);
+    // Tutorial hook - step 4: back to room
+    if(tutorialActive && tutorialStep === 4){
+        tutorialStep = 5;
+        setTimeout(()=>showTutorialStep(), 400);
+    }
+}
+function confirmBackToRoom(){
+    // During tutorial, skip confirmation
+    if(tutorialActive){ backToRoom(); return; }
+    if(S.sel && S.sel.length > 0){
+        document.getElementById('confirm-h').textContent='Return to Room?';
+        document.getElementById('confirm-body').innerHTML='<div style="text-align:center;padding:12px"><p style="font-size:14px;font-weight:600;margin-bottom:8px">Return to room view?</p><p style="font-size:12px;color:var(--text-mid)">You have '+S.sel.length+' selected item'+(S.sel.length!==1?'s':'')+' that haven\'t been added to your collection yet.</p></div>';
+        var foot=document.querySelector('#confirm-modal .mf');
+        foot.innerHTML='<button class="bs" onclick="closeModal(\'confirm-modal\')">Cancel</button><button class="bp" onclick="closeModal(\'confirm-modal\');backToRoom()">Return</button>';
+        openModal('confirm-modal');
+    } else {
+        backToRoom();
+    }
 }
 
 function goToCartView(cartId, onDone) {
@@ -2077,17 +2150,16 @@ function panelCollect(){
     S.sel=[];upInv();upStats();updatePanelSelCount();
     // Re-render current drawer to update in-inv states
     if(S.drawer) renderPanelItems(S.drawer);
-    // Tutorial hook
+    // Tutorial hook - after adding to table, teach them to navigate back to room
     if(tutorialActive && tutorialStep === 3){
         tutorialStep = 4;
-        closePanel();
+        // Don't auto-close panel, let them see the item was collected, then show "back to room" step
         setTimeout(()=>showTutorialStep(), 400);
     }
 }
 
 function closePanel(){
     document.getElementById('cart-panel').classList.remove('active');
-    document.getElementById('tray').classList.remove('panel-open');
     document.getElementById('panel-add-btn').style.display = '';  // restore for training mode
     document.getElementById('panel-action-bar').style.display = 'none';  // hidden until items selected
     if (activeDrawer3D) { slideDrawerClosed(activeDrawer3D); activeDrawer3D = null; }
@@ -2100,14 +2172,16 @@ function rmTrayItem(i){S.inv.splice(i,1);renderTray();upInv();upStats();sfx('cli
 function renderTray(){
     const tray=document.getElementById('tray-content');
     const count=document.getElementById('tray-count');
+    const tabCount=document.getElementById('tray-tab-count');
     count.textContent=S.inv.length+' item'+(S.inv.length!==1?'s':'');
-    
+    tabCount.textContent=S.inv.length;
+
     if(!S.inv.length){
         tray.innerHTML='<div class="tray-empty">Items you collect will appear here</div>';
         return;
     }
-    
-    let h='<div class="tray-scroll">';
+
+    let h='';
     S.inv.forEach((item,i)=>{
         let imgContent;
         if(item.image){
@@ -2115,18 +2189,39 @@ function renderTray(){
         } else {
             imgContent='<span class="tray-abbr">'+item.name.substring(0,2).toUpperCase()+'</span>';
         }
-        h+='<div class="tray-item" onclick="rmTrayItem('+i+')" title="Remove '+item.name+'">';
+        h+='<div class="tray-item">';
         h+='<div class="tray-item-img">'+imgContent+'</div>';
-        h+='<div class="tray-item-remove">&times;</div>';
         h+='<div class="tray-item-name">'+item.name+'</div>';
+        h+='<button class="tray-item-remove" onclick="rmTrayItem('+i+')" title="Remove '+item.name+'">&times;</button>';
         h+='</div>';
     });
-    h+='</div>';
     tray.innerHTML=h;
 }
 
-function showTray(){document.getElementById('tray').classList.add('active');}
-function hideTray(){document.getElementById('tray').classList.remove('active');}
+function showTray(){document.getElementById('tray').classList.add('active');document.getElementById('tray-tab').classList.add('active');}
+function hideTray(){var t=document.getElementById('tray');t.classList.remove('active','open');document.getElementById('tray-tab').classList.remove('active','shifted');}
+function toggleSidePanel(){
+    var t=document.getElementById('tray');var tab=document.getElementById('tray-tab');
+    if(t.classList.contains('open')){t.classList.remove('open');tab.classList.remove('shifted');}
+    else{t.classList.add('open');tab.classList.add('shifted');}
+    sfx('click');
+    // Tutorial hook - step 5: open collected panel
+    if(tutorialActive && tutorialStep === 5 && t.classList.contains('open')){
+        tutorialStep = 6;
+        setTimeout(()=>showTutorialStep(), 400);
+    }
+}
+function openSidePanel(){var t=document.getElementById('tray');var tab=document.getElementById('tray-tab');t.classList.add('open');tab.classList.add('shifted');}
+function closeSidePanel(){var t=document.getElementById('tray');var tab=document.getElementById('tray-tab');t.classList.remove('open');tab.classList.remove('shifted');}
+function confirmResetItems(){
+    if(S.inv.length===0){showToast('No items to reset');return;}
+    document.getElementById('confirm-body').innerHTML='<div style="text-align:center;padding:12px"><p style="font-size:14px;font-weight:600;margin-bottom:8px">Reset all collected items?</p><p style="font-size:12px;color:var(--text-mid)">This will remove all '+S.inv.length+' item'+(S.inv.length!==1?'s':'')+' from your collection.</p></div>';
+    document.getElementById('confirm-h').textContent='Confirm Reset';
+    var foot=document.querySelector('#confirm-modal .mf');
+    foot.innerHTML='<button class="bs" onclick="closeModal(\'confirm-modal\')">Cancel</button><button class="bd" onclick="closeModal(\'confirm-modal\');doResetItems()">Reset All</button>';
+    openModal('confirm-modal');
+}
+function doResetItems(){S.inv=[];renderTray();upInv();sfx('click');showToast('All items removed');}
 function upInv(){document.getElementById('submit-btn').disabled=S.inv.length===0;}
 let tmr=null;function startTimer(){stopTimer();tmr=setInterval(()=>{if(S.st)upStats();},1000);}function stopTimer(){if(tmr){clearInterval(tmr);tmr=null;}}
 function upStats(){/* timer/stats display removed from top bar */}
@@ -2136,7 +2231,10 @@ function confirmSubmit(){
     if(S.inv.length===0){showToast('No items to submit');return;}
     const cnt=S.inv.length;
     const modeText=S.mode==='assessment'?'<br><span style="color:var(--accent-red);font-size:11px">Assessment mode: No retries allowed!</span>':'';
+    document.getElementById('confirm-h').textContent='Confirm Submit';
     document.getElementById('confirm-body').innerHTML='<div style="text-align:center;padding:12px"><p style="font-size:14px;font-weight:600;margin-bottom:8px">Submit '+cnt+' item'+(cnt!==1?'s':'')+'?</p><p style="font-size:12px;color:var(--text-mid)">'+S.inv.map(i=>i.name).join(', ')+'</p>'+modeText+'</div>';
+    var foot=document.querySelector('#confirm-modal .mf');
+    foot.innerHTML='<button class="bs" onclick="closeModal(\'confirm-modal\')">Cancel</button><button class="bp" onclick="closeModal(\'confirm-modal\');doSubmit()">Submit</button>';
     openModal('confirm-modal');
 }
 function doSubmit(){submitInventory();}
@@ -2221,7 +2319,7 @@ function submitInventory(){
     renderScenList();
 }
 function chkA(id){if(S.ach.includes(id))return;const a=ACH.find(x=>x.id===id);if(!a)return;S.ach.push(id);showAch(a);sfx('success');hap('heavy');S.pts+=100;S.tp+=100;showPts(100,'Achievement!');save();}
-function retryScenario(){S.inv=[];S.st=Date.now();S.sub=false;renderTray();document.getElementById('submit-btn').style.display='';document.getElementById('submit-btn').disabled=true;document.getElementById('advance-btn').style.display='none';showHint('Tap a cart to gather items', 3000);upInv();upStats();sfx('click');goToDefaultView(true);}
+function retryScenario(){S.inv=[];S.st=Date.now();S.sub=false;closeSidePanel();renderTray();document.getElementById('submit-btn').style.display='';document.getElementById('submit-btn').disabled=true;document.getElementById('advance-btn').style.display='none';showHint('Tap a cart to gather items', 3000);upInv();upStats();sfx('click');goToDefaultView(true);}
 function continueToNext(){
     hideTray();
     goToDefaultView(true);
@@ -2352,7 +2450,7 @@ function skipTutorialToTraining(){startTrainingMode();}
 
 // ===== INTERACTIVE TUTORIAL =====
 var tutorialActive = false;
-var tutorialStep = 0; // 0=tap green cart, 1=tap bottom drawer, 2=tap saline flush, 3=add to inventory, 4=submit
+var tutorialStep = 0; // 0=tap green cart, 1=tap bottom drawer, 2=tap saline flush, 3=add to inventory, 4=back to room, 5=open collected panel, 6=submit
 var tutBlinkInterval = null;
 var tutCartBlinkMats = []; // store materials being blinked for cleanup
 
@@ -2385,7 +2483,7 @@ function showTutorialStep(){
     const dlg = document.getElementById('tutorial-dialogue');
     clearTutorialBlinks();
     var stepNum = tutorialStep + 1;
-    var totalSteps = 5;
+    var totalSteps = 7;
     var stepLabel = 'Step ' + stepNum + '/' + totalSteps;
     var msg = '';
     if(tutorialStep === 0){
@@ -2402,7 +2500,13 @@ function showTutorialStep(){
         msg = 'Tap <strong>"Add to Table"</strong> to collect the item.';
         blinkAddButton();
     } else if(tutorialStep === 4){
-        msg = 'Tap <strong>Submit</strong> to finish.';
+        msg = 'Tap <strong>"&#x2190; Room"</strong> (top-left) to return to the full room view.';
+        blinkBackToRoomButton();
+    } else if(tutorialStep === 5){
+        msg = 'Tap the <strong>"Collected"</strong> tab on the right side to review your items.';
+        blinkTrayTab();
+    } else if(tutorialStep === 6){
+        msg = 'Review your items, then tap <strong>Submit</strong> in the panel to finish.';
         blinkSubmitButton();
     }
     dlg.innerHTML =
@@ -2477,6 +2581,16 @@ function blinkSubmitButton(){
     if(btn) btn.classList.add('panel-add-blink');
 }
 
+function blinkBackToRoomButton(){
+    var btn = document.getElementById('back-to-room');
+    if(btn) btn.classList.add('panel-add-blink');
+}
+
+function blinkTrayTab(){
+    var tab = document.getElementById('tray-tab');
+    if(tab) tab.classList.add('panel-add-blink');
+}
+
 function clearTutorialBlinks(){
     if(tutBlinkInterval){clearInterval(tutBlinkInterval);tutBlinkInterval=null;}
     // Restore cart materials
@@ -2486,6 +2600,11 @@ function clearTutorialBlinks(){
     document.querySelectorAll('.cart-blink').forEach(function(el){el.classList.remove('cart-blink');});
     document.querySelectorAll('.icard-blink').forEach(function(el){el.classList.remove('icard-blink');});
     document.querySelectorAll('.panel-add-blink').forEach(function(el){el.classList.remove('panel-add-blink');});
+    // Clean up back-to-room and tray-tab blinks
+    var btrBtn = document.getElementById('back-to-room');
+    if(btrBtn) btrBtn.classList.remove('panel-add-blink');
+    var tTab = document.getElementById('tray-tab');
+    if(tTab) tTab.classList.remove('panel-add-blink');
     // Remove label blink
     DATA.carts.forEach(function(c){
         var lbl = document.getElementById('lbl-' + c.id);
@@ -2524,6 +2643,7 @@ function endTutorialWithSuccess(){
     clearTutorialBlinks();
     tutorialActive = false;
     document.getElementById('tutorial-dialogue').style.display = 'none';
+    closeSidePanel();
     hideTray();
     document.getElementById('fab').classList.remove('active');
     document.querySelector('.app').classList.remove('scenario-active');
@@ -2531,7 +2651,7 @@ function endTutorialWithSuccess(){
     S.scenario = null; S.inv = []; S.st = null;
     // Show completion message then start training
     document.getElementById('fb-h').textContent = 'Tutorial Complete!';
-    document.getElementById('fb-body').innerHTML = '<div style="text-align:center;padding:16px"><div style="font-size:48px;margin-bottom:12px">\uD83C\uDF89</div><p style="font-size:14px;font-weight:600;margin-bottom:6px">Great job!</p><p style="font-size:12px;color:var(--text-mid)">You\'ve learned how to navigate carts, open drawers, select items, and submit. Now let\'s start the real training!</p></div>';
+    document.getElementById('fb-body').innerHTML = '<div style="text-align:center;padding:16px"><div style="font-size:48px;margin-bottom:12px">\uD83C\uDF89</div><p style="font-size:14px;font-weight:600;margin-bottom:6px">Great job!</p><p style="font-size:12px;color:var(--text-mid)">You\'ve learned how to navigate carts, open drawers, select items, return to room view, review collected items, and submit. Now let\'s start the real training!</p></div>';
     document.getElementById('fb-foot').innerHTML = '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');startTrainingMode()">Start Training \u2192</button>';
     openModal('fb-modal'); sfx('success');
 }
@@ -2540,6 +2660,7 @@ function endTutorial(){
     clearTutorialBlinks();
     tutorialActive = false;
     document.getElementById('tutorial-dialogue').style.display = 'none';
+    closeSidePanel();
     hideTray();
     document.getElementById('fab').classList.remove('active');
     document.getElementById('hdr-scenario-name').textContent='';
