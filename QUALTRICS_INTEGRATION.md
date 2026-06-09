@@ -18,10 +18,20 @@ The app reads two query parameters on load:
 |----------------|----------|-------------------------------------------------------------------------|
 | `sid`          | yes      | Unique session key minted by Qualtrics. Stamped onto every payload and onto local records. |
 | `parentOrigin` | optional | Explicit target origin for `postMessage`. If omitted, messages are posted with target `*`. Recommended for production. |
+| `phase`        | optional | `full` (default) runs the normal standalone game (intro + all scenarios). `tutorial` runs only the interactive tutorial. `scenario` runs exactly one scenario (see `scenario`). The `tutorial`/`scenario` values enable **directed mode** for a longitudinal split flow — see §7. |
+| `scenario`     | with `phase=scenario` | Which scenario to run: an id (`s4` = Arterial Line, `s2` = Central Line, `s3` = Chest Tube) or a 0-based index. |
 
 If `sid` is absent **and** the app is not running inside an iframe, it behaves
 exactly as the standalone/testing build: nothing is transmitted, localStorage
-and the Export button work as before.
+and the Export button work as before. `phase` defaults to `full`, so existing
+single-iframe embeds keep working unchanged.
+
+> **Stony Brook note:** for `stonybrookmedicine.edu` accounts you can pin the
+> target with `&parentOrigin=https://stonybrookmedicine.qualtrics.com` (or your
+> account's actual `*.qualtrics.com` host shown in the editor address bar). It's
+> optional — security relies on the listener validating the *sender* origin
+> (`https://christiantreat.github.io`), so leaving it off (target `*`) is fine
+> and more portable across datacenters.
 
 **Example embed URL** (what the iframe `src` should be):
 
@@ -347,4 +357,75 @@ In the iframe's devtools console you can confirm the parsed params:
 
 ```js
 new URLSearchParams(location.search).get('sid'); // "TEST123"
+```
+
+---
+
+## 7. Longitudinal study flow (directed mode)
+
+For a study you usually want survey questions **between** game phases:
+
+> Consent/intake → **Tutorial** → questions → **Scenario 1** → questions →
+> **Scenario 2** → questions → **Scenario 3** → questions → post-intervention → end
+
+A single all-in-one iframe can't interleave Qualtrics questions, so each phase
+runs on its **own survey page** as a separate iframe pointed at one phase via the
+`phase`/`scenario` URL params. Every page carries the **same `sid`**, so all the
+data lands in **one response row** — longitudinal and panel-linkable.
+
+### How directed mode behaves
+- The app skips the cinematic intro and menus and runs only the requested phase.
+- When that phase finishes, the app emits **`session_complete`** carrying *only
+  that phase's* fields plus that page's own compact event log. Because each page
+  reports only its own `cq_mN_*` fields, **values never collide across pages.**
+- The listener treats `session_complete` as the **advance signal** and calls
+  `clickNextButton()` to move the survey to the next page (the questions).
+- `mission_complete` still fires on submit (before the participant clicks
+  *Continue*), so partial data is captured even if they abandon the page.
+
+### Additional embedded-data fields in directed mode
+On top of the per-mission `cq_mN_*` fields (§3), directed mode emits:
+
+| Field              | When            | Meaning |
+|--------------------|-----------------|---------|
+| `cq_tut_completed` | tutorial page   | 1 if the tutorial was completed, 0 if skipped |
+| `cq_tut_time`      | tutorial page   | seconds spent on the tutorial |
+| `cq_app_version`   | every phase     | app version |
+| `cq_mode`          | scenario pages  | `training` |
+| `cq_log_tutorial`  | tutorial page   | event log for the tutorial page |
+| `cq_log_m1`        | scenario s4     | event log for the Arterial Line page |
+| `cq_log_m2`        | scenario s2     | event log for the Central Line page |
+| `cq_log_m3`        | scenario s3     | event log for the Chest Tube page |
+
+(The cross-mission session aggregates — `cq_total_score`, `cq_avg_*`,
+`cq_missions_done` — are **only** produced by `full` mode. In the split flow,
+compute those in Qualtrics/analysis from the per-scenario `cq_mN_*` fields.)
+
+### Ready-to-import study survey
+**`cabinet-quest-study.qsf`** implements the whole flow above:
+
+- Survey Flow pre-declares all 60 fields (`sid`, 51 × `cq_mN_*`, `cq_tut_*`,
+  `cq_app_version`, `cq_mode`, and the four `cq_log_*`).
+- 10 blocks (one page each): Consent/Intake → Tutorial → Tutorial Qs →
+  Scenario 1 → Qs → Scenario 2 → Qs → Scenario 3 → Qs → Post-Intervention.
+- Each game page injects its iframe with the right `phase`/`scenario`, runs the
+  listener, writes that page's log to its `cq_log_*` field, **hides Next until
+  the phase completes** (so participants can't skip the game), and auto-advances
+  on `session_complete`.
+- The Consent and Post-Intervention blocks and the per-phase question blocks are
+  **placeholders** — replace them with your IRB-approved items. The placeholder
+  questions are simple 1–5 items (`q_tutorial`, `q_s1`, `q_s2`, `q_s3`).
+
+Import via **Projects → Create project → Survey → Import a QSF file**, pick
+`cabinet-quest-study.qsf`, then publish and preview.
+
+> The simpler single-page demo (`cabinet-quest-demo.qsf`, §4–5) still exists for
+> running the whole game on one page with all metrics on one screen.
+
+### Per-page embed URLs (what each iframe loads)
+```
+Tutorial:    https://christiantreat.github.io/CabinetQuest/?sid=${e://Field/sid}&phase=tutorial
+Scenario 1:  https://christiantreat.github.io/CabinetQuest/?sid=${e://Field/sid}&phase=scenario&scenario=s4
+Scenario 2:  https://christiantreat.github.io/CabinetQuest/?sid=${e://Field/sid}&phase=scenario&scenario=s2
+Scenario 3:  https://christiantreat.github.io/CabinetQuest/?sid=${e://Field/sid}&phase=scenario&scenario=s3
 ```
