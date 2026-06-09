@@ -1,0 +1,926 @@
+{
+  "SurveyEntry": {
+    "SurveyID": "SV_CabinetQuestDemo01",
+    "SurveyName": "Cabinet Quest Embed Demo",
+    "SurveyDescription": null,
+    "SurveyOwnerID": "UR_CabinetQuestOwner",
+    "SurveyBrandID": "cabinetquest",
+    "DivisionID": null,
+    "SurveyLanguage": "EN",
+    "SurveyActiveResponseSet": "RS_default",
+    "SurveyStatus": "Inactive",
+    "SurveyStartDate": "0000-00-00 00:00:00",
+    "SurveyExpirationDate": "0000-00-00 00:00:00",
+    "SurveyCreationDate": "2026-06-09 13:45:00",
+    "CreatorID": "UR_CabinetQuestOwner",
+    "LastModified": "2026-06-09 13:45:00",
+    "LastAccessed": "0000-00-00 00:00:00",
+    "LastActivated": "0000-00-00 00:00:00",
+    "Deleted": null
+  },
+  "SurveyElements": [
+    {
+      "SurveyID": "SV_CabinetQuestDemo01",
+      "Element": "FL",
+      "PrimaryAttribute": "Survey Flow",
+      "SecondaryAttribute": null,
+      "TertiaryAttribute": null,
+      "Payload": {
+        "Flow": [
+          {
+            "Type": "EmbeddedData",
+            "FlowID": "FL_2",
+            "EmbeddedData": [
+              {
+                "Description": "sid",
+                "Type": "Custom",
+                "Field": "sid",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": "${rand://int/100000:999999}"
+              },
+              {
+                "Description": "cq_m1_scenario",
+                "Type": "Custom",
+                "Field": "cq_m1_scenario",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_time",
+                "Type": "Custom",
+                "Field": "cq_m1_time",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_score",
+                "Type": "Custom",
+                "Field": "cq_m1_score",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_stars",
+                "Type": "Custom",
+                "Field": "cq_m1_stars",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_ess_found",
+                "Type": "Custom",
+                "Field": "cq_m1_ess_found",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_ess_total",
+                "Type": "Custom",
+                "Field": "cq_m1_ess_total",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_opt_found",
+                "Type": "Custom",
+                "Field": "cq_m1_opt_found",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_opt_total",
+                "Type": "Custom",
+                "Field": "cq_m1_opt_total",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_extra",
+                "Type": "Custom",
+                "Field": "cq_m1_extra",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_missed_ess",
+                "Type": "Custom",
+                "Field": "cq_m1_missed_ess",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_correct",
+                "Type": "Custom",
+                "Field": "cq_m1_correct",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_incorrect",
+                "Type": "Custom",
+                "Field": "cq_m1_incorrect",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_accuracy",
+                "Type": "Custom",
+                "Field": "cq_m1_accuracy",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_drawers_opened",
+                "Type": "Custom",
+                "Field": "cq_m1_drawers_opened",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_distinct_drawers",
+                "Type": "Custom",
+                "Field": "cq_m1_distinct_drawers",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_cart_opens",
+                "Type": "Custom",
+                "Field": "cq_m1_cart_opens",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m1_complete",
+                "Type": "Custom",
+                "Field": "cq_m1_complete",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_scenario",
+                "Type": "Custom",
+                "Field": "cq_m2_scenario",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_time",
+                "Type": "Custom",
+                "Field": "cq_m2_time",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_score",
+                "Type": "Custom",
+                "Field": "cq_m2_score",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_stars",
+                "Type": "Custom",
+                "Field": "cq_m2_stars",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_ess_found",
+                "Type": "Custom",
+                "Field": "cq_m2_ess_found",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_ess_total",
+                "Type": "Custom",
+                "Field": "cq_m2_ess_total",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_opt_found",
+                "Type": "Custom",
+                "Field": "cq_m2_opt_found",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_opt_total",
+                "Type": "Custom",
+                "Field": "cq_m2_opt_total",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_extra",
+                "Type": "Custom",
+                "Field": "cq_m2_extra",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_missed_ess",
+                "Type": "Custom",
+                "Field": "cq_m2_missed_ess",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_correct",
+                "Type": "Custom",
+                "Field": "cq_m2_correct",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_incorrect",
+                "Type": "Custom",
+                "Field": "cq_m2_incorrect",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_accuracy",
+                "Type": "Custom",
+                "Field": "cq_m2_accuracy",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_drawers_opened",
+                "Type": "Custom",
+                "Field": "cq_m2_drawers_opened",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_distinct_drawers",
+                "Type": "Custom",
+                "Field": "cq_m2_distinct_drawers",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_cart_opens",
+                "Type": "Custom",
+                "Field": "cq_m2_cart_opens",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m2_complete",
+                "Type": "Custom",
+                "Field": "cq_m2_complete",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_scenario",
+                "Type": "Custom",
+                "Field": "cq_m3_scenario",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_time",
+                "Type": "Custom",
+                "Field": "cq_m3_time",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_score",
+                "Type": "Custom",
+                "Field": "cq_m3_score",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_stars",
+                "Type": "Custom",
+                "Field": "cq_m3_stars",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_ess_found",
+                "Type": "Custom",
+                "Field": "cq_m3_ess_found",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_ess_total",
+                "Type": "Custom",
+                "Field": "cq_m3_ess_total",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_opt_found",
+                "Type": "Custom",
+                "Field": "cq_m3_opt_found",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_opt_total",
+                "Type": "Custom",
+                "Field": "cq_m3_opt_total",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_extra",
+                "Type": "Custom",
+                "Field": "cq_m3_extra",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_missed_ess",
+                "Type": "Custom",
+                "Field": "cq_m3_missed_ess",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_correct",
+                "Type": "Custom",
+                "Field": "cq_m3_correct",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_incorrect",
+                "Type": "Custom",
+                "Field": "cq_m3_incorrect",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_accuracy",
+                "Type": "Custom",
+                "Field": "cq_m3_accuracy",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_drawers_opened",
+                "Type": "Custom",
+                "Field": "cq_m3_drawers_opened",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_distinct_drawers",
+                "Type": "Custom",
+                "Field": "cq_m3_distinct_drawers",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_cart_opens",
+                "Type": "Custom",
+                "Field": "cq_m3_cart_opens",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_m3_complete",
+                "Type": "Custom",
+                "Field": "cq_m3_complete",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_sid",
+                "Type": "Custom",
+                "Field": "cq_sid",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_app_version",
+                "Type": "Custom",
+                "Field": "cq_app_version",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_mode",
+                "Type": "Custom",
+                "Field": "cq_mode",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_missions_done",
+                "Type": "Custom",
+                "Field": "cq_missions_done",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_session_time",
+                "Type": "Custom",
+                "Field": "cq_session_time",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_total_score",
+                "Type": "Custom",
+                "Field": "cq_total_score",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_avg_score",
+                "Type": "Custom",
+                "Field": "cq_avg_score",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_avg_accuracy",
+                "Type": "Custom",
+                "Field": "cq_avg_accuracy",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              },
+              {
+                "Description": "cq_event_log",
+                "Type": "Custom",
+                "Field": "cq_event_log",
+                "VariableType": "String",
+                "DataVisibility": {
+                  "Hidden": false,
+                  "Private": false
+                },
+                "AnalyzeText": false,
+                "Value": ""
+              }
+            ]
+          },
+          {
+            "Type": "Block",
+            "ID": "BL_1",
+            "FlowID": "FL_3",
+            "Autofill": []
+          }
+        ],
+        "Properties": {
+          "Count": 3,
+          "RemovedFieldsets": []
+        },
+        "FlowID": "FL_1",
+        "Type": "Root"
+      }
+    },
+    {
+      "SurveyID": "SV_CabinetQuestDemo01",
+      "Element": "BL",
+      "PrimaryAttribute": "Survey Blocks",
+      "SecondaryAttribute": null,
+      "TertiaryAttribute": null,
+      "Payload": [
+        {
+          "Type": "Default",
+          "SubType": "",
+          "Description": "Cabinet Quest",
+          "ID": "BL_1",
+          "BlockElements": [
+            {
+              "Type": "Question",
+              "QuestionID": "QID1"
+            },
+            {
+              "Type": "Question",
+              "QuestionID": "QID2"
+            }
+          ],
+          "Options": {
+            "BlockLocking": "false",
+            "RandomizeQuestions": "false",
+            "BlockVisibility": "Expanded"
+          }
+        }
+      ]
+    },
+    {
+      "SurveyID": "SV_CabinetQuestDemo01",
+      "Element": "SO",
+      "PrimaryAttribute": "Survey Options",
+      "SecondaryAttribute": null,
+      "TertiaryAttribute": null,
+      "Payload": {
+        "BackButton": "false",
+        "SaveAndContinue": "true",
+        "SurveyProtection": "PublicSurvey",
+        "BallotBoxStuffingPrevention": "false",
+        "NoIndex": "Yes",
+        "SecureResponseFiles": "true",
+        "SurveyExpiration": "None",
+        "SurveyTermination": "DefaultMessage",
+        "Header": "",
+        "Footer": "",
+        "ProgressBarDisplay": "None",
+        "PartialData": "+1 week",
+        "ValidationMessage": "",
+        "PreviousButton": "",
+        "NextButton": "Submit  →",
+        "SurveyTitle": "Cabinet Quest Embed Demo",
+        "SkinLibrary": "qualtrics",
+        "SkinType": "templated",
+        "Skin": {
+          "brandingId": null,
+          "templateId": null,
+          "overrides": null
+        },
+        "NewScoring": 1,
+        "EmailVerificationLink": "true"
+      }
+    },
+    {
+      "SurveyID": "SV_CabinetQuestDemo01",
+      "Element": "SQ",
+      "PrimaryAttribute": "QID1",
+      "SecondaryAttribute": "Cabinet Quest",
+      "TertiaryAttribute": null,
+      "Payload": {
+        "QuestionText": "<strong>Cabinet Quest</strong> — complete the scenarios below. Your results are recorded automatically.",
+        "QuestionText_Unsafe": "<strong>Cabinet Quest</strong> — complete the scenarios below. Your results are recorded automatically.",
+        "DataExportTag": "Q_game",
+        "QuestionType": "DB",
+        "Selector": "TB",
+        "SubSelector": "",
+        "Configuration": {
+          "QuestionDescriptionOption": "UseText"
+        },
+        "QuestionDescription": "Cabinet Quest game",
+        "ChoiceOrder": [],
+        "Validation": {
+          "Settings": {
+            "Type": "None"
+          }
+        },
+        "DataVisibility": {
+          "Private": false,
+          "Hidden": false
+        },
+        "QuestionID": "QID1",
+        "QuestionJS": "Qualtrics.SurveyEngine.addOnload(function () {\n    var GITHUB_ORIGIN = 'https://christiantreat.github.io'; // origin only, no path\n    var APP_URL = 'https://christiantreat.github.io/CabinetQuest/';\n    var LOG_QID = 'QID2'; // hidden text-entry question that stores the event log\n\n    var self = this;\n\n    // Resolve the session key from Embedded Data (seeded in the Survey Flow),\n    // falling back to a generated id if piping didn't resolve.\n    var sid = '${e://Field/sid}';\n    if (!sid || sid.indexOf('://') !== -1) { sid = 'demo-' + Date.now(); }\n\n    // Build and insert the game iframe (avoids any HTML sanitization of the question text).\n    var container = (this.getQuestionContainer ? this.getQuestionContainer() : this.questionContainer);\n    var frame = document.createElement('iframe');\n    frame.src = APP_URL + '?sid=' + encodeURIComponent(sid);\n    frame.style.width = '100%';\n    frame.style.height = '80vh';\n    frame.style.minHeight = '600px';\n    frame.style.border = '0';\n    frame.setAttribute('allow', 'fullscreen');\n    frame.title = 'Cabinet Quest';\n    if (container && container.appendChild) container.appendChild(frame);\n\n    // Hide the log text-entry question from participants.\n    try { var lq = document.getElementById(LOG_QID); if (lq) lq.style.display = 'none'; } catch (e) {}\n\n    function handler(event) {\n        if (event.origin !== GITHUB_ORIGIN) { return; }           // 1) validate sender\n        var data = event.data;\n        if (!data || data.source !== 'codesbu') { return; }        // 2) only our messages\n\n        // 3) write every summary key straight to its matching Embedded Data field\n        if (data.summary && typeof data.summary === 'object') {\n            for (var key in data.summary) {\n                if (Object.prototype.hasOwnProperty.call(data.summary, key)) {\n                    Qualtrics.SurveyEngine.setEmbeddedData(key, data.summary[key]);\n                }\n            }\n        }\n        if (data.sid) { Qualtrics.SurveyEngine.setEmbeddedData('sid', data.sid); }\n\n        // 4) on session completion, persist the full event log\n        if (data.type === 'session_complete' && data.log) {\n            // Always store in Embedded Data (never lost even if the QID below changed on import)\n            Qualtrics.SurveyEngine.setEmbeddedData('cq_event_log', data.log);\n            // Best-effort: also drop it into the hidden text-entry question\n            try {\n                var input = document.querySelector('#' + LOG_QID + ' textarea, #' + LOG_QID + ' input[type=text]');\n                if (input) { input.value = data.log; if (window.jQuery) { jQuery(input).trigger('change'); } }\n            } catch (e) {}\n            // self.clickNextButton(); // uncomment to auto-advance when the game ends\n        }\n    }\n    window.addEventListener('message', handler, false);\n    this.__cqHandler = handler;\n});\n\nQualtrics.SurveyEngine.addOnUnload(function () {\n    if (this.__cqHandler) { window.removeEventListener('message', this.__cqHandler, false); }\n});"
+      }
+    },
+    {
+      "SurveyID": "SV_CabinetQuestDemo01",
+      "Element": "SQ",
+      "PrimaryAttribute": "QID2",
+      "SecondaryAttribute": "Event log (hidden)",
+      "TertiaryAttribute": null,
+      "Payload": {
+        "QuestionText": "Event log (hidden — populated automatically)",
+        "QuestionText_Unsafe": "Event log (hidden — populated automatically)",
+        "DefaultChoices": false,
+        "DataExportTag": "cq_event_log",
+        "QuestionType": "TE",
+        "Selector": "ML",
+        "SubSelector": "",
+        "Configuration": {
+          "QuestionDescriptionOption": "UseText"
+        },
+        "QuestionDescription": "Event log (hidden)",
+        "Validation": {
+          "Settings": {
+            "ForceResponse": "OFF",
+            "ForceResponseType": "ON",
+            "Type": "None"
+          }
+        },
+        "GradingData": [],
+        "Language": [],
+        "QuestionID": "QID2",
+        "DataVisibility": {
+          "Private": false,
+          "Hidden": false
+        },
+        "NextChoiceId": 4,
+        "NextAnswerId": 1,
+        "SearchSource": {
+          "AllowFreeResponse": "false"
+        }
+      }
+    },
+    {
+      "SurveyID": "SV_CabinetQuestDemo01",
+      "Element": "QC",
+      "PrimaryAttribute": "Survey Question Count",
+      "SecondaryAttribute": "2",
+      "TertiaryAttribute": null,
+      "Payload": null
+    }
+  ]
+}
