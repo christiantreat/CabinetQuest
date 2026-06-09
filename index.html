@@ -41,11 +41,12 @@
         }
         .app { height:100vh; height:100dvh; display:flex; flex-direction:column; }
 
-        /* ===== HEADER (tutorial-style) ===== */
+        /* ===== HEADER (hidden - replaced by right-side menu tab) ===== */
         .hdr {
+            display: none !important;
             background: rgba(20,20,20,.94);
             padding: 10px 16px;
-            display: flex; align-items: center; gap: 12px;
+            align-items: center; gap: 12px;
             z-index: 100; flex-shrink: 0;
             border-bottom: 2px solid var(--accent-amber);
             font-family: var(--font-mono);
@@ -125,26 +126,7 @@
         }
         .room-hint.hidden { opacity:0; pointer-events:none; }
 
-        /* ===== FAB ===== */
-        .fab {
-            position:fixed; bottom:76px; left:50%; transform:translateX(-50%);
-            display:none; gap:6px; background:var(--ui-panel);
-            padding:7px 10px; border-radius:10px; border:1px solid var(--ui-border);
-            box-shadow:0 6px 20px rgba(0,0,0,.5); z-index:100;
-            max-width:calc(100vw - 20px);
-        }
-        .fab.active { display:flex; }
-        .fb {
-            padding:9px 14px; border:2px solid; border-radius:6px;
-            font-size:12px; font-weight:600; font-family:var(--font-display);
-            cursor:pointer; white-space:nowrap; text-transform:uppercase;
-            letter-spacing:.5px; transition:transform .1s;
-        }
-        .fb:active { transform:scale(.96); }
-        .fb:focus-visible { outline:2px solid var(--accent-amber); outline-offset:2px; }
         @keyframes pg { 0%,100%{box-shadow:0 0 0 rgba(76,175,80,0)} 50%{box-shadow:0 0 12px rgba(76,175,80,.5)} }
-        .fb.ret { background:var(--accent-amber); color:var(--text-dark); border-color:#c88a18; }
-        .fb.adv { background:var(--ui-panel-light); color:var(--text-light); border-color:var(--ui-border); }
 
         /* ===== MODALS ===== */
         .modal {
@@ -262,6 +244,10 @@
             font-family:var(--font-display); font-size:14px; font-weight:700;
             color:var(--text-dark); text-transform:uppercase;
         }
+        .cart-panel-count {
+            font-family:var(--font-mono); font-size:10px; color:var(--text-muted);
+            margin-left:8px; letter-spacing:.3px;
+        }
         .cart-panel-close {
             background:none; border:none; font-size:22px; color:var(--text-muted);
             cursor:pointer; padding:4px 8px; line-height:1;
@@ -273,10 +259,27 @@
         /* Item cards - PHOTO FIRST, large */
         .item-scroll {
             flex:1; overflow-y:auto; padding:8px 12px 80px;
-            background:#fff;
+            background:#fff; position:relative;
         }
+        /* Scroll affordance: gradient fade at bottom when more content exists */
+        .item-scroll-wrap { position:relative; flex:1; display:flex; flex-direction:column; min-height:0; }
+        .scroll-fade {
+            position:absolute; left:0; right:0; bottom:0; height:48px;
+            background:linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,.95));
+            pointer-events:none; opacity:0; transition:opacity .2s;
+            display:flex; align-items:flex-end; justify-content:center;
+            padding-bottom:6px; z-index:2;
+        }
+        .scroll-fade.visible { opacity:1; }
+        .scroll-fade-chev {
+            font-family:var(--font-mono); font-size:13px; color:var(--text-dark);
+            font-weight:700; letter-spacing:.6px;
+            animation:chev-bob 1.4s ease-in-out infinite;
+        }
+        @keyframes chev-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(3px)} }
         .item-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
         @media(min-width:500px) { .item-cards { grid-template-columns:repeat(3,1fr); } }
+        @media(min-width:900px) { .item-cards { grid-template-columns:repeat(6,1fr); gap:10px; } }
 
         .icard {
             background:#fafaf7; border:2px solid #e0dcd5; border-radius:8px;
@@ -305,11 +308,11 @@
         }
 
         .icard-img {
-            width:100%; aspect-ratio:1; background:#eee;
+            width:100%; aspect-ratio:1; background:#fff;
             display:flex; align-items:center; justify-content:center;
-            overflow:hidden; position:relative;
+            overflow:hidden; position:relative; padding:4px;
         }
-        .icard-img img { width:100%; height:100%; object-fit:cover; }
+        .icard-img img { width:100%; height:100%; object-fit:contain; }
         .icard-img .icard-abbr {
             font-size:24px; font-weight:700; color:#bbb;
             font-family:var(--font-display);
@@ -321,9 +324,25 @@
         @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
         .icard-name {
-            padding:6px 8px; font-family:var(--font-mono); font-size:10px;
-            font-weight:600; color:var(--text-dark); text-align:center;
+            padding:7px 10px 3px;
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+            font-size:13px; font-weight:500;
+            color:#1a1a1a; text-align:left;
             line-height:1.3; border-top:1px solid #eee;
+            letter-spacing:.1px;
+        }
+        .icard-desc {
+            padding:4px 10px 8px;
+            font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+            font-size:12px; font-weight:400;
+            color:#3a3a3a; text-align:left; line-height:1.45;
+            letter-spacing:.1px;
+            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+            overflow:hidden; text-overflow:ellipsis;
+            cursor:pointer;
+        }
+        .icard-desc.expanded {
+            -webkit-line-clamp:unset; display:block; overflow:visible;
         }
 
         /* Floating add-to-table bar inside panel */
@@ -380,6 +399,73 @@
         .tray-tab.active { display:flex; align-items:center; gap:6px; }
         .tray-tab.shifted { right:280px; }
         @media(min-width:600px){ .tray-tab.shifted { right:320px; } }
+
+        /* Stack Collected tab above center, Menu tab below center */
+        .tray-tab { top:calc(50% - 60px); }
+
+        /* ===== MENU TAB + PANEL ===== */
+        .menu-tab {
+            position:fixed; right:0; top:calc(50% + 60px); transform:translateY(-50%);
+            z-index:91; display:flex; align-items:center; justify-content:center;
+            background:rgba(30,30,30,.92); border:2px solid var(--accent-amber);
+            border-right:none; border-radius:8px 0 0 8px;
+            padding:12px 6px; cursor:pointer;
+            writing-mode:vertical-rl; text-orientation:mixed;
+            font-family:var(--font-display); font-size:10px; font-weight:700;
+            color:var(--accent-amber); text-transform:uppercase; letter-spacing:1px;
+            transition:right .3s ease, background .2s;
+            backdrop-filter:blur(6px);
+        }
+        .menu-tab:hover { background:rgba(50,50,50,.95); }
+        .menu-tab:active { transform:translateY(-50%) scale(.96); }
+        .menu-tab.shifted { right:260px; }
+
+        .menu-panel {
+            position:fixed; top:0; right:0; bottom:0;
+            width:0; max-width:260px;
+            z-index:92; display:flex; flex-direction:column;
+            background:rgba(30,30,30,.97);
+            border-left:2px solid var(--accent-amber);
+            backdrop-filter:blur(6px);
+            transition:width .3s ease;
+            overflow:hidden;
+        }
+        .menu-panel.open { width:260px; }
+        .menu-panel-header {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:12px 14px; flex-shrink:0;
+            border-bottom:1px solid rgba(255,255,255,.1);
+            font-family:var(--font-display); font-size:12px; font-weight:700;
+            color:var(--accent-amber); text-transform:uppercase; letter-spacing:1px;
+        }
+        .menu-panel-close {
+            background:none; border:none; color:var(--text-light);
+            font-size:18px; cursor:pointer; padding:0 4px; line-height:1;
+        }
+        .menu-panel-close:hover { color:var(--accent-amber); }
+        .menu-panel-scenario {
+            padding:10px 14px; font-family:var(--font-mono); font-size:11px;
+            color:var(--text-light); border-bottom:1px solid rgba(255,255,255,.08);
+            background:rgba(255,255,255,.03);
+        }
+        .menu-panel-scenario .lbl {
+            display:block; font-size:9px; color:var(--accent-amber);
+            text-transform:uppercase; letter-spacing:1px; margin-bottom:3px;
+            font-family:var(--font-display); font-weight:700;
+        }
+        .menu-panel-scenario .val { color:#fff; font-weight:600; }
+        .menu-panel-scenario:empty { display:none; }
+        .menu-items { display:flex; flex-direction:column; padding:8px; gap:4px; overflow-y:auto; }
+        .menu-item {
+            display:flex; align-items:center; gap:10px;
+            padding:12px 14px; background:rgba(255,255,255,.04);
+            border:1px solid rgba(255,255,255,.08); border-radius:6px;
+            color:var(--text-light); font-family:var(--font-mono); font-size:13px;
+            cursor:pointer; text-align:left; transition:background .15s, border-color .15s;
+        }
+        .menu-item:hover { background:rgba(255,255,255,.1); border-color:var(--accent-amber); }
+        .menu-item:active { transform:scale(.98); }
+        .menu-item .ico { font-size:16px; width:20px; text-align:center; }
         .tray-tab-count {
             background:var(--accent-amber); color:var(--text-dark);
             border-radius:50%; width:20px; height:20px;
@@ -422,7 +508,7 @@
             background:#333; flex-shrink:0;
             display:flex; align-items:center; justify-content:center;
         }
-        .tray-item-img img { width:100%; height:100%; object-fit:cover; }
+        .tray-item-img img { width:100%; height:100%; object-fit:contain; }
         .tray-item-img .tray-abbr {
             font-size:12px; font-weight:700; color:#666;
             font-family:var(--font-display);
@@ -729,6 +815,14 @@
             text-align:center; z-index:2;
             transition:all 1.2s ease;
         }
+        .intro-title h1, .intro-title p {
+            display:table;
+            margin-left:auto; margin-right:auto;
+            padding:2px 10px;
+            background:rgba(17,17,17,.7);
+            backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+            border-radius:4px;
+        }
         .intro-title.top {
             top:18%; transform:translate(-50%,-50%) scale(.7);
         }
@@ -791,43 +885,76 @@
             background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.6) 100%);
         }
 
-        /* ===== TUTORIAL DIALOGUE (top bar) ===== */
-        .tutorial-dialogue {
-            position:fixed; top:0; left:0; right:0;
-            background:rgba(20,20,20,.94); color:var(--text-light);
-            padding:10px 16px; font-size:13px;
-            text-align:center; border-bottom:2px solid var(--accent-amber);
-            z-index:300;
+        /* ===== TUTORIAL COACH MARK ===== */
+        .tutorial-coach {
+            position:fixed; left:0; top:0;
+            width:260px; max-width:calc(100vw - 24px);
+            background:linear-gradient(135deg, rgba(30,30,30,.98), rgba(20,20,20,.98));
+            color:var(--text-light);
+            border:2px solid var(--accent-amber);
+            border-radius:8px;
+            padding:10px 12px 12px;
             font-family:var(--font-mono);
-            box-shadow:0 4px 20px rgba(0,0,0,.5);
-            animation:tut-slide-down .3s ease;
-            display:flex; align-items:center; gap:12px;
+            z-index:300;
+            box-shadow:0 8px 28px rgba(0,0,0,.6), 0 0 18px rgba(232,160,32,.22);
+            animation:coach-pop .28s cubic-bezier(.2,.8,.3,1.2);
+            pointer-events:auto;
         }
-        @keyframes tut-slide-down {
-            from { transform:translateY(-100%); }
-            to { transform:translateY(0); }
+        @keyframes coach-pop {
+            from { transform:scale(.85); opacity:0; }
+            to { transform:scale(1); opacity:1; }
         }
-        .tutorial-dialogue .tut-text {
-            flex:1; text-align:left;
+        .tutorial-coach::before {
+            content:'';
+            position:absolute;
+            width:12px; height:12px;
+            background:rgb(22,22,22);
+            left:var(--tail-x, 50%);
+            margin-left:-6px;
+            transform:rotate(45deg);
         }
-        .tutorial-dialogue .tut-text strong {
-            color:var(--accent-amber);
+        .tutorial-coach.tail-down::before {
+            bottom:-7px;
+            border-right:2px solid var(--accent-amber);
+            border-bottom:2px solid var(--accent-amber);
         }
-        .tutorial-dialogue .tut-step {
-            font-family:var(--font-display); font-size:10px;
+        .tutorial-coach.tail-up::before {
+            top:-7px;
+            border-left:2px solid var(--accent-amber);
+            border-top:2px solid var(--accent-amber);
+        }
+        .tutorial-coach .coach-head {
+            display:flex; align-items:center; gap:8px;
+            margin-bottom:8px;
+        }
+        .tutorial-coach .coach-progress {
+            flex:1; height:4px; background:rgba(255,255,255,.08);
+            border-radius:2px; overflow:hidden;
+        }
+        .tutorial-coach .coach-progress-fill {
+            height:100%; background:var(--accent-amber);
+            border-radius:2px; transition:width .35s ease;
+            box-shadow:0 0 8px rgba(232,160,32,.6);
+        }
+        .tutorial-coach .coach-step {
+            font-family:var(--font-display); font-size:9px; font-weight:700;
             color:var(--accent-amber); text-transform:uppercase;
-            letter-spacing:.5px; margin-bottom:2px;
+            letter-spacing:1px; white-space:nowrap;
         }
-        .tutorial-dialogue .tut-msg {
-            font-size:12px; line-height:1.4;
-        }
-        .tutorial-dialogue .tut-skip-btn {
+        .tutorial-coach .coach-skip {
             background:none; border:1px solid var(--ui-border);
-            color:var(--text-muted); font-size:10px; padding:5px 12px;
-            border-radius:4px; cursor:pointer; font-family:var(--font-display);
+            color:var(--text-muted); font-size:9px; padding:3px 8px;
+            border-radius:3px; cursor:pointer; font-family:var(--font-display);
+            letter-spacing:.5px; text-transform:uppercase;
             white-space:nowrap; flex-shrink:0;
         }
-        .tutorial-dialogue .tut-skip-btn:hover { color:var(--text-light); border-color:var(--accent-amber); }
+        .tutorial-coach .coach-skip:hover { color:var(--text-light); border-color:var(--accent-amber); }
+        .tutorial-coach .coach-msg {
+            font-size:12px; line-height:1.45; color:var(--text-light);
+        }
+        .tutorial-coach .coach-msg strong {
+            color:var(--accent-amber); font-weight:700;
+        }
 
         @keyframes cart-blink {
             0%, 100% { opacity:1; }
@@ -949,15 +1076,30 @@
 
     <div class="sbar" id="sbar" style="display:none"></div>
 
-    <div class="fab" id="fab">
-        <button class="fb ret" id="retry-btn" onclick="retryScenario()" style="display:none">&#x1F504; Retry</button>
-        <button class="fb adv" id="advance-btn" onclick="continueToNext()" style="display:none">&#x2192; Next</button>
-    </div>
-
     <!-- Side tab handle for collected items -->
     <div class="tray-tab" id="tray-tab" onclick="toggleSidePanel()">
         <span class="tray-tab-count" id="tray-tab-count">0</span>
         <span>Collected</span>
+    </div>
+
+    <!-- Menu tab -->
+    <div class="menu-tab" id="menu-tab" onclick="toggleMenuPanel()">
+        <span>&#x2630; Menu</span>
+    </div>
+
+    <!-- Menu side panel -->
+    <div class="menu-panel" id="menu-panel">
+        <div class="menu-panel-header">
+            <span>CodeSBU Menu</span>
+            <button class="menu-panel-close" onclick="closeMenuPanel()" aria-label="Close menu">&times;</button>
+        </div>
+        <div class="menu-panel-scenario" id="menu-panel-scenario"></div>
+        <div class="menu-items">
+            <button class="menu-item" onclick="closeMenuPanel();openScenariosModal()"><span class="ico">&#x1F4CB;</span> Scenarios</button>
+            <button class="menu-item" onclick="closeMenuPanel();openModeSelect()"><span class="ico">&#x1F3AE;</span> Change Mode</button>
+            <button class="menu-item" onclick="closeMenuPanel();openSettingsModal()"><span class="ico">&#x2699;</span> Settings</button>
+            <button class="menu-item" onclick="closeMenuPanel();startInteractiveTutorial()"><span class="ico">&#x1F393;</span> Restart Tutorial</button>
+        </div>
     </div>
 
     <!-- Collected Items Side Panel -->
@@ -1030,12 +1172,15 @@
 <div class="cart-panel" id="cart-panel" role="dialog" aria-label="Cart contents">
     <div class="cart-panel-handle"></div>
     <div class="cart-panel-header">
-        <span class="cart-panel-title" id="panel-title">Cart</span>
+        <span><span class="cart-panel-title" id="panel-title">Cart</span><span class="cart-panel-count" id="panel-count"></span></span>
         <button class="cart-panel-close" onclick="closePanel()" aria-label="Close">&times;</button>
     </div>
     <div class="drawer-tabs" id="drawer-tabs"></div>
-    <div class="item-scroll">
-        <div class="item-cards" id="item-cards"></div>
+    <div class="item-scroll-wrap">
+        <div class="item-scroll" id="item-scroll">
+            <div class="item-cards" id="item-cards"></div>
+        </div>
+        <div class="scroll-fade" id="scroll-fade"><span class="scroll-fade-chev">&#x25BC; MORE</span></div>
     </div>
     <div class="panel-action-bar" id="panel-action-bar" style="display:none">
         <span class="panel-sel-count" id="panel-sel-count">Tap items to collect</span>
@@ -1075,7 +1220,7 @@
 <!-- Assessment modal removed -->
 
 <!-- TUTORIAL DIALOGUE (top bar) -->
-<div id="tutorial-dialogue" class="tutorial-dialogue" style="display:none"></div>
+<div id="tutorial-dialogue" class="tutorial-coach tail-down" style="display:none"></div>
 
 <!-- LANDSCAPE BLOCKER -->
 <div class="landscape-blocker"><div class="icon">&#x1F4F1;</div><p>Please rotate your device to portrait mode</p></div>
@@ -1085,50 +1230,109 @@
 // ===== DATA =====
 const DATA = {
     carts: [
-        { id:'airway', name:'Green IV Cart', color:0x2a8c50, pos:[-1.5,0,-3.6], rot:0, desc:'Left of bed', drawerColor:'green' },
-        { id:'resus', name:'Crash Cart', color:0xcc2233, pos:[2.4,0,-3.5], rot:-Math.PI/2, desc:'Right wall, near head', drawerColor:'red' },
-        { id:'airway-tower', name:'Airway Tower', color:0x3a6a8c, pos:[2.4,0,-1], rot:-Math.PI/2, desc:'Right wall, near crash cart', drawerColor:'blue' },
-        { id:'broselow', name:'Broselow Cart', color:0xc07a20, pos:[-2.4,0,0], rot:Math.PI/2, desc:'Left wall, middle', drawerColor:'orange' },
-        { id:'supply-cabinet', name:'Supply Cabinet', color:0x6a6a6a, pos:[-2.7,0,-5], rot:Math.PI/2, desc:'Back left corner', isWallMount:true, drawerColor:'gray' }
+        { id:'airway', name:'Green Cart', color:0x2a8c50, pos:[-1.5,0,-3.6], rot:0, desc:'Left of bed', drawerColor:'green' },
+        { id:'resus', name:'Resuscitation Cart', color:0xcc2233, pos:[-2.4,0,0], rot:Math.PI/2, desc:'Left wall, middle', drawerColor:'red' },
+        { id:'airway-tower', name:'Airway Tower', color:0x3a6a8c, pos:[2.4,0,-1], rot:-Math.PI/2, desc:'Right wall, near head', drawerColor:'blue' },
+        { id:'supply-cabinet', name:'Supply Cabinet', color:0x6a6a6a, pos:[-2.7,0,-5], rot:Math.PI/2, desc:'Back left corner', isWallMount:true, drawerColor:'gray' },
+        { id:'supply-drawer', name:'Supply Drawer', color:0x6a6a6a, pos:[-2.7,0,-5], rot:Math.PI/2, desc:'Below supply cabinet', drawerColor:'gray' }
     ],
     drawers: [
-        {id:'airway-d1',cart:'airway',name:'Top Drawer',n:1},{id:'airway-d2',cart:'airway',name:'Middle Drawer',n:2},{id:'airway-d3',cart:'airway',name:'Bottom Drawer',n:3},
+        {id:'airway-d1',cart:'airway',name:'Shelf 1',n:1},{id:'airway-d2',cart:'airway',name:'Shelf 2',n:2},{id:'airway-d3',cart:'airway',name:'Shelf 3',n:3},{id:'airway-d4',cart:'airway',name:'Shelf 4',n:4},{id:'airway-d5',cart:'airway',name:'Shelf 5',n:5},{id:'airway-d6',cart:'airway',name:'Shelf 6',n:6},
         {id:'resus-d1',cart:'resus',name:'Top Drawer',n:1},{id:'resus-d2',cart:'resus',name:'Drawer 2',n:2},{id:'resus-d3',cart:'resus',name:'Drawer 3',n:3},{id:'resus-d4',cart:'resus',name:'Drawer 4',n:4},{id:'resus-d5',cart:'resus',name:'Drawer 5',n:5},{id:'resus-d6',cart:'resus',name:'Bottom Drawer',n:6},
         {id:'tower-d1',cart:'airway-tower',name:'Top Shelf',n:1},{id:'tower-d2',cart:'airway-tower',name:'Middle Shelf',n:2},{id:'tower-d3',cart:'airway-tower',name:'Bottom Shelf',n:3},
-        {id:'bros-d1',cart:'broselow',name:'Top Drawer',n:1},{id:'bros-d2',cart:'broselow',name:'Drawer 2',n:2},{id:'bros-d3',cart:'broselow',name:'Drawer 3',n:3},{id:'bros-d4',cart:'broselow',name:'Bottom Drawer',n:4},
-        {id:'supply-d1',cart:'supply-cabinet',name:'Upper Shelf',n:1},{id:'supply-d2',cart:'supply-cabinet',name:'Middle Shelf',n:2},{id:'supply-d3',cart:'supply-cabinet',name:'Lower Shelf',n:3}
+        {id:'supply-d1',cart:'supply-cabinet',name:'Upper Shelf',n:1},{id:'supply-d2',cart:'supply-cabinet',name:'Middle Shelf',n:2},{id:'supply-d3',cart:'supply-cabinet',name:'Lower Shelf',n:3},
+        {id:'supply-drawer-d1',cart:'supply-drawer',name:'Drawer',n:1}
     ],
     items: [
-        {id:'ett',name:'Endotracheal Tube',cart:'airway',drawer:'airway-d1'},{id:'laryngoscope',name:'Laryngoscope',cart:'airway',drawer:'airway-d1'},
-        {id:'bvm',name:'Bag-Valve-Mask',cart:'airway',drawer:'airway-d2'},{id:'oropharyngeal',name:'Oropharyngeal Airway',cart:'airway',drawer:'airway-d2'},
-        {id:'suction',name:'Suction Catheter',cart:'airway',drawer:'airway-d3'},{id:'oxygen',name:'Oxygen Mask',cart:'airway',drawer:'airway-d3'},{id:'saline-flush',name:'Saline Flush',cart:'airway',drawer:'airway-d3'},
-        {id:'or-towels',name:'O.R. Towels',cart:'resus',drawer:'resus-d1'},{id:'silk-suture-2-0',name:'2-0 Silk Suture',cart:'resus',drawer:'resus-d1'},
-        {id:'tegaderm-4x4',name:'4x4 Tegaderm',cart:'resus',drawer:'resus-d1'},{id:'betadine-bottle',name:'Betadine Bottle',cart:'resus',drawer:'resus-d1'},
-        {id:'gauze-bandage-roll',name:'Gauze Bandage Roll',cart:'resus',drawer:'resus-d2'},{id:'chloraprep',name:'ChloraPrep',cart:'resus',drawer:'resus-d2'},
-        {id:'us-probe-cover',name:'Ultrasound Probe Cover',cart:'resus',drawer:'resus-d3'},{id:'us-gel',name:'Ultrasound Gel',cart:'resus',drawer:'resus-d3'},
-        {id:'arterial-line-kit',name:'Arterial Line Kit',cart:'resus',drawer:'resus-d3'},{id:'arrow-radial-cath',name:'Arrow Radial Arterial Cath Kit',cart:'resus',drawer:'resus-d3'},
-        {id:'cl-insertion-tray-1',name:'Central Line Insertion Tray',cart:'resus',drawer:'resus-d4'},{id:'cordis-sheath-7-5',name:'7.5 Fr Cordis Sheath Kit',cart:'resus',drawer:'resus-d4'},
-        {id:'cl-insertion-tray-2',name:'Central Line Insertion Tray',cart:'resus',drawer:'resus-d5'},{id:'triple-lumen-cl',name:'Triple Lumen Central Line Kit',cart:'resus',drawer:'resus-d5'},
-        {id:'chest-tube',name:'Chest Tube',cart:'resus',drawer:'resus-d6'},{id:'pleur-evac',name:'Pleur-evac Chest Drain',cart:'resus',drawer:'resus-d6'},{id:'chest-tube-tray',name:'Chest Tube Tray',cart:'resus',drawer:'resus-d6'},
+        {id:'green-14g-needle',name:'14 Gauge Needle',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/14g-needle.png',desc:'Largest-bore IV needle; used for trauma, rapid fluid resuscitation, and massive transfusion.'},
+        {id:'green-16g-needle',name:'16 Gauge Needle',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/16g-needle.png',desc:'Large-bore needle for trauma and blood administration in adult patients.'},
+        {id:'green-18g-needle',name:'18 Gauge Needle',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/18g-needle.png',desc:'Standard adult IV needle for blood draws, fluids, and most medications.'},
+        {id:'green-20g-needle',name:'20 Gauge Needle',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/20g-needle.png',desc:'General-use IV needle for routine infusions and standard medication delivery.'},
+        {id:'green-22g-needle',name:'22 Gauge Needle',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/22g-needle.png',desc:'Small-bore needle for pediatric, elderly, or fragile-vein patients.'},
+        {id:'green-chlorhexidine-wipe',name:'Chlorhexidine Wipe',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/chlorhexidine-wipe.png',desc:'Antiseptic skin prep for IV insertion sites and minor procedures.'},
+        {id:'green-4x4-gauze',name:'4x4 Gauze',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/4x4-gauze.png',desc:'Sterile gauze pads for wound dressing, absorbing fluids, and skin prep.'},
+        {id:'green-tegaderm',name:'Tegaderm',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/tegaderm.png',desc:'Transparent adhesive dressing used to secure IV catheters and cover wounds.'},
+        {id:'green-tourniquet',name:'Tourniquet',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/tourniquet.png',desc:'Elastic band applied proximal to the IV site to engorge veins before cannulation.'},
+        {id:'green-vacutainer-adapter',name:'Vacutainer Adapter',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/vacutainer-adapter.png',desc:'Luer adapter connecting an IV or needle to a vacutainer tube for blood collection.'},
+        {id:'green-vacutainer-tube-holder',name:'Vacutainer Tube Holder',cart:'airway',drawer:'airway-d1',image:'images/greencart/shelf-1/vacutainer-tube-holder.png',desc:'Plastic sleeve that holds the vacutainer tube and needle assembly during blood draw.'},
+        {id:'green-22g-needle-iv',name:'22G IV Needle',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/22g-needle-iv.png'},
+        {id:'green-blood-collection-tubes',name:'Blood Collection Tubes',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/blood-collection-tubes.png'},
+        {id:'green-blunt-fill-needle',name:'Blunt Fill Needle',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/blunt-fill-needle.png'},
+        {id:'green-cavilon',name:'Cavilon',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/cavilon.png'},
+        {id:'green-iv-extension',name:'IV Extension',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/iv-extension.png'},
+        {id:'green-luer-lock',name:'Luer Lock',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/luer-lock.png'},
+        {id:'green-paper-tape',name:'Paper Tape',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/paper-tape.png'},
+        {id:'green-plastic-tape',name:'Plastic Tape',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/plastic-tape.png'},
+        {id:'green-red-cap',name:'Red Cap',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/red-cap.png'},
+        {id:'green-three-way-stopcock',name:'Three-Way Stopcock',cart:'airway',drawer:'airway-d2',image:'images/greencart/shelf-2/three-way-stopcock.png'},
+        {id:'green-10ml-syringe',name:'10mL Syringe',cart:'airway',drawer:'airway-d3',image:'images/greencart/shelf-3/10ml-syringe.png'},
+        {id:'green-5ml-syringe',name:'5mL Syringe',cart:'airway',drawer:'airway-d3',image:'images/greencart/shelf-3/5ml-syringe.png'},
+        {id:'saline-flush',name:'Saline Flush',cart:'airway',drawer:'airway-d3',image:'images/greencart/shelf-3/saline-flush.png'},
+        {id:'green-betadine',name:'Betadine',cart:'airway',drawer:'airway-d4',image:'images/greencart/shelf-4/betadine.png'},
+        {id:'green-blood-cultures',name:'Blood Cultures',cart:'airway',drawer:'airway-d4',image:'images/greencart/shelf-4/blood-cultures.png'},
+        {id:'green-iv-infusion-set',name:'IV Infusion Set',cart:'airway',drawer:'airway-d4',image:'images/greencart/shelf-4/iv-infusion-set.png'},
+        {id:'green-iv-piggyback',name:'IV Piggyback',cart:'airway',drawer:'airway-d4',image:'images/greencart/shelf-4/iv-piggyback.png'},
+        {id:'green-iv-start-kit',name:'IV Start Kit',cart:'airway',drawer:'airway-d4',image:'images/greencart/shelf-4/iv-start-kit.png'},
+        {id:'green-iv-set',name:'IV Set',cart:'airway',drawer:'airway-d4',image:'images/greencart/shelf-4/iv-set.png'},
+        {id:'green-sterile-gloves',name:'Sterile Gloves',cart:'airway',drawer:'airway-d4',image:'images/greencart/shelf-4/sterile-gloves.png'},
+        {id:'green-ekg-electrodes',name:'EKG Electrodes',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/ekg-electrodes.png'},
+        {id:'green-face-tent',name:'Face Tent',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/face-tent.png'},
+        {id:'green-nasal-cannula',name:'Nasal Cannula',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/nasal-cannula.png'},
+        {id:'green-npa-28fr',name:'Nasopharyngeal Airway 28Fr',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/npa-28fr.png'},
+        {id:'green-npa-34fr',name:'Nasopharyngeal Airway 34Fr',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/npa-34fr.png'},
+        {id:'green-nebulizer',name:'Nebulizer',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/nebulizer.png'},
+        {id:'green-non-rebreather',name:'Non-Rebreather Mask',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/non-rebreather.png'},
+        {id:'green-pulse-ox',name:'Pulse Oximeter',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/pulse-ox.png'},
+        {id:'green-venti-mask',name:'Venturi Mask',cart:'airway',drawer:'airway-d5',image:'images/greencart/shelf-5/venti-mask.png'},
+        {id:'green-lr-1l',name:'Lactated Ringers 1L',cart:'airway',drawer:'airway-d6',image:'images/greencart/shelf-6/lr-1l.png'},
+        {id:'green-adult-zoll-pads',name:'Adult Zoll Pads',cart:'airway',drawer:'airway-d6',image:'images/greencart/shelf-6/adult-zoll-pads.png'},
+        {id:'green-blood-tubing',name:'Blood Tubing',cart:'airway',drawer:'airway-d6',image:'images/greencart/shelf-6/blood-tubing.png'},
+        {id:'green-chloraprep',name:'ChloraPrep',cart:'airway',drawer:'airway-d6',image:'images/greencart/shelf-6/chloraprep.png'},
+        {id:'green-normal-saline-500cc',name:'Normal Saline 500cc',cart:'airway',drawer:'airway-d6',image:'images/greencart/shelf-6/normal-saline-500cc.png'},
+        {id:'green-pediatric-zoll-pads',name:'Pediatric Zoll Pads',cart:'airway',drawer:'airway-d6',image:'images/greencart/shelf-6/pediatric-zoll-pads.png'},
+        {id:'or-towels',name:'O.R. Towels',cart:'resus',drawer:'resus-d1',image:'images/resuscitationcart/drawer-1/or-towels.png'},
+        {id:'suture-2-0',name:'2-0 Sutures',cart:'resus',drawer:'resus-d1',image:'images/resuscitationcart/drawer-1/2-0-sutures.png'},
+        {id:'suture-orange',name:'Orange Sutures',cart:'resus',drawer:'resus-d1',image:'images/resuscitationcart/drawer-1/orange-sutures.png'},
+        {id:'providone-iodine',name:'Providone-Iodine',cart:'resus',drawer:'resus-d1',image:'images/resuscitationcart/drawer-1/providone-iodine.png'},
+        {id:'blade-10',name:'#10 Blade',cart:'resus',drawer:'resus-d1',image:'images/resuscitationcart/drawer-1/10-blade.png'},
+        {id:'suture-tray',name:'Suture Tray',cart:'resus',drawer:'resus-d2',image:'images/resuscitationcart/drawer-2/suture-tray.png'},
+        {id:'chloraprep',name:'ChloraPrep',cart:'resus',drawer:'resus-d2',image:'images/resuscitationcart/drawer-2/chloraprep.png'},
+        {id:'surgicel',name:'Surgicel',cart:'resus',drawer:'resus-d2',image:'images/resuscitationcart/drawer-2/surgicel.png'},
+        {id:'radial-artery-kit',name:'Radial Artery Catheterization Set',cart:'resus',drawer:'resus-d3',image:'images/resuscitationcart/drawer-3/radial-artery.png'},
+        {id:'tegaderm-4in',name:'4-inch Tegaderm',cart:'resus',drawer:'resus-d3',image:'images/resuscitationcart/drawer-3/4in-tegaderm.png'},
+        {id:'tegaderm-small',name:'Small Tegaderm',cart:'resus',drawer:'resus-d3',image:'images/resuscitationcart/drawer-3/small-tegaderm.png'},
+        {id:'us-probe-cover',name:'Sterile Ultrasound Probe Cover',cart:'resus',drawer:'resus-d3',image:'images/resuscitationcart/drawer-3/us-probe-cover.png'},
+        {id:'femoral-artery-kit',name:'Femoral Arterial Catheterization Kit',cart:'resus',drawer:'resus-d3',image:'images/resuscitationcart/drawer-3/femoral-artery.png'},
+        {id:'abg-kit',name:'Arterial Blood Gas Kit',cart:'resus',drawer:'resus-d3',image:'images/resuscitationcart/drawer-3/abg-kit.png'},
+        {id:'cordis',name:'Cordis',cart:'resus',drawer:'resus-d4',image:'images/resuscitationcart/drawer-4/cordis.png'},
+        {id:'central-line-kit',name:'Central Line Kit Bundle',cart:'resus',drawer:'resus-d4',image:'images/resuscitationcart/drawer-4/central-line-kit.png'},
+        {id:'cordis-triple-lumen',name:'Triple Lumen CBC for Cordis',cart:'resus',drawer:'resus-d5',image:'images/resuscitationcart/drawer-5/cordis-triple-lumen.png'},
+        {id:'central-line-tray',name:'Central Line Kit/Tray',cart:'resus',drawer:'resus-d5',image:'images/resuscitationcart/drawer-5/central-line-tray.png'},
+        {id:'chest-tube-tray',name:'Chest Tube Tray',cart:'resus',drawer:'resus-d6',image:'images/resuscitationcart/drawer-6/chest-tube-tray.png'},
+        {id:'chest-tube',name:'Chest Tube',cart:'resus',drawer:'resus-d6',image:'images/resuscitationcart/drawer-6/chest-tube.png'},
         {id:'glidescope',name:'Glidescope',cart:'airway-tower',drawer:'tower-d1'},{id:'video-blade',name:'Video Laryngoscope Blade',cart:'airway-tower',drawer:'tower-d1'},
         {id:'bougie',name:'Bougie',cart:'airway-tower',drawer:'tower-d2'},{id:'lma',name:'Laryngeal Mask Airway',cart:'airway-tower',drawer:'tower-d2'},{id:'cric-kit',name:'Cricothyrotomy Kit',cart:'airway-tower',drawer:'tower-d2'},
         {id:'etco2',name:'EtCO2 Detector',cart:'airway-tower',drawer:'tower-d3'},{id:'tube-holder',name:'ET Tube Holder',cart:'airway-tower',drawer:'tower-d3'},
-        {id:'peds-ett',name:'Peds ET Tube Set',cart:'broselow',drawer:'bros-d1'},{id:'peds-io',name:'Peds IO Needle',cart:'broselow',drawer:'bros-d1'},
-        {id:'peds-bvm',name:'Peds BVM',cart:'broselow',drawer:'bros-d2'},{id:'peds-bp-cuff',name:'Peds BP Cuff Set',cart:'broselow',drawer:'bros-d2'},
-        {id:'broselow-tape',name:'Broselow Tape',cart:'broselow',drawer:'bros-d3'},{id:'peds-iv-kit',name:'Peds IV Start Kit',cart:'broselow',drawer:'bros-d3'},
-        {id:'peds-npa',name:'Peds NPA Set',cart:'broselow',drawer:'bros-d4'},{id:'peds-opa',name:'Peds OPA Set',cart:'broselow',drawer:'bros-d4'},
         {id:'normal-saline',name:'Normal Saline 1L',cart:'supply-cabinet',drawer:'supply-d1'},{id:'lr',name:'Lactated Ringers 1L',cart:'supply-cabinet',drawer:'supply-d1'},
         {id:'iv-tubing',name:'IV Tubing Set',cart:'supply-cabinet',drawer:'supply-d1'},{id:'pressure-bag',name:'Pressure Bag',cart:'supply-cabinet',drawer:'supply-d1'},
-        {id:'blood-tubing',name:'Blood Tubing',cart:'supply-cabinet',drawer:'supply-d2'},{id:'rapid-infuser-tubing',name:'Rapid Infuser Tubing',cart:'supply-cabinet',drawer:'supply-d2'},
-        {id:'sterile-gloves',name:'Sterile Gloves',cart:'supply-cabinet',drawer:'supply-d3'},{id:'sterile-gown',name:'Sterile Gown',cart:'supply-cabinet',drawer:'supply-d3'},{id:'face-shield',name:'Face Shield',cart:'supply-cabinet',drawer:'supply-d3'}
+        {id:'ez-io',name:'IO Kit',cart:'supply-cabinet',drawer:'supply-d2',image:'images/resuscitationcart/ez-io.png'},
+        {id:'pelvic-binder',name:'Pelvic Binder',cart:'supply-cabinet',drawer:'supply-d2',image:'images/resuscitationcart/pelvic-binder.png'},
+        {id:'cat-tourniquet',name:'CAT Tourniquet',cart:'supply-cabinet',drawer:'supply-d2',image:'images/resuscitationcart/tourniquet.png'},
+        {id:'sterile-gloves',name:'Sterile Gloves',cart:'supply-cabinet',drawer:'supply-d3'},{id:'sterile-gown',name:'Sterile Gown',cart:'supply-cabinet',drawer:'supply-d3'},{id:'face-shield',name:'Face Shield',cart:'supply-cabinet',drawer:'supply-d3'},
+        {id:'peep-valve',name:'PEEP Valve',cart:'supply-drawer',drawer:'supply-drawer-d1',image:'images/resuscitationcart/peep-valve.png'},
+        {id:'transvenous-pacer',name:'Transvenous Pacing Kit',cart:'supply-drawer',drawer:'supply-drawer-d1',image:'images/resuscitationcart/transvenous-pacer.png'},
+        {id:'tvp-electrodes',name:'Transvenous Pacing Electrodes',cart:'supply-drawer',drawer:'supply-drawer-d1',image:'images/resuscitationcart/tvp-electrodes.png'},
+        {id:'pressure-infusion-bag',name:'Pressure Infusion Bag',cart:'supply-drawer',drawer:'supply-drawer-d1',image:'images/resuscitationcart/pressure-infusion-bag.png'},
+        {id:'bvm',name:'Bag Valve Mask',cart:'supply-drawer',drawer:'supply-drawer-d1',image:'images/resuscitationcart/bvm.png'},
+        {id:'arterial-line-tubing',name:'Arterial Line Tubing',cart:'supply-drawer',drawer:'supply-drawer-d1',image:'images/resuscitationcart/arterial-line-tubing.png'}
     ],
     scenarios: [
         {id:'s4',name:'Arterial Line Placement',description:'Patient requires arterial line for hemodynamic monitoring.',
-         essential:['arterial-line-kit','arrow-radial-cath','chloraprep','us-gel','sterile-gloves'],optional:['us-probe-cover','tegaderm-4x4','gauze-bandage-roll']},
+         essential:['radial-artery-kit','chloraprep','sterile-gloves','arterial-line-tubing'],optional:['us-probe-cover','tegaderm-4in','femoral-artery-kit']},
         {id:'s2',name:'Central Line Placement',description:'Patient requires central venous access for resuscitation.',
-         essential:['cl-insertion-tray-1','triple-lumen-cl','chloraprep','betadine-bottle','sterile-gloves','sterile-gown'],optional:['or-towels','us-gel','us-probe-cover']},
+         essential:['central-line-kit','cordis-triple-lumen','chloraprep','providone-iodine','sterile-gloves','sterile-gown'],optional:['or-towels','us-probe-cover','cordis']},
         {id:'s3',name:'Chest Tube Insertion',description:'Patient with pneumothorax requiring chest tube placement.',
-         essential:['chest-tube','chest-tube-tray','pleur-evac','betadine-bottle','sterile-gloves'],optional:['or-towels','chloraprep','gauze-bandage-roll','sterile-gown']}
+         essential:['chest-tube','chest-tube-tray','providone-iodine','sterile-gloves'],optional:['or-towels','chloraprep','sterile-gown']}
     ]
 };
 function gCN(id){const c=DATA.carts.find(x=>x.id===id);return c?c.name:id;}
@@ -1138,7 +1342,106 @@ const ACH=[{id:'first-scenario',title:'First Steps',description:'Complete your f
 
 // ===== STATE =====
 const S={scenario:null,si:0,su:1,inv:[],st:null,sid:Date.now(),cart:null,drawer:null,sel:[],sub:false,comp:[],ach:[],pts:0,tp:0,snd:true,hap:true,res:[],
-    mode:'training',assessQueue:[],assessResults:[],assessIdx:0};
+    mode:'training',assessQueue:[],assessResults:[],assessIdx:0,
+    missionSummaries:{},missionAgg:{},m:null};
+
+// ===== QUALTRICS EMBED / RESULTS EMISSION =====
+// Standalone behavior is fully preserved: when not in an iframe (or no sid is
+// passed) nothing is transmitted -- the app runs exactly as before.
+const APP_VERSION='1.0.0';
+const SESSION_START_WALL=Date.now();            // wall-clock start, for ordering
+const PERF_START=performance.now();             // monotonic start, for durations
+const _QP=new URLSearchParams(location.search);
+const QUALTRICS_SID=_QP.get('sid')||null;       // unique session key from Qualtrics
+const PARENT_ORIGIN=_QP.get('parentOrigin')||null; // optional explicit target origin
+const IS_EMBEDDED=(window.parent!==window);
+if(QUALTRICS_SID) S.sid=QUALTRICS_SID;          // stamp the Qualtrics key onto app state + localStorage records
+
+// Integer code legends for compact logging (decodable via these maps, which are
+// also embedded in the log header so it is self-contained).
+const AREA_CODES={}; DATA.carts.forEach((c,i)=>AREA_CODES[c.id]=i);
+const DRAWER_CODES={}; DATA.drawers.forEach((d,i)=>DRAWER_CODES[d.id]=i);
+function itemCode(id){return DATA.items.findIndex(i=>i.id===id);}
+
+// Compact timestamped event stream. Each event is an array: [tDeltaMs, code, ...args]
+// tDeltaMs = ms since session start (performance.now delta). Codes are integers.
+const EV=[];
+function logEv(code){const a=[Math.round(performance.now()-PERF_START),code];for(let i=1;i<arguments.length;i++)a.push(arguments[i]);EV.push(a);}
+
+// Per-mission counters (reset at the start of each scenario attempt).
+function resetMission(){S.m={drawerOpens:0,distinctDrawers:[],cartOpens:0,selects:0,deselects:0};}
+resetMission();
+
+// Single results-emitting function -- destination is swappable later.
+function emitResults(type,summary,log){
+    if(!IS_EMBEDDED) return; // standalone/testing mode: never postMessage
+    const payload={source:'codesbu',type:type,sid:S.sid,appVersion:APP_VERSION,sessionStart:SESSION_START_WALL,summary:summary,log:(log!==undefined?log:null)};
+    try{window.parent.postMessage(payload,PARENT_ORIGIN||'*');}catch(e){console.warn('CabinetQuest emitResults failed:',e);}
+}
+
+// Build the compact, self-describing event-log string (session_complete only).
+function buildLog(){
+    const obj={v:APP_VERSION,sid:String(S.sid),s:SESSION_START_WALL,
+        lg:{areas:AREA_CODES,drawers:DRAWER_CODES},
+        codes:{1:'scenario_start',2:'cart_open',3:'drawer_open',4:'item_select',5:'item_deselect',6:'collect',7:'submit',8:'session_complete'},
+        e:EV};
+    const str=JSON.stringify(obj);
+    if(str.length>15000) console.warn('CabinetQuest: event log is '+str.length+' chars (Qualtrics hidden-field ceiling ~20000).');
+    return str;
+}
+
+// Build the FLAT cq_-prefixed summary object for one mission (num = scenario order, 1-based).
+function missionFlat(num,sc,fE,mE,fO,mO,ex,t,score,stars){
+    const p='cq_m'+num+'_';
+    const correct=fE.length+fO.length, incorrect=ex.length;
+    const acc=(correct+incorrect)>0?Math.round(correct/(correct+incorrect)*100)/100:0;
+    const o={};
+    o[p+'scenario']=sc.name;
+    o[p+'time']=t;
+    o[p+'score']=score;
+    o[p+'stars']=stars;
+    o[p+'ess_found']=fE.length;
+    o[p+'ess_total']=sc.essential.length;
+    o[p+'opt_found']=fO.length;
+    o[p+'opt_total']=sc.optional.length;
+    o[p+'extra']=ex.length;
+    o[p+'missed_ess']=mE.length;
+    o[p+'correct']=correct;
+    o[p+'incorrect']=incorrect;
+    o[p+'accuracy']=acc;
+    o[p+'drawers_opened']=S.m.drawerOpens;
+    o[p+'distinct_drawers']=S.m.distinctDrawers.length;
+    o[p+'cart_opens']=S.m.cartOpens;
+    o[p+'complete']=mE.length===0?1:0;
+    return o;
+}
+
+// Record one mission: log it, store its flat summary, emit mission_complete.
+function recordMission(num,sc,fE,mE,fO,mO,ex,t,score,stars){
+    logEv(7,num,score);
+    const flat=missionFlat(num,sc,fE,mE,fO,mO,ex,t,score,stars);
+    S.missionSummaries[num]=flat;
+    S.missionAgg[num]={score:score,accuracy:flat['cq_m'+num+'_accuracy'],time:t,stars:stars};
+    emitResults('mission_complete',flat,null);
+}
+
+// Emit session_complete: merge all mission summaries + session aggregates + full log.
+function emitSession(mode){
+    logEv(8);
+    const flat=Object.assign({},...Object.values(S.missionSummaries));
+    const aggs=Object.values(S.missionAgg);
+    const done=aggs.length;
+    const totScore=aggs.reduce((s,a)=>s+a.score,0);
+    flat['cq_sid']=String(S.sid);
+    flat['cq_app_version']=APP_VERSION;
+    flat['cq_mode']=mode;
+    flat['cq_missions_done']=done;
+    flat['cq_session_time']=Math.round((Date.now()-SESSION_START_WALL)/1000);
+    flat['cq_total_score']=totScore;
+    flat['cq_avg_score']=done?Math.round(totScore/done):0;
+    flat['cq_avg_accuracy']=done?Math.round(aggs.reduce((s,a)=>s+a.accuracy,0)/done*100)/100:0;
+    emitResults('session_complete',flat,buildLog());
+}
 
 // ===== STORAGE =====
 function sS(k,v){try{localStorage.setItem(k,v)}catch(e){}}
@@ -1287,6 +1590,7 @@ function init3D() {
     function animate() {
         requestAnimationFrame(animate);
         updateCartLabels(); // FIX 1: update label positions each frame
+        updateTutorialCoach();
         renderer.render(scene, camera);
     }
     animate();
@@ -1419,17 +1723,14 @@ function backToRoom() {
     // Close panel if open
     if (document.getElementById('cart-panel').classList.contains('active')) {
         document.getElementById('cart-panel').classList.remove('active');
+        document.getElementById('tray').classList.remove('panel-open');
         renderTray();
     }
     // Close any open drawer
     if (activeDrawer3D) { slideDrawerClosed(activeDrawer3D); activeDrawer3D = null; }
     // Return to room view
     goToDefaultView(true);
-    // Tutorial hook - step 4: back to room
-    if(tutorialActive && tutorialStep === 4){
-        tutorialStep = 5;
-        setTimeout(()=>showTutorialStep(), 400);
-    }
+    if(tutorialActive) advanceTutorial('back-to-room');
 }
 function confirmBackToRoom(){
     // During tutorial, skip confirmation
@@ -1789,8 +2090,10 @@ function setupInteraction(vp, canvas) {
                 if (obj) {
                     sfx('click'); hap('light');
                     S.cart = obj.data;
+                    S.m.cartOpens++; logEv(2, AREA_CODES[obj.data.id]);
                     hideHint();
-                    if(tutorialActive) handleTutorialCartClick(obj.data.id);
+                    if (hoveredObj) { unhighlightCart(hoveredObj); hoveredObj = null; }
+                    if(tutorialActive) advanceTutorial('cart:'+obj.data.id);
                     goToCartView(obj.data.id);
                 }
             }
@@ -1851,6 +2154,7 @@ function setupInteraction(vp, canvas) {
 }
 
 function highlightCart(obj) {
+    if (tutBlinkInterval) return;
     obj.group.children.forEach(c => {
         if (c.material && c.material.emissive) {
             c._origEmissive = c.material.emissive.getHex();
@@ -1987,11 +2291,10 @@ function renderScenList(){
 }
 function selScen(sc,i){
     S.scenario=sc;S.si=i;S.inv=[];S.st=Date.now();S.sub=false;
+    resetMission();logEv(1,i+1);
     document.querySelector('.app').classList.add('scenario-active');
     document.getElementById('hdr-scenario-name').textContent=sc.name;
-    const f=document.getElementById('fab');f.classList.add('active');
     document.getElementById('submit-btn').disabled=true;document.getElementById('submit-btn').style.display='';
-    document.getElementById('retry-btn').style.display='';document.getElementById('advance-btn').style.display='none';
     showHint('Tap a cart to approach it', 3000);
     upStats();closeModal('scen-modal');sfx('click');startTimer();
     goToDefaultView(true);
@@ -2023,7 +2326,8 @@ function openDrawer3D(dc) {
     S.sel = [];
     const dr = DATA.drawers.find(d => d.id === dc.drawerId);
     if (!dr) return;
-    
+    S.m.drawerOpens++; if(!S.m.distinctDrawers.includes(dr.id)) S.m.distinctDrawers.push(dr.id); logEv(3, DRAWER_CODES[dr.id]);
+
     // Check if all items in this drawer are already collected
     const drawerItems = DATA.items.filter(i => i.drawer === dr.id);
     const uncollected = drawerItems.filter(i => !S.inv.find(x => x.id === i.id));
@@ -2081,7 +2385,8 @@ function slideDrawerClosed(dc) {
 
 function renderPanelItems(dr){
     const g=document.getElementById('item-cards');g.innerHTML='';
-    DATA.items.filter(i=>i.drawer===dr.id).forEach(item=>{
+    const items=DATA.items.filter(i=>i.drawer===dr.id);
+    items.forEach(item=>{
         const card=document.createElement('div');
         card.className='icard';card.setAttribute('tabindex','0');
         card.setAttribute('aria-label',item.name);
@@ -2117,17 +2422,36 @@ function renderPanelItems(dr){
 
         g.appendChild(card);
     });
+    updatePanelCount(items.length);
+    setTimeout(updateScrollFade,30);
 }
+
+function updatePanelCount(n){
+    const el=document.getElementById('panel-count');
+    if(el) el.textContent=n?(n+' item'+(n!==1?'s':'')):'';
+}
+
+function updateScrollFade(){
+    const sc=document.getElementById('item-scroll');
+    const fade=document.getElementById('scroll-fade');
+    if(!sc||!fade) return;
+    const more=sc.scrollHeight - sc.clientHeight - sc.scrollTop > 8;
+    fade.classList.toggle('visible', more);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+    const sc=document.getElementById('item-scroll');
+    if(sc) sc.addEventListener('scroll',updateScrollFade);
+    window.addEventListener('resize',updateScrollFade);
+});
 
 function togPanelItem(item,card){
     const i=S.sel.findIndex(x=>x.id===item.id);
-    if(i>-1){S.sel.splice(i,1);card.classList.remove('selected');}
-    else{S.sel.push(item);card.classList.add('selected');}
+    if(i>-1){S.sel.splice(i,1);card.classList.remove('selected');S.m.deselects++;logEv(5,itemCode(item.id));}
+    else{S.sel.push(item);card.classList.add('selected');S.m.selects++;logEv(4,itemCode(item.id));}
     sfx('click'); updatePanelSelCount();
-    // Tutorial hook
-    if(tutorialActive && tutorialStep === 2 && item.id === 'saline-flush' && S.sel.find(x=>x.id==='saline-flush')){
-        tutorialStep = 3;
-        setTimeout(()=>showTutorialStep(), 300);
+    if(tutorialActive && S.sel.find(x=>x.id===item.id)){
+        advanceTutorial('item-select:'+item.id);
     }
 }
 
@@ -2146,20 +2470,16 @@ function updatePanelSelCount(){
 function panelCollect(){
     if(!S.sel.length)return;
     let n=0;S.sel.forEach(item=>{if(!S.inv.find(i=>i.id===item.id)){S.inv.push({...item});n++;hap('light');}});
-    if(n>0){sfx('collect');showIT(n);renderTray();}
+    if(n>0){sfx('collect');showIT(n);renderTray();logEv(6,n);}
     S.sel=[];upInv();upStats();updatePanelSelCount();
     // Re-render current drawer to update in-inv states
     if(S.drawer) renderPanelItems(S.drawer);
-    // Tutorial hook - after adding to table, teach them to navigate back to room
-    if(tutorialActive && tutorialStep === 3){
-        tutorialStep = 4;
-        // Don't auto-close panel, let them see the item was collected, then show "back to room" step
-        setTimeout(()=>showTutorialStep(), 400);
-    }
+    if(tutorialActive) advanceTutorial('item-collect');
 }
 
 function closePanel(){
     document.getElementById('cart-panel').classList.remove('active');
+    document.getElementById('tray').classList.remove('panel-open');
     document.getElementById('panel-add-btn').style.display = '';  // restore for training mode
     document.getElementById('panel-action-bar').style.display = 'none';  // hidden until items selected
     if (activeDrawer3D) { slideDrawerClosed(activeDrawer3D); activeDrawer3D = null; }
@@ -2205,14 +2525,24 @@ function toggleSidePanel(){
     if(t.classList.contains('open')){t.classList.remove('open');tab.classList.remove('shifted');}
     else{t.classList.add('open');tab.classList.add('shifted');}
     sfx('click');
-    // Tutorial hook - step 5: open collected panel
-    if(tutorialActive && tutorialStep === 5 && t.classList.contains('open')){
-        tutorialStep = 6;
-        setTimeout(()=>showTutorialStep(), 400);
-    }
+    if(tutorialActive && t.classList.contains('open')) advanceTutorial('open-tray');
 }
 function openSidePanel(){var t=document.getElementById('tray');var tab=document.getElementById('tray-tab');t.classList.add('open');tab.classList.add('shifted');}
 function closeSidePanel(){var t=document.getElementById('tray');var tab=document.getElementById('tray-tab');t.classList.remove('open');tab.classList.remove('shifted');}
+function updateMenuPanelScenario(){
+    var box=document.getElementById('menu-panel-scenario');if(!box)return;
+    var name=(S.scenario&&S.scenario.name)?S.scenario.name:'';
+    var mode=S.mode?S.mode.charAt(0).toUpperCase()+S.mode.slice(1):'';
+    if(name){box.innerHTML='<span class="lbl">Scenario</span><span class="val">'+name+'</span>'+(mode?'<div style="margin-top:6px"><span class="lbl">Mode</span><span class="val">'+mode+'</span></div>':'');}
+    else {box.innerHTML=mode?'<span class="lbl">Mode</span><span class="val">'+mode+'</span>':'';}
+}
+function toggleMenuPanel(){
+    var p=document.getElementById('menu-panel');var tab=document.getElementById('menu-tab');
+    if(p.classList.contains('open')){p.classList.remove('open');tab.classList.remove('shifted');}
+    else{updateMenuPanelScenario();p.classList.add('open');tab.classList.add('shifted');}
+    sfx('click');
+}
+function closeMenuPanel(){document.getElementById('menu-panel').classList.remove('open');document.getElementById('menu-tab').classList.remove('shifted');}
 function confirmResetItems(){
     if(S.inv.length===0){showToast('No items to reset');return;}
     document.getElementById('confirm-body').innerHTML='<div style="text-align:center;padding:12px"><p style="font-size:14px;font-weight:600;margin-bottom:8px">Reset all collected items?</p><p style="font-size:12px;color:var(--text-mid)">This will remove all '+S.inv.length+' item'+(S.inv.length!==1?'s':'')+' from your collection.</p></div>';
@@ -2312,25 +2642,27 @@ function submitInventory(){
         fo += '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');continueToNext()">Complete \u1F389</button>';
     document.getElementById('fb-foot').innerHTML = fo;
     openModal('fb-modal');
-    S.sub=true;document.getElementById('submit-btn').style.display='none';document.getElementById('advance-btn').style.display='';
+    S.sub=true;document.getElementById('submit-btn').style.display='none';
     S.res.push({name:sc.name,score:score,stars:stars,time:t,ts:new Date().toISOString()});
     sAn({sid:S.sid,scId:sc.id,scName:sc.name,ts:new Date().toISOString(),time:t,collected:ids,fE:fE,mE:mE,fO:fO,ex:ex,ok:aR,score:score,stars:stars});
+    recordMission(S.si+1,sc,fE,mE,fO,mO,ex,t,score,stars);
     setTimeout(function(){if(S.comp.length===1)chkA('first-scenario');if(aR)chkA('perfect-score');if(aR&&t<30)chkA('speed-demon');if(aR&&nX)chkA('efficient');if(S.comp.length>=3)chkA('three-scenarios');if(S.comp.length===DATA.scenarios.length)chkA('all-scenarios');},800);
     renderScenList();
 }
 function chkA(id){if(S.ach.includes(id))return;const a=ACH.find(x=>x.id===id);if(!a)return;S.ach.push(id);showAch(a);sfx('success');hap('heavy');S.pts+=100;S.tp+=100;showPts(100,'Achievement!');save();}
-function retryScenario(){S.inv=[];S.st=Date.now();S.sub=false;closeSidePanel();renderTray();document.getElementById('submit-btn').style.display='';document.getElementById('submit-btn').disabled=true;document.getElementById('advance-btn').style.display='none';showHint('Tap a cart to gather items', 3000);upInv();upStats();sfx('click');goToDefaultView(true);}
+function retryScenario(){S.inv=[];S.st=Date.now();S.sub=false;resetMission();logEv(1,S.si+1);closeSidePanel();renderTray();document.getElementById('submit-btn').style.display='';document.getElementById('submit-btn').disabled=true;showHint('Tap a cart to gather items', 3000);upInv();upStats();sfx('click');goToDefaultView(true);}
 function continueToNext(){
     hideTray();
     goToDefaultView(true);
     if(S.si===DATA.scenarios.length-1){compTrain();return;}
     S.si++;if(S.si>=S.su)S.su=S.si+1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;
-    document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');
+    document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('hdr-scenario-name').textContent='';
     showHint('Open Scenarios for next', 3000);
     upInv();upStats();stopTimer();openScenariosModal();sfx('click');
 }
 function compTrain(){
+    emitSession('training');
     var resultsH = '';
     var totalStars = 0;
     var totalTime = 0;
@@ -2364,7 +2696,7 @@ function compTrain(){
     document.getElementById('fb-foot').innerHTML = fo;
     openModal('fb-modal');sfx('success');
 }
-function resetStart(){hideTray();S.si=0;S.su=1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;S.comp=[];document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('hdr-scenario-name').textContent='';showHint('Open Scenarios menu to begin', 0);upInv();upStats();stopTimer();save();}
+function resetStart(){hideTray();S.si=0;S.su=1;S.inv=[];S.scenario=null;S.st=null;S.sub=false;S.comp=[];S.missionSummaries={};S.missionAgg={};EV.length=0;resetMission();document.querySelector('.app').classList.remove('scenario-active');document.getElementById('hdr-scenario-name').textContent='';showHint('Open Scenarios menu to begin', 0);upInv();upStats();stopTimer();save();}
 
 function openSettingsModal(){openModal('set-modal');document.getElementById('snd-tog').checked=S.snd;document.getElementById('hap-tog').checked=S.hap;renderRes();}
 function toggleSound(){S.snd=document.getElementById('snd-tog').checked;save();sfx('click');}
@@ -2450,10 +2782,137 @@ function skipTutorialToTraining(){startTrainingMode();}
 
 // ===== INTERACTIVE TUTORIAL =====
 var tutorialActive = false;
-var tutorialStep = 0; // 0=tap green cart, 1=tap bottom drawer, 2=tap saline flush, 3=add to inventory, 4=back to room, 5=open collected panel, 6=submit
+var tutorialStep = 0;
 var tutBlinkInterval = null;
-var tutCartBlinkMats = []; // store materials being blinked for cleanup
+var tutBlinkedMats = [];
+var tutBlinkedEls = [];
 
+var TUTORIAL_STEPS = [
+    { trigger:'cart:airway',
+      msg:'Collect a <strong>Saline Flush</strong> from the <strong>Green IV Cart</strong>. Tap the blinking cart.',
+      blink:function(){ blinkCart3D('airway'); blinkCartLabel('airway'); },
+      target:function(){ return get3DCartRect('airway'); } },
+    { trigger:'drawer:airway-d3',
+      msg:'Tap the <strong>blinking drawer</strong> to open it.',
+      blink:function(){ blinkDrawer3D('airway-d3'); },
+      target:function(){ return get3DDrawerRect('airway-d3'); } },
+    { trigger:'item-select:saline-flush',
+      msg:'Tap the <strong>Saline Flush</strong> item to select it.',
+      blink:function(){ setTimeout(function(){ blinkItemCard('saline-flush'); }, 300); },
+      target:function(){ return getItemCardRect('Saline Flush'); } },
+    { trigger:'item-collect',
+      msg:'Tap <strong>"Add to Table"</strong> to collect the item.',
+      blink:function(){ blinkElementById('panel-add-btn'); },
+      target:function(){ return getDOMRect('#panel-add-btn'); } },
+    { trigger:'back-to-room',
+      msg:'Tap <strong>"&#x2190; Room"</strong> to return to the full room view.',
+      blink:function(){ blinkElementById('back-to-room'); },
+      target:function(){ return getDOMRect('#back-to-room'); } },
+    { trigger:'open-tray',
+      msg:'Tap the <strong>"Collected"</strong> tab to review your items.',
+      blink:function(){ blinkElementById('tray-tab'); },
+      target:function(){ return getDOMRect('#tray-tab'); } },
+    { trigger:'submit',
+      msg:'Review your items, then tap <strong>Submit</strong> to finish.',
+      blink:function(){ blinkElementById('submit-btn'); },
+      target:function(){ return getDOMRect('#submit-btn'); } }
+];
+
+function get3DCartRect(cartId){
+    if(!camera) return null;
+    var obj = clickables && clickables.find(function(c){return c.data.id === cartId;});
+    if(!obj) return null;
+    var pos = new THREE.Vector3();
+    obj.group.getWorldPosition(pos);
+    pos.y += obj.data.isWallMount ? 3.4 : 2.2;
+    return projectWorldToRect(pos, 90, 60);
+}
+function get3DDrawerRect(drawerId){
+    if(!camera) return null;
+    var dc = drawerClickables && drawerClickables.find(function(d){return d.drawerId === drawerId;});
+    if(!dc) return null;
+    var pos = new THREE.Vector3();
+    dc.group.getWorldPosition(pos);
+    return projectWorldToRect(pos, 120, 50);
+}
+function projectWorldToRect(pos, w, h){
+    var proj = pos.clone().project(camera);
+    if(proj.z > 1) return null;
+    var vp = document.getElementById('viewport');
+    var r = vp.getBoundingClientRect();
+    var sx = (proj.x * 0.5 + 0.5) * r.width + r.left;
+    var sy = (-proj.y * 0.5 + 0.5) * r.height + r.top;
+    return { x:sx, y:sy, w:w, h:h };
+}
+function getDOMRect(selector){
+    var el = document.querySelector(selector);
+    if(!el) return null;
+    var r = el.getBoundingClientRect();
+    if(r.width === 0 && r.height === 0) return null;
+    return { x:r.left + r.width/2, y:r.top + r.height/2, w:r.width, h:r.height };
+}
+function getItemCardRect(label){
+    var cards = document.querySelectorAll('.icard');
+    for(var i=0;i<cards.length;i++){
+        if(cards[i].getAttribute('aria-label') === label){
+            var r = cards[i].getBoundingClientRect();
+            return { x:r.left + r.width/2, y:r.top + r.height/2, w:r.width, h:r.height };
+        }
+    }
+    return null;
+}
+function positionCoachMark(rect){
+    var coach = document.getElementById('tutorial-dialogue');
+    if(!coach || !rect) return;
+    var cw = coach.offsetWidth;
+    var ch = coach.offsetHeight;
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var margin = 12;
+    var gap = 14;
+    var targetTop = rect.y - rect.h/2;
+    var targetBottom = rect.y + rect.h/2;
+    var placeBelow = (targetTop - gap - ch) < margin;
+    var top;
+    if(placeBelow){
+        top = targetBottom + gap;
+        if(top + ch > vh - margin) top = vh - margin - ch;
+        coach.classList.remove('tail-down');
+        coach.classList.add('tail-up');
+    } else {
+        top = targetTop - gap - ch;
+        if(top < margin) top = margin;
+        coach.classList.remove('tail-up');
+        coach.classList.add('tail-down');
+    }
+    var left = rect.x - cw/2;
+    left = Math.max(margin, Math.min(vw - cw - margin, left));
+    coach.style.left = left + 'px';
+    coach.style.top = top + 'px';
+    var tailX = rect.x - left;
+    tailX = Math.max(14, Math.min(cw - 14, tailX));
+    coach.style.setProperty('--tail-x', tailX + 'px');
+}
+function updateTutorialCoach(){
+    if(!tutorialActive) return;
+    var step = TUTORIAL_STEPS[tutorialStep];
+    if(!step || !step.target) return;
+    var coach = document.getElementById('tutorial-dialogue');
+    if(!coach || coach.style.display === 'none') return;
+    var rect = step.target();
+    if(rect) positionCoachMark(rect);
+}
+
+function advanceTutorial(trigger){
+    if(!tutorialActive) return false;
+    var step = TUTORIAL_STEPS[tutorialStep];
+    if(!step || step.trigger !== trigger) return false;
+    tutorialStep++;
+    if(tutorialStep < TUTORIAL_STEPS.length){
+        setTimeout(showTutorialStep, 400);
+    }
+    return true;
+}
 function startInteractiveTutorial(){
     tutorialActive = true;
     tutorialStep = 0;
@@ -2465,13 +2924,9 @@ function startInteractiveTutorial(){
     // Show header (was hidden during intro)
     document.querySelector('.hdr').style.display = '';
     document.getElementById('cart-labels').style.opacity = '';
-    // Show tray and FAB
     showTray(); renderTray();
-    document.getElementById('fab').classList.add('active');
     document.getElementById('submit-btn').disabled = true;
     document.getElementById('submit-btn').style.display = '';
-    document.getElementById('retry-btn').style.display = 'none';
-    document.getElementById('advance-btn').style.display = 'none';
     // No scenario bar during tutorial - the tutorial dialogue replaces it
     document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('hdr-scenario-name').textContent='';
@@ -2480,172 +2935,112 @@ function startInteractiveTutorial(){
 }
 
 function showTutorialStep(){
-    const dlg = document.getElementById('tutorial-dialogue');
+    var dlg = document.getElementById('tutorial-dialogue');
     clearTutorialBlinks();
+    var step = TUTORIAL_STEPS[tutorialStep];
+    if(!step) return;
+    var total = TUTORIAL_STEPS.length;
     var stepNum = tutorialStep + 1;
-    var totalSteps = 7;
-    var stepLabel = 'Step ' + stepNum + '/' + totalSteps;
-    var msg = '';
-    if(tutorialStep === 0){
-        msg = 'Collect a <strong>Saline Flush</strong> from the <strong>Green IV Cart</strong>. Tap the blinking cart.';
-        blinkCart3D('airway');
-        blinkCartLabel('airway');
-    } else if(tutorialStep === 1){
-        msg = 'Tap the <strong>blinking drawer</strong> (Bottom Drawer) to open it.';
-        blinkDrawer3D('airway-d3');
-    } else if(tutorialStep === 2){
-        msg = 'Tap the <strong>Saline Flush</strong> item to select it.';
-        setTimeout(()=>blinkItemCard('saline-flush'), 300);
-    } else if(tutorialStep === 3){
-        msg = 'Tap <strong>"Add to Table"</strong> to collect the item.';
-        blinkAddButton();
-    } else if(tutorialStep === 4){
-        msg = 'Tap <strong>"&#x2190; Room"</strong> (top-left) to return to the full room view.';
-        blinkBackToRoomButton();
-    } else if(tutorialStep === 5){
-        msg = 'Tap the <strong>"Collected"</strong> tab on the right side to review your items.';
-        blinkTrayTab();
-    } else if(tutorialStep === 6){
-        msg = 'Review your items, then tap <strong>Submit</strong> in the panel to finish.';
-        blinkSubmitButton();
-    }
+    var pct = Math.round((stepNum / total) * 100);
     dlg.innerHTML =
-        '<div class="tut-text">' +
-            '<div class="tut-step">' + stepLabel + '</div>' +
-            '<div class="tut-msg">' + msg + '</div>' +
+        '<div class="coach-head">' +
+            '<div class="coach-step">' + stepNum + ' / ' + total + '</div>' +
+            '<div class="coach-progress"><div class="coach-progress-fill" style="width:' + pct + '%"></div></div>' +
+            '<button class="coach-skip" onclick="endTutorial()">Skip</button>' +
         '</div>' +
-        '<button class="tut-skip-btn" onclick="endTutorial()">Skip</button>';
+        '<div class="coach-msg">' + step.msg + '</div>';
     dlg.style.display = '';
+    dlg.style.visibility = 'hidden';
+    requestAnimationFrame(function(){
+        var rect = step.target && step.target();
+        if(rect){
+            dlg.style.transform = '';
+            positionCoachMark(rect);
+        } else {
+            dlg.style.left = '50%';
+            dlg.style.top = '80px';
+            dlg.style.transform = 'translate(-50%, 0)';
+        }
+        dlg.style.visibility = '';
+    });
+    if(step.blink) step.blink();
 }
 
-function blinkCart3D(cartId){
-    // Blink the cart's 3D materials
-    const obj = clickables.find(c => c.data.id === cartId);
-    if(!obj) return;
-    tutCartBlinkMats = [];
-    obj.group.traverse(function(child){
+function hideTutorialDialogue(){
+    clearTutorialBlinks();
+    document.getElementById('tutorial-dialogue').style.display = 'none';
+}
+
+function track3DBlink(group){
+    if (hoveredObj && hoveredObj.group === group) { unhighlightCart(hoveredObj); hoveredObj = null; }
+    group.traverse(function(child){
         if(child.material && child.material.emissive){
-            tutCartBlinkMats.push({mat: child.material, origEmissive: child.material.emissive.getHex()});
+            var baseEmissive = (child._origEmissive !== undefined) ? child._origEmissive : child.material.emissive.getHex();
+            tutBlinkedMats.push({mat: child.material, origEmissive: baseEmissive});
         }
     });
     var blinkOn = true;
     tutBlinkInterval = setInterval(function(){
         blinkOn = !blinkOn;
-        tutCartBlinkMats.forEach(function(m){
+        tutBlinkedMats.forEach(function(m){
             m.mat.emissive.setHex(blinkOn ? 0x554400 : m.origEmissive);
         });
     }, 750);
 }
 
-function blinkCartLabel(cartId){
-    var lbl = document.getElementById('lbl-' + cartId);
-    if(lbl) lbl.classList.add('cart-blink');
+function blinkCart3D(cartId){
+    var obj = clickables.find(function(c){return c.data.id === cartId;});
+    if(obj) track3DBlink(obj.group);
 }
 
 function blinkDrawer3D(drawerId){
     var dc = drawerClickables.find(function(d){return d.drawerId === drawerId;});
-    if(!dc) return;
-    // Blink the drawer face
-    dc.group.traverse(function(child){
-        if(child.material && child.material.emissive){
-            tutCartBlinkMats.push({mat: child.material, origEmissive: child.material.emissive.getHex()});
-        }
-    });
-    var blinkOn = true;
-    tutBlinkInterval = setInterval(function(){
-        blinkOn = !blinkOn;
-        dc.group.traverse(function(child){
-            if(child.material && child.material.emissive){
-                child.material.emissive.setHex(blinkOn ? 0x554400 : 0x000000);
-            }
-        });
-    }, 750);
+    if(dc) track3DBlink(dc.group);
 }
 
-function blinkItemCard(itemId){
-    var cards = document.querySelectorAll('.icard');
-    cards.forEach(function(card){
+function addBlinkClass(el, cls){
+    if(!el) return;
+    el.classList.add(cls);
+    tutBlinkedEls.push({el:el, cls:cls});
+}
+
+function blinkCartLabel(cartId){
+    addBlinkClass(document.getElementById('lbl-' + cartId), 'cart-blink');
+}
+
+function blinkItemCard(itemName){
+    document.querySelectorAll('.icard').forEach(function(card){
         if(card.getAttribute('aria-label') === 'Saline Flush'){
-            card.classList.add('icard-blink');
+            addBlinkClass(card, 'icard-blink');
         }
     });
 }
 
-function blinkAddButton(){
-    var btn = document.getElementById('panel-add-btn');
-    if(btn) btn.classList.add('panel-add-blink');
-}
-
-function blinkSubmitButton(){
-    var btn = document.getElementById('submit-btn');
-    if(btn) btn.classList.add('panel-add-blink');
-}
-
-function blinkBackToRoomButton(){
-    var btn = document.getElementById('back-to-room');
-    if(btn) btn.classList.add('panel-add-blink');
-}
-
-function blinkTrayTab(){
-    var tab = document.getElementById('tray-tab');
-    if(tab) tab.classList.add('panel-add-blink');
+function blinkElementById(id){
+    addBlinkClass(document.getElementById(id), 'panel-add-blink');
 }
 
 function clearTutorialBlinks(){
-    if(tutBlinkInterval){clearInterval(tutBlinkInterval);tutBlinkInterval=null;}
-    // Restore cart materials
-    tutCartBlinkMats.forEach(function(m){m.mat.emissive.setHex(m.origEmissive);});
-    tutCartBlinkMats = [];
-    // Remove CSS blink classes
-    document.querySelectorAll('.cart-blink').forEach(function(el){el.classList.remove('cart-blink');});
-    document.querySelectorAll('.icard-blink').forEach(function(el){el.classList.remove('icard-blink');});
-    document.querySelectorAll('.panel-add-blink').forEach(function(el){el.classList.remove('panel-add-blink');});
-    // Clean up back-to-room and tray-tab blinks
-    var btrBtn = document.getElementById('back-to-room');
-    if(btrBtn) btrBtn.classList.remove('panel-add-blink');
-    var tTab = document.getElementById('tray-tab');
-    if(tTab) tTab.classList.remove('panel-add-blink');
-    // Remove label blink
-    DATA.carts.forEach(function(c){
-        var lbl = document.getElementById('lbl-' + c.id);
-        if(lbl) lbl.classList.remove('cart-blink');
-    });
-}
-
-function handleTutorialCartClick(cartId){
-    if(!tutorialActive) return false;
-    if(tutorialStep === 0 && cartId === 'airway'){
-        tutorialStep = 1;
-        setTimeout(()=>showTutorialStep(), 400);
-        return true;
-    }
-    return false;
+    if(tutBlinkInterval){clearInterval(tutBlinkInterval); tutBlinkInterval=null;}
+    tutBlinkedMats.forEach(function(m){m.mat.emissive.setHex(m.origEmissive);});
+    tutBlinkedMats = [];
+    tutBlinkedEls.forEach(function(b){b.el.classList.remove(b.cls);});
+    tutBlinkedEls = [];
 }
 
 function handleTutorialDrawerClick(dc){
-    if(!tutorialActive) return;
-    if(tutorialStep === 1 && dc.drawerId === 'airway-d3'){
-        tutorialStep = 2;
-        // Open the drawer normally
+    if(advanceTutorial('drawer:'+dc.drawerId)){
         openDrawer3D(dc);
-        setTimeout(()=>showTutorialStep(), 400);
-        return;
-    }
-    // If wrong drawer, show hint
-    if(tutorialStep === 1){
+    } else if(tutorialStep === 1){
         showToast('Try the Bottom Drawer');
     }
 }
 
-// Tutorial hooks are inline in togPanelItem and panelCollect functions
-
 function endTutorialWithSuccess(){
-    clearTutorialBlinks();
     tutorialActive = false;
-    document.getElementById('tutorial-dialogue').style.display = 'none';
+    hideTutorialDialogue();
     closeSidePanel();
     hideTray();
-    document.getElementById('fab').classList.remove('active');
     document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('hdr-scenario-name').textContent='';
     S.scenario = null; S.inv = []; S.st = null;
@@ -2657,14 +3052,13 @@ function endTutorialWithSuccess(){
 }
 
 function endTutorial(){
-    clearTutorialBlinks();
     tutorialActive = false;
-    document.getElementById('tutorial-dialogue').style.display = 'none';
+    hideTutorialDialogue();
     closeSidePanel();
     hideTray();
-    document.getElementById('fab').classList.remove('active');
     document.getElementById('hdr-scenario-name').textContent='';
     document.getElementById('cart-panel').classList.remove('active');
+    document.getElementById('tray').classList.remove('panel-open');
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
     S.scenario = null; S.inv = []; S.st = null;
     goToDefaultView(true);
@@ -2678,8 +3072,8 @@ function startTrainingMode(){
     document.getElementById('cart-labels').style.opacity = '';
     const b = document.getElementById('mode-badge');
     b.style.display = ''; b.textContent = 'TRAIN'; b.className = 'mode-badge training';
-    // Go directly to first scenario (Arterial Line Placement)
-    S.su = DATA.scenarios.length; // unlock all
+    // Sequential unlock: Arterial -> Central Line -> Chest Tube
+    S.su = Math.max(S.su || 1, 1);
     goToDefaultView(true);
     openScenariosModal();
 }
@@ -2694,7 +3088,6 @@ function openModeSelect(){
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
     hideTray();
     document.querySelector('.app').classList.remove('scenario-active');
-    document.getElementById('fab').classList.remove('active');
     document.getElementById('hdr-scenario-name').textContent='';
     goToDefaultView(false);
     openModal('mode-modal');
@@ -2713,18 +3106,17 @@ function selectMode(mode){
 function startAssessment(){
     S.assessQueue=[...DATA.scenarios].sort(()=>Math.random()-.5);
     S.assessResults=[];S.assessIdx=0;S.su=DATA.scenarios.length;
+    S.missionSummaries={};S.missionAgg={};EV.length=0;
     loadAssessScenario();
 }
 function loadAssessScenario(){
     if(S.assessIdx>=S.assessQueue.length){finishAssessment();return;}
     const sc=S.assessQueue[S.assessIdx];
     S.scenario=sc;S.si=DATA.scenarios.indexOf(sc);S.inv=[];S.st=Date.now();S.sub=false;
+    resetMission();logEv(1,S.si+1);
     document.querySelector('.app').classList.add('scenario-active');
     document.getElementById('hdr-scenario-name').textContent='['+( S.assessIdx+1)+'/'+S.assessQueue.length+'] '+sc.name;
-    document.getElementById('fab').classList.add('active');
     document.getElementById('submit-btn').disabled=true;document.getElementById('submit-btn').style.display='';
-    document.getElementById('retry-btn').style.display='none';
-    document.getElementById('advance-btn').style.display='none';
     showHint('Scenario '+(S.assessIdx+1)+' of '+S.assessQueue.length+': Gather items', 4000);
     upStats();startTimer();
     showTray();renderTray();
@@ -2734,11 +3126,20 @@ function assessSubmit(){
     const sc=S.scenario;const ids=S.inv.map(i=>i.id);const t=Math.floor((Date.now()-S.st)/1000);
     S.assessResults.push({scenarioId:sc.id,scenarioName:sc.name,collected:ids,time:t,essential:sc.essential,optional:sc.optional});
     sAn({sid:S.sid,mode:'assessment',scId:sc.id,ts:new Date().toISOString(),time:t,collected:ids});
+    // Compute the same metrics as training scoring so mission_complete fires here too.
+    const fE=sc.essential.filter(id=>ids.includes(id)),mE=sc.essential.filter(id=>!ids.includes(id));
+    const fO=sc.optional.filter(id=>ids.includes(id)),mO=sc.optional.filter(id=>!ids.includes(id));
+    const ex=ids.filter(id=>!sc.essential.includes(id)&&!sc.optional.includes(id));
+    const score=Math.max(0,Math.round((fE.length/sc.essential.length)*60+(sc.optional.length?(fO.length/sc.optional.length)*20:20)-ex.length*5));
+    const aE=mE.length===0,aR=aE&&mO.length===0,nX=ex.length===0;
+    let stars=0;if(aR&&nX&&t<60)stars=5;else if(aR&&nX)stars=4;else if(aR)stars=3;else if(aE)stars=2;else if(fE.length>0)stars=1;
+    recordMission(S.si+1,sc,fE,mE,fO,mO,ex,t,score,stars);
     sfx('collect');showToast('Submitted! Next scenario...');
     S.assessIdx++;setTimeout(()=>loadAssessScenario(),800);
 }
 function finishAssessment(){
-    stopTimer();document.querySelector('.app').classList.remove('scenario-active');document.getElementById('fab').classList.remove('active');document.getElementById('hdr-scenario-name').textContent='';
+    emitSession('assessment');
+    stopTimer();document.querySelector('.app').classList.remove('scenario-active');document.getElementById('hdr-scenario-name').textContent='';
     let html='<div style="text-align:center;margin-bottom:14px"><p style="font-family:var(--font-display);font-size:15px;font-weight:700;text-transform:uppercase">Assessment Complete</p><p style="font-size:11px;color:var(--text-muted)">'+S.assessResults.length+' scenarios</p></div>';
     let total=0;
     S.assessResults.forEach(r=>{
@@ -2776,7 +3177,6 @@ function startFindIt(){
     findItScore = {correct:0, wrong:0};
     document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('hdr-scenario-name').textContent='';
-    document.getElementById('fab').classList.remove('active');
     hideTray();
     loadFindItItem();
 }
@@ -2874,7 +3274,6 @@ function startExplore(){
     exploreActive = true;
     document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('hdr-scenario-name').textContent='';
-    document.getElementById('fab').classList.remove('active');
     hideTray();
     document.getElementById('explore-bar').classList.add('active');
     document.getElementById('explore-search').value = '';
@@ -2901,7 +3300,8 @@ function openDrawer3DExplore(dc){
     // Render items in explore mode (view only, no selection)
     var g = document.getElementById('item-cards');
     g.innerHTML = '';
-    DATA.items.filter(function(i){return i.drawer===dr.id;}).forEach(function(item){
+    var items = DATA.items.filter(function(i){return i.drawer===dr.id;});
+    items.forEach(function(item){
         var card = document.createElement('div');
         card.className = 'icard';
         card.style.cursor = 'default';
@@ -2924,8 +3324,19 @@ function openDrawer3DExplore(dc){
         nameDiv.textContent = item.name;
         card.appendChild(nameDiv);
 
+        if(item.desc){
+            var descDiv = document.createElement('div');
+            descDiv.className = 'icard-desc';
+            descDiv.textContent = item.desc;
+            descDiv.title = 'Tap to expand';
+            descDiv.onclick = function(e){e.stopPropagation();descDiv.classList.toggle('expanded');};
+            card.appendChild(descDiv);
+        }
+
         g.appendChild(card);
     });
+    updatePanelCount(items.length);
+    setTimeout(updateScrollFade,30);
 
     // Show panel without selection bar
     document.getElementById('drawer-tabs').style.display = 'none';
@@ -2936,6 +3347,7 @@ function openDrawer3DExplore(dc){
 
 function closeExplorePanel(){
     document.getElementById('cart-panel').classList.remove('active');
+    document.getElementById('tray').classList.remove('panel-open');
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
 }
 
@@ -2959,6 +3371,7 @@ function exploreSearch(query){
         // Navigate to that cart
         if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
         document.getElementById('cart-panel').classList.remove('active');
+        document.getElementById('tray').classList.remove('panel-open');
         goToCartView(cart.id);
     }
 }
@@ -2967,6 +3380,7 @@ function exitExplore(){
     exploreActive = false;
     document.getElementById('explore-bar').classList.remove('active');
     document.getElementById('cart-panel').classList.remove('active');
+    document.getElementById('tray').classList.remove('panel-open');
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
     goToDefaultView(true);
     document.getElementById('mode-badge').style.display='none';
