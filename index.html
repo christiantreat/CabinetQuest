@@ -1357,6 +1357,14 @@ const PARENT_ORIGIN=_QP.get('parentOrigin')||null; // optional explicit target o
 const IS_EMBEDDED=(window.parent!==window);
 if(QUALTRICS_SID) S.sid=QUALTRICS_SID;          // stamp the Qualtrics key onto app state + localStorage records
 
+// Directed/longitudinal embedding: run a single phase per survey page.
+//   phase=full (default) -> normal standalone behavior (intro + all scenarios)
+//   phase=tutorial        -> run only the interactive tutorial
+//   phase=scenario&scenario=<id|index> -> run only that one scenario
+const PHASE=_QP.get('phase')||'full';
+const SCEN_PARAM=_QP.get('scenario');
+const DIRECTED=(PHASE==='tutorial'||PHASE==='scenario');
+
 // Integer code legends for compact logging (decodable via these maps, which are
 // also embedded in the log header so it is self-contained).
 const AREA_CODES={}; DATA.carts.forEach((c,i)=>AREA_CODES[c.id]=i);
@@ -2636,7 +2644,9 @@ function submitInventory(){
 
     var fo = '';
     fo += '<button class="bp" style="background:var(--accent-amber);border-color:#c88a18;color:var(--text-dark);flex:1" onclick="closeModal(\'fb-modal\');retryScenario()">Retry</button>';
-    if (S.si < DATA.scenarios.length - 1)
+    if (DIRECTED)
+        fo += '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');finishDirectedScenario()">Continue \u2192</button>';
+    else if (S.si < DATA.scenarios.length - 1)
         fo += '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');continueToNext()">Next Scenario \u2192</button>';
     else
         fo += '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');continueToNext()">Complete \u1F389</button>';
@@ -2916,6 +2926,7 @@ function advanceTutorial(trigger){
 function startInteractiveTutorial(){
     tutorialActive = true;
     tutorialStep = 0;
+    resetMission(); logEv(1,0); // 0 = tutorial
     S.mode = 'training';
     S.scenario = {id:'tutorial',name:'Tutorial',description:'Learn the basics.',essential:['saline-flush'],optional:[]};
     S.inv = [];
@@ -3047,7 +3058,9 @@ function endTutorialWithSuccess(){
     // Show completion message then start training
     document.getElementById('fb-h').textContent = 'Tutorial Complete!';
     document.getElementById('fb-body').innerHTML = '<div style="text-align:center;padding:16px"><div style="font-size:48px;margin-bottom:12px">\uD83C\uDF89</div><p style="font-size:14px;font-weight:600;margin-bottom:6px">Great job!</p><p style="font-size:12px;color:var(--text-mid)">You\'ve learned how to navigate carts, open drawers, select items, return to room view, review collected items, and submit. Now let\'s start the real training!</p></div>';
-    document.getElementById('fb-foot').innerHTML = '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');startTrainingMode()">Start Training \u2192</button>';
+    document.getElementById('fb-foot').innerHTML = DIRECTED
+        ? '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');finishDirectedTutorial(true)">Continue \u2192</button>'
+        : '<button class="bp" style="flex:1" onclick="closeModal(\'fb-modal\');startTrainingMode()">Start Training \u2192</button>';
     openModal('fb-modal'); sfx('success');
 }
 
@@ -3062,6 +3075,7 @@ function endTutorial(){
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
     S.scenario = null; S.inv = []; S.st = null;
     goToDefaultView(true);
+    if(DIRECTED){ finishDirectedTutorial(false); return; }
     startTrainingMode();
 }
 
@@ -3394,13 +3408,67 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 // ===== PORTRAIT LOCK =====
 try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('portrait').catch(function(){});}catch(e){}
 
+// ===== DIRECTED (single-phase) EMBED MODE =====
+// Used when the app is embedded one phase per Qualtrics survey page so that
+// survey questions can be interleaved between scenarios. On completion the
+// phase emits session_complete (which the parent survey treats as its
+// advance signal) with only that phase's fields + its own event log, so the
+// per-scenario cq_mN_* fields never collide across pages (all share one sid).
+function startDirected(){
+    var ov=document.getElementById('intro-overlay'); if(ov){ov.classList.add('hidden');ov.style.opacity='';}
+    document.querySelector('.hdr').style.display='';
+    document.getElementById('cart-labels').style.opacity='';
+    if(PHASE==='tutorial'){
+        goToDefaultView(false);
+        setTimeout(startInteractiveTutorial,400);
+    } else { // scenario
+        var idx=parseInt(SCEN_PARAM,10);
+        var sc=DATA.scenarios.find(function(s){return s.id===SCEN_PARAM;});
+        if(!sc && !isNaN(idx)) sc=DATA.scenarios[idx];
+        if(!sc) sc=DATA.scenarios[0];
+        startDirectedScenario(sc);
+    }
+}
+function startDirectedScenario(sc){
+    S.su=DATA.scenarios.length; // unlocks irrelevant in directed mode
+    selScen(sc, DATA.scenarios.indexOf(sc));
+}
+// Continue button after a directed scenario's feedback: emit + lock + advance.
+function finishDirectedScenario(){
+    logEv(8);
+    var num=S.si+1;
+    var flat=Object.assign({cq_app_version:APP_VERSION,cq_mode:'training'}, S.missionSummaries[num]||{});
+    emitResults('session_complete', flat, buildLog());
+    hideTray(); closeSidePanel();
+    document.querySelector('.app').classList.remove('scenario-active');
+    showDirectedDone('Scenario complete.');
+}
+// Tutorial finished (or skipped) in directed mode.
+function finishDirectedTutorial(completed){
+    logEv(8);
+    var summary={cq_tut_completed:completed?1:0, cq_tut_time:Math.round((Date.now()-SESSION_START_WALL)/1000), cq_app_version:APP_VERSION};
+    emitResults('session_complete', summary, buildLog());
+    hideTray(); closeSidePanel();
+    showDirectedDone('Tutorial complete.');
+}
+function showDirectedDone(msg){
+    var d=document.getElementById('directed-done');
+    if(!d){
+        d=document.createElement('div'); d.id='directed-done';
+        d.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(18,28,38,.94);color:#fff;text-align:center;padding:24px';
+        document.body.appendChild(d);
+    }
+    d.innerHTML='<div style="max-width:340px"><div style="font-size:52px;margin-bottom:14px">✅</div><p style="font-size:17px;font-weight:700;margin-bottom:8px">'+msg+'</p><p style="font-size:13px;opacity:.85;line-height:1.5">Please continue with the survey. If it does not advance automatically, click the survey’s Next button.</p></div>';
+    d.style.display='flex';
+}
+
 // ===== INIT =====
 function init(){
     load();
     init3D();
     upStats();
-    // Start cinematic intro (replaces old tutorial modal)
-    startCinematicIntro();
+    if(DIRECTED){ startDirected(); }
+    else { startCinematicIntro(); } // normal cinematic intro + full game
 }
 window.onload=init;
 </script>
