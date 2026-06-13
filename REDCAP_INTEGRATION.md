@@ -56,9 +56,9 @@ a logging failure can never block or break the learner's UI.
 
 Anonymous per-session ID, never a direct identifier:
 
-- **Embedded in Qualtrics** (`?sid=...` present): the Qualtrics `sid` is reused
-  so REDCap platform analytics join to the corresponding survey record by study
-  session key only.
+- **Launched with `?sid=...`** (e.g. from a REDCap survey link that passes the
+  participant's study session key): that `sid` is reused so platform analytics
+  join to the corresponding study record by session key only.
 - **Standalone**: `crypto.randomUUID()`, persisted in `sessionStorage` for the
   tab session.
 

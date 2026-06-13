@@ -1,6 +1,6 @@
 "Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max","Identifier?","Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
 record_id,event,,text,"Record ID",,"Auto-assigned by REDCap (record auto-numbering)",,,,,,,,,,,
-session_id,event,,text,"Session ID",,"Anonymous per-session UUID generated in the browser (or Qualtrics sid when embedded)",,,,,,,,,,,
+session_id,event,,text,"Session ID",,"Anonymous per-session UUID generated in the browser (or the sid passed on the study link)",,,,,,,,,,,
 server_timestamp,event,,text,"Server Timestamp (UTC)",,"ISO-8601, set server-side by the proxy",,,,,,,,,,,
 module,event,,text,"Module",,"Which part of the app: app / tutorial / session / scenario id (s4, s2, s3)",,,,,,,,,,,
 event_type,event,,text,"Event Type",,"One of: session_start, tutorial_start, tutorial_complete, scenario_start, mission_complete, session_complete, client_error",,,,,,,,,,,

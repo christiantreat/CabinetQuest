@@ -1345,19 +1345,18 @@ const S={scenario:null,si:0,su:1,inv:[],st:null,sid:Date.now(),cart:null,drawer:
     mode:'training',assessQueue:[],assessResults:[],assessIdx:0,
     missionSummaries:{},missionAgg:{},m:null};
 
-// ===== QUALTRICS EMBED / RESULTS EMISSION =====
-// Standalone behavior is fully preserved: when not in an iframe (or no sid is
-// passed) nothing is transmitted -- the app runs exactly as before.
+// ===== SESSION KEY / EMBED PARAMS =====
+// Standalone behavior is fully preserved: with no query params the app runs
+// exactly as before.
 const APP_VERSION='1.0.0';
 const SESSION_START_WALL=Date.now();            // wall-clock start, for ordering
 const PERF_START=performance.now();             // monotonic start, for durations
 const _QP=new URLSearchParams(location.search);
-const QUALTRICS_SID=_QP.get('sid')||null;       // unique session key from Qualtrics
-const PARENT_ORIGIN=_QP.get('parentOrigin')||null; // optional explicit target origin
+const EXTERNAL_SID=_QP.get('sid')||null;        // session key passed by an external system (e.g. a REDCap survey link)
 const IS_EMBEDDED=(window.parent!==window);
-if(QUALTRICS_SID) S.sid=QUALTRICS_SID;          // stamp the Qualtrics key onto app state + localStorage records
+if(EXTERNAL_SID) S.sid=EXTERNAL_SID;            // stamp the external key onto app state + localStorage records
 
-// Directed/longitudinal embedding: run a single phase per survey page.
+// Directed/longitudinal linking: run a single phase per link/page.
 //   phase=full (default) -> normal standalone behavior (intro + all scenarios)
 //   phase=tutorial        -> run only the interactive tutorial
 //   phase=scenario&scenario=<id|index> -> run only that one scenario
@@ -1380,13 +1379,6 @@ function logEv(code){const a=[Math.round(performance.now()-PERF_START),code];for
 function resetMission(){S.m={drawerOpens:0,distinctDrawers:[],cartOpens:0,selects:0,deselects:0};}
 resetMission();
 
-// Single results-emitting function -- destination is swappable later.
-function emitResults(type,summary,log){
-    if(!IS_EMBEDDED) return; // standalone/testing mode: never postMessage
-    const payload={source:'codesbu',type:type,sid:S.sid,appVersion:APP_VERSION,sessionStart:SESSION_START_WALL,summary:summary,log:(log!==undefined?log:null)};
-    try{window.parent.postMessage(payload,PARENT_ORIGIN||'*');}catch(e){console.warn('CabinetQuest emitResults failed:',e);}
-}
-
 // ===== REDCAP EVENT COLLECTION (via server-side proxy) =====
 // One JSON event per POST to our /collect proxy (redcap_proxy.py), which maps
 // it onto the REDCap data dictionary and imports it as one record. The browser
@@ -1395,11 +1387,12 @@ function emitResults(type,summary,log){
 // standalone/local behavior is then exactly as before.
 const REDCAP_COLLECT_URL='';      // set at deploy time, e.g. 'https://<our-proxy-host>/collect'
 
-// Anonymous per-session id: reuse the Qualtrics sid when embedded (so platform
-// analytics join to the survey record), otherwise a per-tab random UUID. No
-// direct identifiers are ever collected or sent.
+// Anonymous per-session id: reuse the externally supplied sid when present
+// (so platform analytics join to the study record by session key only),
+// otherwise a per-tab random UUID. No direct identifiers are ever collected
+// or sent.
 const RC_SESSION_ID=(function(){
-    if(QUALTRICS_SID) return String(QUALTRICS_SID);
+    if(EXTERNAL_SID) return String(EXTERNAL_SID);
     try{
         let id=sessionStorage.getItem('cq_rc_sid');
         if(!id){id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'cq-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);sessionStorage.setItem('cq_rc_sid',id);}
@@ -1452,11 +1445,6 @@ function buildLogObj(){
         codes:{1:'scenario_start',2:'cart_open',3:'drawer_open',4:'item_select',5:'item_deselect',6:'collect',7:'submit',8:'session_complete'},
         e:EV};
 }
-function buildLog(){
-    const str=JSON.stringify(buildLogObj());
-    if(str.length>15000) console.warn('CabinetQuest: event log is '+str.length+' chars (Qualtrics hidden-field ceiling ~20000).');
-    return str;
-}
 
 // Build the FLAT cq_-prefixed summary object for one mission (num = scenario order, 1-based).
 function missionFlat(num,sc,fE,mE,fO,mO,ex,t,score,stars){
@@ -1490,7 +1478,6 @@ function recordMission(num,sc,fE,mE,fO,mO,ex,t,score,stars){
     const flat=missionFlat(num,sc,fE,mE,fO,mO,ex,t,score,stars);
     S.missionSummaries[num]=flat;
     S.missionAgg[num]={score:score,accuracy:flat['cq_m'+num+'_accuracy'],time:t,stars:stars};
-    emitResults('mission_complete',flat,null);
     redcapLog(sc.id,'mission_complete',Object.assign({mode:S.mode},flat));
 }
 
@@ -1509,7 +1496,6 @@ function emitSession(mode){
     flat['cq_total_score']=totScore;
     flat['cq_avg_score']=done?Math.round(totScore/done):0;
     flat['cq_avg_accuracy']=done?Math.round(aggs.reduce((s,a)=>s+a.accuracy,0)/done*100)/100:0;
-    emitResults('session_complete',flat,buildLog());
     redcapLog('session','session_complete',Object.assign({},flat,{log:buildLogObj()}));
 }
 
@@ -3475,12 +3461,12 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 // ===== PORTRAIT LOCK =====
 try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('portrait').catch(function(){});}catch(e){}
 
-// ===== DIRECTED (single-phase) EMBED MODE =====
-// Used when the app is embedded one phase per Qualtrics survey page so that
-// survey questions can be interleaved between scenarios. On completion the
-// phase emits session_complete (which the parent survey treats as its
-// advance signal) with only that phase's fields + its own event log, so the
-// per-scenario cq_mN_* fields never collide across pages (all share one sid).
+// ===== DIRECTED (single-phase) MODE =====
+// Used when the app is launched one phase per link (e.g. from successive
+// REDCap survey pages, each passing the same sid) so that survey questions
+// can be interleaved between scenarios. On completion the phase logs
+// session_complete to REDCap with only that phase's fields + its own event
+// log, so the per-scenario cq_mN_* fields never collide across pages.
 function startDirected(){
     var ov=document.getElementById('intro-overlay'); if(ov){ov.classList.add('hidden');ov.style.opacity='';}
     document.querySelector('.hdr').style.display='';
@@ -3505,7 +3491,6 @@ function finishDirectedScenario(){
     logEv(8);
     var num=S.si+1;
     var flat=Object.assign({cq_app_version:APP_VERSION,cq_mode:'training'}, S.missionSummaries[num]||{});
-    emitResults('session_complete', flat, buildLog());
     redcapLog('session','session_complete',Object.assign({},flat,{log:buildLogObj()}));
     hideTray(); closeSidePanel();
     document.querySelector('.app').classList.remove('scenario-active');
@@ -3515,7 +3500,6 @@ function finishDirectedScenario(){
 function finishDirectedTutorial(completed){
     logEv(8);
     var summary={cq_tut_completed:completed?1:0, cq_tut_time:Math.round((Date.now()-SESSION_START_WALL)/1000), cq_app_version:APP_VERSION};
-    emitResults('session_complete', summary, buildLog());
     redcapLog('session','session_complete',Object.assign({},summary,{log:buildLogObj()}));
     hideTray(); closeSidePanel();
     showDirectedDone('Tutorial complete.');
