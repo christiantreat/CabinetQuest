@@ -1,0 +1,4 @@
+# redcap_proxy.py dependencies
+fastapi>=0.111
+httpx>=0.27
+uvicorn[standard]>=0.30

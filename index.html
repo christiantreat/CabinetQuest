@@ -1387,13 +1387,73 @@ function emitResults(type,summary,log){
     try{window.parent.postMessage(payload,PARENT_ORIGIN||'*');}catch(e){console.warn('CabinetQuest emitResults failed:',e);}
 }
 
-// Build the compact, self-describing event-log string (session_complete only).
-function buildLog(){
-    const obj={v:APP_VERSION,sid:String(S.sid),s:SESSION_START_WALL,
+// ===== REDCAP EVENT COLLECTION (via server-side proxy) =====
+// One JSON event per POST to our /collect proxy (redcap_proxy.py), which maps
+// it onto the REDCap data dictionary and imports it as one record. The browser
+// never contacts REDCap directly and never sees the API token (see
+// REDCAP_INTEGRATION.md). Leave REDCAP_COLLECT_URL empty to disable entirely --
+// standalone/local behavior is then exactly as before.
+const REDCAP_COLLECT_URL='';      // set at deploy time, e.g. 'https://<our-proxy-host>/collect'
+
+// Anonymous per-session id: reuse the Qualtrics sid when embedded (so platform
+// analytics join to the survey record), otherwise a per-tab random UUID. No
+// direct identifiers are ever collected or sent.
+const RC_SESSION_ID=(function(){
+    if(QUALTRICS_SID) return String(QUALTRICS_SID);
+    try{
+        let id=sessionStorage.getItem('cq_rc_sid');
+        if(!id){id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'cq-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);sessionStorage.setItem('cq_rc_sid',id);}
+        return id;
+    }catch(e){return 'cq-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);}
+})();
+
+// Fire-and-forget queue: logging must never block or break the learner's UI.
+// Events are serialized at enqueue time and sent strictly in order; a failed
+// send is retried up to 3 times, then dropped silently.
+const RC_QUEUE=[];
+let rcBusy=false;
+function redcapLog(module,eventType,eventData){
+    if(!REDCAP_COLLECT_URL) return;
+    try{
+        RC_QUEUE.push({body:JSON.stringify({session_id:RC_SESSION_ID,module:module,event_type:eventType,event_data:eventData||{}}),tries:0});
+        if(RC_QUEUE.length>100) RC_QUEUE.shift();
+        rcFlush();
+    }catch(e){}
+}
+function rcFlush(){
+    if(rcBusy||!RC_QUEUE.length) return;
+    const ev=RC_QUEUE[0];rcBusy=true;
+    try{
+        fetch(REDCAP_COLLECT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:ev.body,keepalive:ev.body.length<60000})
+            .then(function(r){if(!r.ok)throw new Error('http '+r.status);RC_QUEUE.shift();})
+            .catch(function(){ev.tries++;if(ev.tries>=3)RC_QUEUE.shift();})
+            .then(function(){rcBusy=false;if(RC_QUEUE.length)setTimeout(rcFlush,ev.tries?1500*ev.tries:50);});
+    }catch(e){rcBusy=false;}
+}
+// Best-effort flush on page close. sendBeacon posts text/plain (no CORS
+// preflight, so it survives unload); the proxy parses the raw body as JSON
+// regardless of declared content type.
+window.addEventListener('pagehide',function(){
+    if(!REDCAP_COLLECT_URL||!navigator.sendBeacon) return;
+    try{while(RC_QUEUE.length)navigator.sendBeacon(REDCAP_COLLECT_URL,RC_QUEUE.shift().body);}catch(e){}
+});
+// Technical-feasibility telemetry (protocol criterion F3): capture uncaught
+// errors, capped so a render loop can't flood REDCap with records.
+let rcErrLogged=0;
+window.addEventListener('error',function(e){
+    if(rcErrLogged>=10) return;rcErrLogged++;
+    redcapLog('app','client_error',{message:String(e.message||'').slice(0,500),source:String(e.filename||'').slice(0,200),line:e.lineno||0});
+});
+
+// Build the compact, self-describing event log (session_complete only).
+function buildLogObj(){
+    return {v:APP_VERSION,sid:String(S.sid),s:SESSION_START_WALL,
         lg:{areas:AREA_CODES,drawers:DRAWER_CODES},
         codes:{1:'scenario_start',2:'cart_open',3:'drawer_open',4:'item_select',5:'item_deselect',6:'collect',7:'submit',8:'session_complete'},
         e:EV};
-    const str=JSON.stringify(obj);
+}
+function buildLog(){
+    const str=JSON.stringify(buildLogObj());
     if(str.length>15000) console.warn('CabinetQuest: event log is '+str.length+' chars (Qualtrics hidden-field ceiling ~20000).');
     return str;
 }
@@ -1431,6 +1491,7 @@ function recordMission(num,sc,fE,mE,fO,mO,ex,t,score,stars){
     S.missionSummaries[num]=flat;
     S.missionAgg[num]={score:score,accuracy:flat['cq_m'+num+'_accuracy'],time:t,stars:stars};
     emitResults('mission_complete',flat,null);
+    redcapLog(sc.id,'mission_complete',Object.assign({mode:S.mode},flat));
 }
 
 // Emit session_complete: merge all mission summaries + session aggregates + full log.
@@ -1449,6 +1510,7 @@ function emitSession(mode){
     flat['cq_avg_score']=done?Math.round(totScore/done):0;
     flat['cq_avg_accuracy']=done?Math.round(aggs.reduce((s,a)=>s+a.accuracy,0)/done*100)/100:0;
     emitResults('session_complete',flat,buildLog());
+    redcapLog('session','session_complete',Object.assign({},flat,{log:buildLogObj()}));
 }
 
 // ===== STORAGE =====
@@ -2300,6 +2362,7 @@ function renderScenList(){
 function selScen(sc,i){
     S.scenario=sc;S.si=i;S.inv=[];S.st=Date.now();S.sub=false;
     resetMission();logEv(1,i+1);
+    redcapLog(sc.id,'scenario_start',{scenario:sc.name,order:i+1,mode:S.mode});
     document.querySelector('.app').classList.add('scenario-active');
     document.getElementById('hdr-scenario-name').textContent=sc.name;
     document.getElementById('submit-btn').disabled=true;document.getElementById('submit-btn').style.display='';
@@ -2660,7 +2723,7 @@ function submitInventory(){
     renderScenList();
 }
 function chkA(id){if(S.ach.includes(id))return;const a=ACH.find(x=>x.id===id);if(!a)return;S.ach.push(id);showAch(a);sfx('success');hap('heavy');S.pts+=100;S.tp+=100;showPts(100,'Achievement!');save();}
-function retryScenario(){S.inv=[];S.st=Date.now();S.sub=false;resetMission();logEv(1,S.si+1);closeSidePanel();renderTray();document.getElementById('submit-btn').style.display='';document.getElementById('submit-btn').disabled=true;showHint('Tap a cart to gather items', 3000);upInv();upStats();sfx('click');goToDefaultView(true);}
+function retryScenario(){S.inv=[];S.st=Date.now();S.sub=false;resetMission();logEv(1,S.si+1);redcapLog(S.scenario.id,'scenario_start',{scenario:S.scenario.name,order:S.si+1,mode:S.mode,retry:1});closeSidePanel();renderTray();document.getElementById('submit-btn').style.display='';document.getElementById('submit-btn').disabled=true;showHint('Tap a cart to gather items', 3000);upInv();upStats();sfx('click');goToDefaultView(true);}
 function continueToNext(){
     hideTray();
     goToDefaultView(true);
@@ -2927,6 +2990,7 @@ function startInteractiveTutorial(){
     tutorialActive = true;
     tutorialStep = 0;
     resetMission(); logEv(1,0); // 0 = tutorial
+    redcapLog('tutorial','tutorial_start',{phase:PHASE});
     S.mode = 'training';
     S.scenario = {id:'tutorial',name:'Tutorial',description:'Learn the basics.',essential:['saline-flush'],optional:[]};
     S.inv = [];
@@ -3054,6 +3118,7 @@ function endTutorialWithSuccess(){
     hideTray();
     document.querySelector('.app').classList.remove('scenario-active');
     document.getElementById('hdr-scenario-name').textContent='';
+    redcapLog('tutorial','tutorial_complete',{completed:1,steps_done:TUTORIAL_STEPS.length,steps_total:TUTORIAL_STEPS.length,time:S.st?Math.round((Date.now()-S.st)/1000):null});
     S.scenario = null; S.inv = []; S.st = null;
     // Show completion message then start training
     document.getElementById('fb-h').textContent = 'Tutorial Complete!';
@@ -3073,6 +3138,7 @@ function endTutorial(){
     document.getElementById('cart-panel').classList.remove('active');
     document.getElementById('tray').classList.remove('panel-open');
     if(activeDrawer3D){slideDrawerClosed(activeDrawer3D);activeDrawer3D=null;}
+    redcapLog('tutorial','tutorial_complete',{completed:0,steps_done:tutorialStep,steps_total:TUTORIAL_STEPS.length,time:S.st?Math.round((Date.now()-S.st)/1000):null});
     S.scenario = null; S.inv = []; S.st = null;
     goToDefaultView(true);
     if(DIRECTED){ finishDirectedTutorial(false); return; }
@@ -3128,6 +3194,7 @@ function loadAssessScenario(){
     const sc=S.assessQueue[S.assessIdx];
     S.scenario=sc;S.si=DATA.scenarios.indexOf(sc);S.inv=[];S.st=Date.now();S.sub=false;
     resetMission();logEv(1,S.si+1);
+    redcapLog(sc.id,'scenario_start',{scenario:sc.name,order:S.si+1,mode:'assessment'});
     document.querySelector('.app').classList.add('scenario-active');
     document.getElementById('hdr-scenario-name').textContent='['+( S.assessIdx+1)+'/'+S.assessQueue.length+'] '+sc.name;
     document.getElementById('submit-btn').disabled=true;document.getElementById('submit-btn').style.display='';
@@ -3439,6 +3506,7 @@ function finishDirectedScenario(){
     var num=S.si+1;
     var flat=Object.assign({cq_app_version:APP_VERSION,cq_mode:'training'}, S.missionSummaries[num]||{});
     emitResults('session_complete', flat, buildLog());
+    redcapLog('session','session_complete',Object.assign({},flat,{log:buildLogObj()}));
     hideTray(); closeSidePanel();
     document.querySelector('.app').classList.remove('scenario-active');
     showDirectedDone('Scenario complete.');
@@ -3448,6 +3516,7 @@ function finishDirectedTutorial(completed){
     logEv(8);
     var summary={cq_tut_completed:completed?1:0, cq_tut_time:Math.round((Date.now()-SESSION_START_WALL)/1000), cq_app_version:APP_VERSION};
     emitResults('session_complete', summary, buildLog());
+    redcapLog('session','session_complete',Object.assign({},summary,{log:buildLogObj()}));
     hideTray(); closeSidePanel();
     showDirectedDone('Tutorial complete.');
 }
@@ -3465,6 +3534,7 @@ function showDirectedDone(msg){
 // ===== INIT =====
 function init(){
     load();
+    redcapLog('app','session_start',{phase:PHASE,embedded:IS_EMBEDDED?1:0,app_version:APP_VERSION,screen_w:screen.width,screen_h:screen.height});
     init3D();
     upStats();
     if(DIRECTED){ startDirected(); }
